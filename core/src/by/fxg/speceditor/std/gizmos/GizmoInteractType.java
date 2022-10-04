@@ -1,4 +1,4 @@
-package by.fxg.speceditor.screen.project.map.viewport;
+package by.fxg.speceditor.std.gizmos;
 
 public enum GizmoInteractType {
 	NONE,

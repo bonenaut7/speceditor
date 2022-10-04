@@ -9,10 +9,10 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.prefabs.PrefabProject;
 import by.fxg.speceditor.screen.BaseScreen;
+import by.fxg.speceditor.screen.deprecated.SubscreenExplorer;
+import by.fxg.speceditor.screen.deprecated.SubscreenProjectManager;
+import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.screen.gui.GuiAbout;
-import by.fxg.speceditor.screen.project.map.SubscreenExplorer;
-import by.fxg.speceditor.screen.project.map.SubscreenProjectManager;
-import by.fxg.speceditor.screen.project.map.SubscreenViewport;
 import by.fxg.speceditor.ui.UDropdownClick;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

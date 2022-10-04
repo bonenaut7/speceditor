@@ -1,4 +1,4 @@
-package by.fxg.speceditor.screen.project.map.viewport;
+package by.fxg.speceditor.std.gizmos;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags;
 
+/** Inner bullet physics class for raycasting with mouse clicks **/
 class GizmoHitbox {
 	btCollisionShape shape;
 	btCollisionObject object;
@@ -26,6 +27,7 @@ class GizmoHitbox {
 		}
 	}
 	
+	/** Updates position for raycast hitbox **/
 	public void updatePosition(Vector3 position) {
 		Matrix4 temp = this.object.getWorldTransform();
 		temp.setToTranslation(position);

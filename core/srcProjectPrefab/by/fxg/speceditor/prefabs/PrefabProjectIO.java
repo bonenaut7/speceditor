@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.pilesos.specformat.editor.ReaderUtil;
 import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.objecttree.ElementStack;
 import by.fxg.speceditor.std.objecttree.elements.ElementFolder;

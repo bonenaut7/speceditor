@@ -1,4 +1,4 @@
-package by.fxg.speceditor.screen.project.map;
+package by.fxg.speceditor.screen.deprecated;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -14,7 +14,7 @@ import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.GInputProcessor.IMouseController;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.screen.project.map.viewport.GizmosModule;
+import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
 import by.fxg.speceditor.std.render.IRendererType;
 import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;

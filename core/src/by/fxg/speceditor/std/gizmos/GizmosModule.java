@@ -1,4 +1,4 @@
-package by.fxg.speceditor.screen.project.map.viewport;
+package by.fxg.speceditor.std.gizmos;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -24,9 +24,7 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.TO_REMOVE.__TreeElement;
 import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.api.std.objectTree.TreeElement;
-import by.fxg.speceditor.screen.project.map.SubscreenViewport;
-import by.fxg.speceditor.std.gizmos.GizmoTransformType;
-import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
+import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
 import by.fxg.speceditor.std.render.DebugDraw3D;
 import by.fxg.speceditor.ui.SpecInterface;
@@ -39,13 +37,17 @@ public class GizmosModule {
 	private GizmoHitbox[] hitboxes = new GizmoHitbox[3];
 	private ModelInstance xyzShape;
 	
+	/** Current selected tool in Viewport, e.g. It can be null as None tool selected, or Translation tool for example. <br>
+	 * Also this enum used for specifying available transform actions in {@link ITreeElementGizmos#isTransformSupported(GizmoTransformType)} **/
 	public GizmoTransformType selectedTool = null;
 	
+	/** This needs to be removed **/ @Deprecated
 	private Vector3 valueVec = new Vector3(), startVec = new Vector3(), clickOffset = new Vector3(), rayTmpVec = new Vector3(), upScaleGizmoVec = new Vector3();
 	
-	//gRP - render pos+offset, gS = start of interact, gE - end of interact
+	/** Current interaction type **/
 	private GizmoInteractType interactType = GizmoInteractType.NONE;
 	
+	//gRP - render pos+offset, gS = start of interact, gE - end of interact
 	private Vector3
 		_tmpVector = new Vector3(),
 		_gizmoRenderPosition = new Vector3(), //render position, posision+offset
@@ -53,9 +55,10 @@ public class GizmosModule {
 		_gizmoStart = new Vector3(), //interact start position
 		_gizmoEnd = new Vector3(); //interact end position
 	
+	/** just keep it as it is, i want to make viewport-locked cursor like in blender later **/
 	private Vector2 prevMousePosition = new Vector2();
 
-	private ITreeElementSelector<?> selector;
+	/** current selected elements that can be interacted with gizmos **/
 	private Array<ITreeElementGizmos> elements = new Array<>();
 	
 	public GizmosModule() {
@@ -75,19 +78,20 @@ public class GizmosModule {
 	public void update(SubscreenViewport screenViewport, int x, int y, int width, int height) {
 		if (SpecInterface.isFocused(this) && !this.elements.isEmpty()) {
 			
+			//_tmpVector.set(this._gizmoRenderPosition).
 			for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.updatePosition(this.upScaleGizmoVec);
 			this.xyzShape.transform.setToTranslation(this._gizmoRenderPosition);
 		}
 		
-		if (this.element != null && this.toolType > -1) {
-			if (this.toolType == 0) {
-				this.upScaleGizmoVec.set(this.valueVec).add(this.element.getOffsetTransform(GizmoTransformType.TRANSLATE));
-			} else if (this.element.isTransformable(GizmoTransformType.TRANSLATE)) {
-				this.upScaleGizmoVec.set(this.element.getTransform(GizmoTransformType.TRANSLATE)).add(this.element.getOffsetTransform(GizmoTransformType.TRANSLATE));
-			}
-			for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.updatePosition(this.upScaleGizmoVec);
-			this.xyzShape.transform.setToTranslation(this.upScaleGizmoVec);
-		}
+//		if (this.element != null && this.toolType > -1) {
+//			if (this.toolType == 0) {
+//				this.upScaleGizmoVec.set(this.valueVec).add(this.element.getOffsetTransform(GizmoTransformType.TRANSLATE));
+//			} else if (this.element.isTransformable(GizmoTransformType.TRANSLATE)) {
+//				this.upScaleGizmoVec.set(this.element.getTransform(GizmoTransformType.TRANSLATE)).add(this.element.getOffsetTransform(GizmoTransformType.TRANSLATE));
+//			}
+//			for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.updatePosition(this.upScaleGizmoVec);
+//			this.xyzShape.transform.setToTranslation(this.upScaleGizmoVec);
+//		}
 		//element update
 //		SpecObjectTree objectTree = screenViewport.objectTree;
 //		if (objectTree.selectedItems.size == 1) {
@@ -163,6 +167,7 @@ public class GizmosModule {
 		this.debugDraw.update();
 	}
 	
+	/** Processing of gizmo with translation mode **/
 	private void processTranslation(Camera camera, int x, int y, int width, int height) {
 		float mx = Interpolation.linear.apply(0, Gdx.graphics.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 		float my = Interpolation.linear.apply(0, Gdx.graphics.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
@@ -187,6 +192,7 @@ public class GizmosModule {
 //		this.element.getTransform(GizmoTransformType.TRANSLATE).set(this.valueVec);
 	}
 	
+	/** Processing of gizmo with rotation mode **/
 	private void processRotation(Camera camera, int x, int y, int width, int height) {
 //		float mx = Interpolation.linear.apply(0, Gdx.graphics.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 //		float my = Interpolation.linear.apply(0, Gdx.graphics.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
@@ -213,6 +219,7 @@ public class GizmosModule {
 //		this.element.getTransform(GizmoTransformType.ROTATE).set(this.valueVec);
 	}
 	
+	/** Processing of gizmo with scaling mode **/
 	private void processScaling(Camera camera, int x, int y, int width, int height) {
 //		float mx = Interpolation.linear.apply(0, Gdx.graphics.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 //		float my = Interpolation.linear.apply(0, Gdx.graphics.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
@@ -233,6 +240,7 @@ public class GizmosModule {
 	}
 	
 	private static final ClosestRayResultCallback callback = new ClosestRayResultCallback(new Vector3(), new Vector3());
+	/** Returns {@link GizmoInteractType} if param ray intersected one of gizmo arrows **/
 	private GizmoInteractType isRayCastedGizmo(Ray ray) {
 		if (this.selectedTool != null) {
 			callback.setRayFromWorld(ray.origin);
@@ -255,6 +263,7 @@ public class GizmosModule {
 		vector.z = MathUtils.round(vector.x * precision) / precision;
 	}
 	
+	/** Renders gizmo arrows to {@link #frameBuffer} **/
 	public void passRender(Camera camera) {
 		if (!this.elements.isEmpty()) {
 			this.frameBuffer.capture(0f, 0f, 0f, 0f);
@@ -268,6 +277,7 @@ public class GizmosModule {
 		}
 	}
 	
+	/** **/
 	public void updateSelectorMode(ITreeElementSelector<?> selector, GizmoTransformType type) {
 		this.elements.clear();
 		if (type != null) {
@@ -292,16 +302,17 @@ public class GizmosModule {
 			
 			//per-vector rescaling positioning
 			Array<Vector3> vectors = new Array<>();
-			for (ITreeElementGizmos gizmoElement : this.elements) {
+			this.elements.forEach(gizmoElement -> {
 				if (gizmoElement.isTransformSupported(GizmoTransformType.TRANSLATE)) {
 					vectors.add(gizmoElement.getOffsetTransform(GizmoTransformType.TRANSLATE).add(gizmoElement.getTransform(GizmoTransformType.TRANSLATE)));
 				}
-			}
+			});
 			float scaleModifier = 1.0F / vectors.size;
 			for (Vector3 vec : vectors) this._gizmoRenderPosition.add(vec.scl(scaleModifier));
 		}
 	}
 	
+	/** Returns rendered gizmo arrows as TextureRegion for further rendering **/
 	public TextureRegion getTexture() {
 		return this.frameBuffer.getTexture();
 	}
