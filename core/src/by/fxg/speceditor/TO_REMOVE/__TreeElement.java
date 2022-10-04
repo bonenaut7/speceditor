@@ -11,7 +11,6 @@ import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objecttree.ElementStack;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 
 public abstract class __TreeElement {

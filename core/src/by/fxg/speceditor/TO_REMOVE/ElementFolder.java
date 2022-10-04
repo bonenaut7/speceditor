@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.objecttree.ElementStack;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 
 public class ElementFolder extends __TreeElement {

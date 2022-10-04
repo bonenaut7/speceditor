@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.TO_REMOVE.ModuleProject;
 import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.screen.deprecated.ModuleProject;
 import by.fxg.speceditor.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import by.fxg.speceditor.utils.BaseSubscreen;

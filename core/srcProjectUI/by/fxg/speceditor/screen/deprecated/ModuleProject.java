@@ -1,4 +1,4 @@
-package by.fxg.speceditor.TO_REMOVE;
+package by.fxg.speceditor.screen.deprecated;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 

@@ -1,7 +1,6 @@
 package by.fxg.speceditor.std.gizmos;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -20,15 +19,11 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
-import by.fxg.speceditor.TO_REMOVE.__TreeElement;
 import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
 import by.fxg.speceditor.std.render.DebugDraw3D;
 import by.fxg.speceditor.ui.SpecInterface;
-import by.fxg.speceditor.ui.SpecInterface.AppCursor;
 
 public class GizmosModule {
 	private TextureFrameBuffer frameBuffer;
@@ -279,11 +274,11 @@ public class GizmosModule {
 	}
 	
 	/** **/
-	public void updateSelectorMode(ITreeElementSelector<?> selector, GizmoTransformType type) {
+	public void updateSelectorMode(ITreeElementSelector<?> selector) {
 		this.elements.clear();
-		if (type != null) {
+		if (this.selectedTool != null) {
 			for (TreeElement element : selector.getIterable()) {
-				if (element instanceof ITreeElementGizmos && ((ITreeElementGizmos)element).isTransformSupported(type)) {
+				if (element instanceof ITreeElementGizmos && ((ITreeElementGizmos)element).isTransformSupported(this.selectedTool)) {
 					this.elements.add((ITreeElementGizmos)element);
 				}
 			}

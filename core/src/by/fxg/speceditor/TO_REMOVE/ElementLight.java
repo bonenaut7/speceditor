@@ -12,7 +12,6 @@ import by.fxg.pilesos.specformat.graph.SpecLight;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 
 public class ElementLight extends __TreeElement implements IConvertable<SpecLight> {

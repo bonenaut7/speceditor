@@ -11,7 +11,6 @@ import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;

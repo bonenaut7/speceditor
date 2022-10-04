@@ -6,14 +6,12 @@ import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.TO_REMOVE.ElementLight;
-
 public interface IRendererType {
 	void addAttribute(Attribute attribute);
 	void removeAttribute(Attribute attribute);
 	
 	void add(Object element);
-	void addLight(ElementLight light, boolean selected, boolean visible);
+	//void addLight(ElementLight light, boolean selected, boolean visible);
 	
 	void update();
 	void passRender();

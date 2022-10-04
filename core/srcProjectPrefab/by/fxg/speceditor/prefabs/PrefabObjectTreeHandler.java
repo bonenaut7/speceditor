@@ -24,6 +24,7 @@ public class PrefabObjectTreeHandler implements ITreeElementHandler {
 	
 	public void onRefresh(SpecObjectTree objectTree) {
 		this.prefabProject.projectScreen.subEditorPane.updateSelectableEditorPane(objectTree.elementSelector);
+		this.prefabProject.projectScreen.subViewport.gizmosModule.updateSelectorMode(objectTree.elementSelector);
 
 		this.prefabProject.renderer.clear(true);
 		this.searchRenderables(this.prefabProject.renderer, objectTree, objectTree.getStack().getElements(), true);

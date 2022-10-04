@@ -19,7 +19,6 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.g3d.PBRTextureLinkedAttribute;
 import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;

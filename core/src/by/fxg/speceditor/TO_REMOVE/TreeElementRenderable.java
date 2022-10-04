@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.objecttree;
+package by.fxg.speceditor.TO_REMOVE;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector3;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.TO_REMOVE.__TreeElement;
 import by.fxg.speceditor.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

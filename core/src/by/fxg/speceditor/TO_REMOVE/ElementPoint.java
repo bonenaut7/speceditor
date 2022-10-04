@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 
 public class ElementPoint extends __TreeElement {

@@ -16,7 +16,6 @@ import by.fxg.speceditor.ResourceManager;
 import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.std.render.DebugDraw3D;
 import by.fxg.speceditor.std.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.ui.SpecInterface.UColor;

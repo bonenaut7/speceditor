@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UInputField;
 import by.fxg.speceditor.ui.URenderBlock;
 import space.earlygrey.shapedrawer.ShapeDrawer;

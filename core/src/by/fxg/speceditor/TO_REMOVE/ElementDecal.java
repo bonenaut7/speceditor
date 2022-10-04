@@ -15,7 +15,6 @@ import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.std.g3d.EditDecal;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 
 public class ElementDecal extends __TreeElement implements IConvertable<SpecDecal> {

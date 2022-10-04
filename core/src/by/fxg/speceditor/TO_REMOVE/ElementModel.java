@@ -15,7 +15,6 @@ import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.TreeElementRenderable;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 

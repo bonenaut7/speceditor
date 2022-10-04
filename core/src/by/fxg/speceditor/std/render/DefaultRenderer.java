@@ -7,15 +7,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.decals.BaseDecal;
 import by.fxg.pilesos.decals.CameraAlphaGroupStrategy;
 import by.fxg.pilesos.decals.DecalDrawer;
-import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
-import by.fxg.speceditor.TO_REMOVE.ElementLight;
 import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
 import by.fxg.speceditor.std.render.DebugDraw3D.IDebugDraw;
@@ -58,13 +55,13 @@ public class DefaultRenderer implements IRendererType {
 		if (object instanceof BaseDecal) this.decalDrawer.decalsToProduce.add((BaseDecal)object);
 	}
 	
-	public void addLight(ElementLight element, boolean selected, boolean visible) {
-		this.editorDecalDrawer.decalsToProduce.add(element.editorDecal);
-		element.editorDecal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(String.format("defaults/sceneLight_%s_%s.png", selected, visible))));
-		element.editorDecal.getDecal().setScale(0.0015f, 0.0015f);
-		element.editorDecal.getDecal().setPosition(element.light.position);
-		if (selected || visible) this.environment.add(element.light);
-	}
+//	public void addLight(ElementLight element, boolean selected, boolean visible) {
+//		this.editorDecalDrawer.decalsToProduce.add(element.editorDecal);
+//		element.editorDecal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(String.format("defaults/sceneLight_%s_%s.png", selected, visible))));
+//		element.editorDecal.getDecal().setScale(0.0015f, 0.0015f);
+//		element.editorDecal.getDecal().setPosition(element.light.position);
+//		if (selected || visible) this.environment.add(element.light);
+//	}
 
 	public void update() {
 		this.clear(true);
