@@ -24,6 +24,7 @@ import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.std.render.DebugDraw3D;
 import by.fxg.speceditor.ui.SpecInterface;
+import by.fxg.speceditor.utils.Utils;
 
 public class GizmosModule {
 	private TextureFrameBuffer frameBuffer;

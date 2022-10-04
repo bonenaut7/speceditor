@@ -65,7 +65,7 @@ public abstract class TreeElement {
 		if (this.parent instanceof ITreeElementGizmos) {
 			return ((ITreeElementGizmos)this.parent).getOffsetTransform(transformType).add(((ITreeElementGizmos)this.parent).getTransform(transformType));
 		}
-		return null;
+		return ITreeElementGizmos.gizmoVector.set(0, 0, 0);
 	}
 	
 	public Sprite getObjectTreeSprite() { return Game.storage.sprites.get("icons/question"); }

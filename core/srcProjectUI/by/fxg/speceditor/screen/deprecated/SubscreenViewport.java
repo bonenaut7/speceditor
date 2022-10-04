@@ -95,6 +95,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 			if (this.toolButtons[i].isPressed()) {
 				if (i == 0) this.gizmosModule.selectedTool = null;
 				else this.gizmosModule.selectedTool = GizmoTransformType.values()[i - 1];
+				this.gizmosModule.updateSelectorMode(this.objectTree.elementSelector);
 			}
 		}
 		
@@ -126,7 +127,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 			this.toolButtons[i - 1].setTransforms(x + width - 64 - 62 * j, y + height - 16, 60, 12).render(shape, foster);
 		}
 		shape.setColor(UColor.overlay);
-		int offset = this.gizmosModule.selectedTool == null ? 0 : this.gizmosModule.selectedTool.ordinal() + 1;
+		int offset = this.gizmosModule.selectedTool == null ? -1 : this.gizmosModule.selectedTool.ordinal();
 		shape.filledRectangle(x + width - 186 - 2 + 62 * offset, y + height - 16, 60, 12);
 		batch.end();
 	}
