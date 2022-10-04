@@ -1,6 +1,6 @@
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-sourceSets.main.java.srcDirs = [ "src/", "srcLibraries/", "srcEngine/", "srcFormat/" ]
+sourceSets.main.java.srcDirs = [ "src/", "srcEngine/", "srcProjectPrefab/", "srcProjectScene/", "srcProjectUI/" ]
 
 eclipse.project.name = appName + "-core"

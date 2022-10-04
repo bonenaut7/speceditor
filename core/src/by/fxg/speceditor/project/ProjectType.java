@@ -2,9 +2,9 @@ package by.fxg.speceditor.project;
 
 import com.badlogic.gdx.graphics.Camera;
 
-import by.fxg.speceditor.hc.elementlist.PMObjectExplorer;
-import by.fxg.speceditor.render.DefaultRenderer;
-import by.fxg.speceditor.render.IRendererType;
+import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+import by.fxg.speceditor.std.render.DefaultRenderer;
+import by.fxg.speceditor.std.render.IRendererType;
 
 public enum ProjectType {
 	DEFAULT,
@@ -14,7 +14,7 @@ public enum ProjectType {
 	PREFAB_GLTF,
 	;
 	
-	public IRendererType createRenderer(PMObjectExplorer pmObjectExplorer, Camera camera) {
+	public IRendererType createRenderer(SpecObjectTree pmObjectExplorer, Camera camera) {
 		switch (this) {
 			case PREFAB_DEFAULT:
 			case DEFAULT: return new DefaultRenderer(pmObjectExplorer, camera);

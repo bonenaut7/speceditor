@@ -3,8 +3,6 @@ package by.fxg.speceditor;
 import com.badlogic.gdx.Gdx;
 
 import by.fxg.pilesos.PilesosInputImpl;
-import by.fxg.speceditor.screen.project.map.ScreenProject;
-import by.fxg.speceditor.screen.project.map.SubscreenViewport;
 
 public class GInputProcessor extends PilesosInputImpl {
 	public void setCursorCatched(boolean value) {
@@ -22,21 +20,21 @@ public class GInputProcessor extends PilesosInputImpl {
 		return false;
 	}
 	
-	public int curX, curY;
+	public static IMouseController mouseController;
 	private float tempMX = -1048576F, tempMY = -1048576F;
 	public void moveCamera(int screenX, int screenY) {
-		if (this.isCursorCatched() && Game.get.renderer != null && Game.get.renderer.getScreen() != null) {
+		if (this.isCursorCatched() && mouseController != null) {
 			float dx = this.tempMX - screenX;
 			float dy = this.tempMY - screenY;
-			if (Game.get.renderer.currentScreen != null && Game.get.renderer.currentScreen instanceof ScreenProject) {
-				((SubscreenViewport)((ScreenProject)Game.get.renderer.currentScreen).subViewport).applyCameraMovement(dx, dy);
-			}
+			mouseController.onMouseInput(dx, dy);
 			this.tempMX = screenX;
 			this.tempMY = screenY;
 		} else {
 			this.tempMX = this.tempMY = -1048576F;
 		}
-		curX = screenX;
-		curY = screenY;
+	}
+	
+	public interface IMouseController {
+		void onMouseInput(float x, float y);
 	}
 }

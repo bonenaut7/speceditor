@@ -17,7 +17,6 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class RenderManager {
 	private static TextureRegion shapeDrawerRegion;
-	public Game game;
 	public static Foster foster;
 	public static PolygonSpriteBatch batch;
 	public static ShapeDrawer shape;
@@ -25,7 +24,6 @@ public class RenderManager {
 	public BaseScreen currentScreen, currentGui;
 	
 	public RenderManager(Game game) {
-		this.game = game; //new ScreenUi();//
 		this.currentScreen = new ScreenSelectProject();
 		this.currentGui = null;
 		

@@ -1,0 +1,142 @@
+package by.fxg.speceditor.prefabs.screen;
+
+import java.awt.Desktop;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
+
+import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.Game;
+import by.fxg.speceditor.prefabs.PrefabProject;
+import by.fxg.speceditor.screen.BaseScreen;
+import by.fxg.speceditor.screen.gui.GuiAbout;
+import by.fxg.speceditor.screen.project.map.SubscreenExplorer;
+import by.fxg.speceditor.screen.project.map.SubscreenProjectManager;
+import by.fxg.speceditor.screen.project.map.SubscreenViewport;
+import by.fxg.speceditor.ui.UDropdownClick;
+import space.earlygrey.shapedrawer.ShapeDrawer;
+
+public class ScreenPrefabProject extends BaseScreen {
+	public PrefabProject project;
+
+	private UDropdownClick dropdownButtonApp, dropdownButtonProject;
+	public SubscreenProjectManager subObjectTree;
+	public SubscreenExplorer unnamedUselessModule; //TODO do something with it lol
+	public SubscreenPrefabEditor subEditorPane;
+	public SubscreenViewport subViewport;
+	
+	public ScreenPrefabProject(PrefabProject project) {
+		this.project = project;
+		int width = Gdx.graphics.getWidth(), height = Gdx.graphics.getHeight();
+		this.dropdownButtonApp = new UDropdownClick("Editor", 1, height - 21, 90, 20, 20, "Project select", "About");
+		this.dropdownButtonProject = new UDropdownClick("Project", 92, height - 21, 75, 20, 20, "Save", "Export as", "Open folder", "Backups");
+		
+		this.updateDimensions(width, height);
+		this.subObjectTree = new SubscreenProjectManager(this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
+		this.unnamedUselessModule = new SubscreenExplorer(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
+		this.subEditorPane = new SubscreenPrefabEditor(this, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
+		this.subViewport = new SubscreenViewport(this.project.renderer, this.subObjectTree.objectTree, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
+	}
+	
+	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
+		if (!this.dropdownButtonApp.isDropped() && !this.dropdownButtonProject.isDropped()) {
+			int ddLine = 22;
+			int sProjManW = width / 6;
+			int sEditorW = width / 5;
+			int sExplorerH = height / 4;
+			
+			this.subObjectTree.update(batch, shape, foster, 0, 0, sProjManW, height - ddLine);
+			this.subEditorPane.update(batch, shape, foster, width - sEditorW, 0, sEditorW, height - ddLine);
+			this.unnamedUselessModule.update(batch, shape, foster, sProjManW, 0, width - sProjManW - sEditorW, sExplorerH);
+			this.subViewport.update(batch, shape, foster, sProjManW, sExplorerH, width - sProjManW - sEditorW, height - sExplorerH - ddLine);
+		}
+	}
+
+	
+	private int sObjectTreeX, sObjectTreeY, sObjectTreeW, sObjectTreeH, sUUMX, sUUMY, sUUMW, sUUMH;
+	private int sEditorX, sEditorY, sEditorW, sEditorH, sViewportX, sViewportY, sViewportW, sViewportH;
+	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
+		this.subViewport.render(batch, shape, foster, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
+		this.subObjectTree.render(batch, shape, foster, this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
+		this.subEditorPane.render(batch, shape, foster, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
+		this.unnamedUselessModule.render(batch, shape, foster, this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
+		
+		batch.begin();
+		shape.setColor(0.075f, 0.075f, 0.075f, 1f);
+		shape.filledRectangle(0, height - 22, width, 22);
+		this.dropdownButtonApp.render(shape, foster);
+		this.dropdownButtonProject.render(shape, foster);
+		batch.end();
+		this.postUpdate();
+	}
+	
+	private void postUpdate() {
+		this.dropdownButtonApp.update();
+		this.dropdownButtonProject.update();
+		if (this.dropdownButtonApp.isPressed()) {
+			switch (this.dropdownButtonApp.getVariant()) {
+				case 0: break;
+				case 1: Game.get.renderer.currentGui = new GuiAbout(); break;
+			}
+		}
+		if (this.dropdownButtonProject.isPressed()) {
+			switch (this.dropdownButtonProject.getVariant()) {
+				case 0: {
+					//this.project.saveHeader();
+					//this.project.saveProject(this.subObjectExplorer.objectExplorer);
+					//SAVE PROJECT
+					this.project.io.writeProjectData(this.subObjectTree.objectTree.getStack());
+				} break;
+				case 1: {
+	//				FileHandle inputFolder = null;
+	//				JFrame frame = new JFrame();
+	//				frame.setAlwaysOnTop(true);
+	//				JFileChooser fileChooser = new JFileChooser();
+	//				fileChooser.setMultiSelectionEnabled(false);
+	//				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	//				fileChooser.setDialogTitle("Select directory to export scene");
+	//				fileChooser.setCurrentDirectory(__$$Project.instance.projectFolder.parent().parent().file());
+	//				if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
+	//					inputFolder = Gdx.files.absolute(fileChooser.getSelectedFile().getAbsolutePath());
+	//					SpecFormatExporter exporter = new SpecFormatExporter();
+	//					exporter.export(this.project, inputFolder.child("scene.sfs"), SpecFormatConverter.convertToGraph(this.project, this.subObjectExplorer.objectExplorer, true));
+	//				}
+					//EXPORT PROJECT
+				} break;
+				case 2: {
+					try { Desktop.getDesktop().open(this.project.getProjectFolder().file()); } catch (Exception e) {}
+				} break;
+			}
+		}
+	}
+
+	public void resize(int width, int height) {
+		this.dropdownButtonApp.setTransforms(1, height - 21, 90, 20);
+		this.dropdownButtonProject.setTransforms(92, height - 21, 75, 20);
+		this.updateDimensions(width, height);
+		this.subObjectTree.resize(this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
+		this.unnamedUselessModule.resize(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
+		this.subEditorPane.resize(this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
+		this.subViewport.resize(this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
+	}
+	
+	private void updateDimensions(int width, int height) {
+		int leftBlock = width / 6, rightBlock = width / 5;
+		this.sObjectTreeX = 1;
+		this.sObjectTreeY = 1;
+		this.sObjectTreeW = leftBlock - 2;
+		this.sObjectTreeH = height - 24;
+		this.sUUMX = leftBlock + 1;
+		this.sUUMY = 1;
+		this.sUUMW = width - leftBlock - rightBlock - 2;
+		this.sUUMH = height / 14 - 2;
+		this.sEditorX = width - rightBlock + 1;
+		this.sEditorY = 1;
+		this.sEditorW = rightBlock - 3;
+		this.sEditorH = height - 24;
+		this.sViewportX = leftBlock + 1;
+		this.sViewportY = this.sUUMH + 1;
+		this.sViewportW = width - leftBlock - rightBlock - 2;
+		this.sViewportH = height - 24 - this.sUUMH;
+	}
+}

@@ -8,8 +8,8 @@ import java.util.Map;
 import org.ini4j.Wini;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Cursor.SystemCursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -22,35 +22,28 @@ public class Storage {
 	private final File settingsFile;
 	public static IAccess access;
 	public static Wini settings;
+	public static FileHandle appFolder, addonsFolder, projectsFolder;
 	
 	public Map<String, Sprite> sprites = new HashMap<>();
 	private Map<AppCursor, Cursor> cursors = new HashMap<>();
 	private Cursor defaultCursor;
 	
-	public Storage(GameManager manager) {
-		this.sprites.put("obj.folder.true.false", new Sprite(manager.get("icons/obj.folder.true.false.png", Texture.class)));
-		this.sprites.put("obj.folder.true.true", new Sprite(manager.get("icons/obj.folder.true.true.png", Texture.class)));
-		this.sprites.put("obj.folder.false.false", new Sprite(manager.get("icons/obj.folder.false.false.png", Texture.class)));
-		this.sprites.put("obj.folder.false.true", new Sprite(manager.get("icons/obj.folder.false.true.png", Texture.class)));
+	public Storage(ResourceManager manager) {
+		appFolder = Gdx.files.local("spec/");
+		addonsFolder = appFolder.child("addons/");
+		projectsFolder = appFolder.child("projects/");
+		appFolder.mkdirs();
+		addonsFolder.mkdirs();
+		projectsFolder.mkdirs();
 		
-		this.sprites.put("obj.light.false", new Sprite(manager.get("icons/obj.light.false.png", Texture.class)));
-		this.sprites.put("obj.light.true", new Sprite(manager.get("icons/obj.light.true.png", Texture.class)));
-		this.sprites.put("obj.decal.false", new Sprite(manager.get("icons/obj.decal.false.png", Texture.class)));
-		this.sprites.put("obj.decal.true", new Sprite(manager.get("icons/obj.decal.true.png", Texture.class)));
-		this.sprites.put("obj.model.false", new Sprite(manager.get("icons/obj.model.false.png", Texture.class)));
-		this.sprites.put("obj.model.true", new Sprite(manager.get("icons/obj.model.true.png", Texture.class)));
+		this.sprites.put("icons/question", new Sprite(manager.get("defaults/icons/question.png", Texture.class)));
+		this.sprites.put("icons/folder.false", new Sprite(manager.get("defaults/icons/folder.closed.png", Texture.class)));
+		this.sprites.put("icons/folder.true", new Sprite(manager.get("defaults/icons/folder.opened.png", Texture.class)));
 		
-		this.sprites.put("obj.hitbox.false", new Sprite(manager.get("icons/obj.hitbox.false.png", Texture.class)));
-		this.sprites.put("obj.hitbox.true", new Sprite(manager.get("icons/obj.hitbox.true.png", Texture.class)));
-		this.sprites.put("obj.meshhitbox.false", new Sprite(manager.get("icons/obj.meshhitbox.false.png", Texture.class)));
-		this.sprites.put("obj.meshhitbox.true", new Sprite(manager.get("icons/obj.meshhitbox.true.png", Texture.class)));
-		this.sprites.put("obj.hitboxstorage.false", new Sprite(manager.get("icons/obj.hitboxstorage.false.png", Texture.class)));
-		this.sprites.put("obj.hitboxstorage.true", new Sprite(manager.get("icons/obj.hitboxstorage.true.png", Texture.class)));
-		
-		this.sprites.put("obj.point.false", new Sprite(manager.get("icons/obj.point.false.png", Texture.class)));
-		this.sprites.put("obj.point.true", new Sprite(manager.get("icons/obj.point.true.png", Texture.class)));
-		this.sprites.put("obj.pointarray.false", new Sprite(manager.get("icons/obj.pointarray.false.png", Texture.class)));
-		this.sprites.put("obj.pointarray.true", new Sprite(manager.get("icons/obj.pointarray.true.png", Texture.class)));
+		this.sprites.put("icons/package", new Sprite(manager.get("defaults/icons/package.png", Texture.class)));
+		this.sprites.put("icons/model", new Sprite(manager.get("defaults/icons/model.png", Texture.class)));
+		this.sprites.put("icons/light", new Sprite(manager.get("defaults/icons/light.png", Texture.class)));
+		this.sprites.put("icons/hitbox", new Sprite(manager.get("defaults/icons/hitbox.png", Texture.class)));
 		
 		SpriteStack.getTexture("defaults/sceneLight_false_false.png").setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		SpriteStack.getTexture("defaults/sceneLight_false_true.png").setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -89,6 +82,11 @@ public class Storage {
 		}
 	}
 	
+	public Cursor getCursor(AppCursor cursor) {
+		if (cursor != null && this.cursors.containsKey(cursor)) return this.cursors.get(cursor);
+		return this.defaultCursor;
+	}
+	
 	private Cursor createCursor(AppCursor type, String internalPath, int xOffset, int yOffset) {
 		try {
 			Texture texture = new Texture(Gdx.files.internal(internalPath));
@@ -104,11 +102,6 @@ public class Storage {
 			if (Game.DEBUG) e.printStackTrace();
 		}
 		return null;
-	}
-	
-	public Cursor getCursor(AppCursor cursor) {
-		if (cursor != null && this.cursors.containsKey(cursor)) return this.cursors.get(cursor);
-		return this.defaultCursor;
 	}
 	
 	public static interface IAccess {
