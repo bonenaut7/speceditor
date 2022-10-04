@@ -14,6 +14,7 @@ import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.GInputProcessor.IMouseController;
 import by.fxg.speceditor.Game;
+import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
 import by.fxg.speceditor.std.render.IRendererType;
@@ -50,7 +51,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 		this.camera.near = ViewportSettings.cameraSettings.z;
 		this.camera.update();
 		
-		//this.gizmosModule = new GizmosModule();
+		this.gizmosModule = new GizmosModule();
 		this.resize(x, y, width, height);
 	}
 	
@@ -90,18 +91,19 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 			 GInputProcessor.mouseController = this;
 		}
 		
-//		for (int i = 0; i != this.toolButtons.length; i++) {
-//			if (this.toolButtons[i].isPressed()) {
-//				this.gizmosModule.toolType = i - 1;
-//			}
-//		}
-//		
-//		this.gizmosModule.update(this, x, y, width, height);
+		for (int i = 0; i != this.toolButtons.length; i++) {
+			if (this.toolButtons[i].isPressed()) {
+				if (i == 0) this.gizmosModule.selectedTool = null;
+				else this.gizmosModule.selectedTool = GizmoTransformType.values()[i - 1];
+			}
+		}
+		
+		this.gizmosModule.update(this, x, y, width, height);
 	}
 
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		this.renderer.passRender();
-		//this.gizmosModule.passRender(this.camera);
+		this.gizmosModule.passRender(this.camera);
 		
 		batch.begin();
 		shape.setColor(UColor.background);
@@ -109,7 +111,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 		shape.setColor(UColor.gray);
 		shape.rectangle(x + 1, y + 1, width - 2, height - 2);
 		batch.draw(this.renderer.getTexture(), x + 3, y + 3, width - 6, height - 6);
-		//batch.draw(this.gizmosModule.getTexture(), x + 3, y + 3, width - 6, height - 6);
+		batch.draw(this.gizmosModule.getTexture(), x + 3, y + 3, width - 6, height - 6);
 		
 		shape.filledRectangle(x + 2, y + height - 12, 50, 10);
 		foster.setString("Viewport").draw(x + 4, y + height - 3, Align.left);
@@ -124,7 +126,8 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 			this.toolButtons[i - 1].setTransforms(x + width - 64 - 62 * j, y + height - 16, 60, 12).render(shape, foster);
 		}
 		shape.setColor(UColor.overlay);
-		//shape.filledRectangle(x + width - 186 - 2 + 62 * this.gizmosModule.toolType, y + height - 16, 60, 12);
+		int offset = this.gizmosModule.selectedTool == null ? 0 : this.gizmosModule.selectedTool.ordinal() + 1;
+		shape.filledRectangle(x + width - 186 - 2 + 62 * offset, y + height - 16, 60, 12);
 		batch.end();
 	}
 	

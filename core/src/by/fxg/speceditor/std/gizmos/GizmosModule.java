@@ -76,6 +76,7 @@ public class GizmosModule {
 	}
 	
 	public void update(SubscreenViewport screenViewport, int x, int y, int width, int height) {
+		//SpecInterface checks if no of other elements are selected to not mess up with interface, and it's needed for elements to have at least one (selected in ObjectTree) element
 		if (SpecInterface.isFocused(this) && !this.elements.isEmpty()) {
 			
 			//_tmpVector.set(this._gizmoRenderPosition).
@@ -123,46 +124,46 @@ public class GizmosModule {
 //		}
 		
 		//on click
-		if (Game.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(x, y, width, height) && this.element != null && this.toolType > -1) {
-			GizmoTransformType transformType = GizmoTransformType.values()[this.toolType];
-			if (this.element.isTransformable(transformType)) {
-				float mx = Interpolation.linear.apply(0, Gdx.graphics.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
-				float my = Interpolation.linear.apply(0, Gdx.graphics.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
-				Ray ray = screenViewport.camera.getPickRay(mx, my);
-				GizmoInteractType hitType = this.isRayCastedGizmo(ray);
-				if (hitType != GizmoInteractType.NONE) {
-					this.holdingType = hitType;
-					this.startVec.set(this.valueVec);
-					this.prevMousePosition.set(GDXUtil.getMouseX(), GDXUtil.getMouseY());
-					this.clickOffset = ray.getEndPoint(this.clickOffset.set(this.valueVec), screenViewport.camera.position.dst(this.clickOffset));
-					this.clickOffset.sub(this.startVec);
-				}
-			}
-		}
-		
-		//hold click update
-		if (this.holdingType != GizmoInteractType.NONE && this.element != null) {
-			if (Game.get.getInput().isMouseDown(0, true)) {
-				SpecInterface.setCursor(AppCursor.GRABBING);
-				int mx = GDXUtil.getMouseX();
-				int my = GDXUtil.getMouseY();
-				if (mx < x) { Gdx.input.setCursorPosition(x + width, Gdx.graphics.getHeight() - my); this.prevMousePosition.x = x + width; }
-				else if (mx > x + width) { Gdx.input.setCursorPosition(x, Gdx.graphics.getHeight() - my); this.prevMousePosition.x = x; }
-				if (my < y) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y - height); this.prevMousePosition.y = Gdx.graphics.getHeight() - y - height; }
-				else if (my > y + height) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y); this.prevMousePosition.y = Gdx.graphics.getHeight() - y; }
-				
-				if (mx != this.prevMousePosition.x || my != this.prevMousePosition.y) {
-					switch (this.toolType) {
-						case 0: this.processTranslation(screenViewport.camera, x, y, width, height); break;
-						case 1: this.processRotation(screenViewport.camera, x, y, width, height); break;
-						case 2: this.processScaling(screenViewport.camera, x, y, width, height); break;
-					}
-				}
-				this.prevMousePosition.set(mx, my);
-			} else this.holdingType = GizmoInteractType.NONE;
-		} else if (this.element != null && this.toolType > -1) {
-			this.valueVec.set(this.element.getTransform(GizmoTransformType.values()[this.toolType]));
-		}
+//		if (Game.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(x, y, width, height) && this.element != null && this.toolType > -1) {
+//			GizmoTransformType transformType = GizmoTransformType.values()[this.toolType];
+//			if (this.element.isTransformable(transformType)) {
+//				float mx = Interpolation.linear.apply(0, Gdx.graphics.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
+//				float my = Interpolation.linear.apply(0, Gdx.graphics.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
+//				Ray ray = screenViewport.camera.getPickRay(mx, my);
+//				GizmoInteractType hitType = this.isRayCastedGizmo(ray);
+//				if (hitType != GizmoInteractType.NONE) {
+//					this.holdingType = hitType;
+//					this.startVec.set(this.valueVec);
+//					this.prevMousePosition.set(GDXUtil.getMouseX(), GDXUtil.getMouseY());
+//					this.clickOffset = ray.getEndPoint(this.clickOffset.set(this.valueVec), screenViewport.camera.position.dst(this.clickOffset));
+//					this.clickOffset.sub(this.startVec);
+//				}
+//			}
+//		}
+//		
+//		//hold click update
+//		if (this.holdingType != GizmoInteractType.NONE && this.element != null) {
+//			if (Game.get.getInput().isMouseDown(0, true)) {
+//				SpecInterface.setCursor(AppCursor.GRABBING);
+//				int mx = GDXUtil.getMouseX();
+//				int my = GDXUtil.getMouseY();
+//				if (mx < x) { Gdx.input.setCursorPosition(x + width, Gdx.graphics.getHeight() - my); this.prevMousePosition.x = x + width; }
+//				else if (mx > x + width) { Gdx.input.setCursorPosition(x, Gdx.graphics.getHeight() - my); this.prevMousePosition.x = x; }
+//				if (my < y) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y - height); this.prevMousePosition.y = Gdx.graphics.getHeight() - y - height; }
+//				else if (my > y + height) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y); this.prevMousePosition.y = Gdx.graphics.getHeight() - y; }
+//				
+//				if (mx != this.prevMousePosition.x || my != this.prevMousePosition.y) {
+//					switch (this.toolType) {
+//						case 0: this.processTranslation(screenViewport.camera, x, y, width, height); break;
+//						case 1: this.processRotation(screenViewport.camera, x, y, width, height); break;
+//						case 2: this.processScaling(screenViewport.camera, x, y, width, height); break;
+//					}
+//				}
+//				this.prevMousePosition.set(mx, my);
+//			} else this.holdingType = GizmoInteractType.NONE;
+//		} else if (this.element != null && this.toolType > -1) {
+//			this.valueVec.set(this.element.getTransform(GizmoTransformType.values()[this.toolType]));
+//		}
 		
 		this.debugDraw.update();
 	}
