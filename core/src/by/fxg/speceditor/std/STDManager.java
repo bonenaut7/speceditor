@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.speceditor.api.std.editorPane.EditorPane;
 import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.editorPane.EditorPaneFolder;
+import by.fxg.speceditor.std.editorPane.EditorPaneLight;
 import by.fxg.speceditor.std.editorPane.EditorPaneModel;
 import by.fxg.speceditor.std.editorPane.EditorPaneMultipleGizmoTransform;
 import by.fxg.speceditor.std.editorPane.EditorPaneStandardRename;
@@ -47,7 +48,8 @@ public class STDManager {
 		//per-element ones
 		this.editorPanes.addAll(
 			new EditorPaneFolder(),
-			new EditorPaneModel()
+			new EditorPaneModel(),
+			new EditorPaneLight()
 			
 		);
 	}

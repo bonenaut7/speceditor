@@ -24,14 +24,14 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneModel extends EditorPane {
 	private ElementModel element = null;
-	private UInputField folderName, modelPath;
+	private UInputField modelName, modelPath;
 	private UButton buttonSelectModel;
 	
 	private TransformBlock transform;
 	private EditorPaneMatsel matsel;
 	
 	public EditorPaneModel() {
-		this.folderName = new UInputField().setMaxLength(32);
+		this.modelName = new UInputField().setMaxLength(32);
 		this.modelPath = new UInputField().setMaxLength(128);
 		this.buttonSelectModel = new UButton("Open file");
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
@@ -40,9 +40,9 @@ public class EditorPaneModel extends EditorPane {
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
 		foster.setString("Name:").draw(x + 5, (yOffset -= 10) + 1, Align.left);
-		this.folderName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= 10, width - (int)foster.getWidth() - 15, 15).update();
-		this.folderName.render(batch, shape, foster);
-		this.element.setName(this.folderName.getText());
+		this.modelName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= 10, width - (int)foster.getWidth() - 15, 15).update();
+		this.modelName.render(batch, shape, foster);
+		this.element.setName(this.modelName.getText());
 		
 		foster.setString("EXT Path:").draw(x + 5, (yOffset -= 10) + 1, Align.left);
 		this.modelPath.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= 10, width - (int)foster.getWidth() - 15, 15).update();
@@ -76,7 +76,7 @@ public class EditorPaneModel extends EditorPane {
 
 	public void updatePane(ITreeElementSelector<?> selector) {
 		this.element = (ElementModel)selector.get(0);
-		this.folderName.setText(this.element.getName());
+		this.modelName.setText(this.element.getName());
 		this.modelPath.setText(this.element.localModelHandle);
 		
 		this.transform.updateBlock(this.element);
@@ -90,7 +90,6 @@ public class EditorPaneModel extends EditorPane {
 	private class TransformBlock extends URenderBlock {
 		private EditorPaneModel parent;
 		private UInputField[] position = new UInputField[3], rotation = new UInputField[3], scale = new UInputField[3];
-		private boolean needsUpdate = false;
 		
 		private TransformBlock(EditorPaneModel parent) {
 			super("Transforms");
@@ -102,8 +101,7 @@ public class EditorPaneModel extends EditorPane {
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateValues();//this.needsUpdate = true;
-			else if (this.needsUpdate) ;
+			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateGizmoValues();
 			
 			String[] coords = {"X", "Y", "Z"};
 			foster.setString("Position:").draw(this.x, (yOffset -= 22) + 7, Align.left);
@@ -155,7 +153,7 @@ public class EditorPaneModel extends EditorPane {
 			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
 		}
 		
-		private void updateValues() {
+		private void updateGizmoValues() {
 			if (this.parent != null && this.parent.element != null) {
 				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
 				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);

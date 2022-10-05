@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 
 import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.speceditor.ui.SpecInterface.AppCursor;
@@ -25,6 +26,7 @@ public class Storage {
 	public static FileHandle appFolder, addonsFolder, projectsFolder;
 	
 	public Map<String, Sprite> sprites = new HashMap<>();
+	public Map<String, Decal> decals = new HashMap<>();
 	private Map<AppCursor, Cursor> cursors = new HashMap<>();
 	private Cursor defaultCursor;
 	
@@ -45,10 +47,10 @@ public class Storage {
 		this.sprites.put("icons/light", new Sprite(manager.get("defaults/icons/light.png", Texture.class)));
 		this.sprites.put("icons/hitbox", new Sprite(manager.get("defaults/icons/hitbox.png", Texture.class)));
 		
-		SpriteStack.getTexture("defaults/sceneLight_false_false.png").setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		SpriteStack.getTexture("defaults/sceneLight_false_true.png").setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		SpriteStack.getTexture("defaults/sceneLight_true_false.png").setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		SpriteStack.getTexture("defaults/sceneLight_true_true.png").setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		SpriteStack.getTextureRegion("defaults/lightdecal_false.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		SpriteStack.getTextureRegion("defaults/lightdecal_true.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		this.decals.put("viewport/light.false", Decal.newDecal(SpriteStack.getTextureRegion("defaults/lightdecal_false.png")));
+		this.decals.put("viewport/light.true", Decal.newDecal(SpriteStack.getTextureRegion("defaults/lightdecal_true.png")));
 		
 		this.defaultCursor = this.createCursor(AppCursor.ARROW, "assets/defaults/cursor/arrow.png", 4, 4);
 		this.createCursor(AppCursor.CROSS, "assets/defaults/cursor/cross.png", 16, 16);

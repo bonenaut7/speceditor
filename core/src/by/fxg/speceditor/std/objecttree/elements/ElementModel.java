@@ -15,8 +15,6 @@ import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 public class ElementModel extends TreeElement implements ITreeElementGizmos, IModelProvider {
-	protected boolean isFolderOpened = false;
-
 	public String localModelHandle = "";
 	public FileHandle modelHandle = null;
 	public ModelInstance modelInstance;

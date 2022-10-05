@@ -41,13 +41,9 @@ public class GizmosModule implements IFocusable {
 	 * Also this enum used for specifying available transform actions in {@link ITreeElementGizmos#isTransformSupported(GizmoTransformType)} **/
 	public GizmoTransformType selectedTool = null;
 	
-	/** This needs to be removed **/ @Deprecated
-	private Vector3 valueVec = new Vector3(), startVec = new Vector3(), clickOffset = new Vector3(), rayTmpVec = new Vector3(), upScaleGizmoVec = new Vector3();
-	
 	/** Current interaction type **/
 	private GizmoInteractType interactType = GizmoInteractType.NONE;
 	
-	//gRP - render pos+offset, gS = start of interact, gE - end of interact
 	private Vector3
 		_tmpVector = new Vector3(),
 		_gizmoRenderPosition = new Vector3(), //render position, posision+offset
@@ -71,7 +67,7 @@ public class GizmosModule implements IFocusable {
 		}
 
 		ModelBuilder mb = new ModelBuilder();
-		this.xyzShape = new ModelInstance(mb.createXYZCoordinates(3f, 0.1f, 0.25f, 5, GL20.GL_TRIANGLES, new Material(), Usage.Position | Usage.Normal | Usage.ColorPacked));
+		this.xyzShape = new ModelInstance(mb.createXYZCoordinates(3f, 0.125f, 0.375f, 5, GL20.GL_TRIANGLES, new Material(), Usage.Position | Usage.Normal | Usage.ColorPacked));
 	}
 	
 	public void update(SubscreenViewport screenViewport, int x, int y, int width, int height) {
@@ -113,7 +109,7 @@ public class GizmosModule implements IFocusable {
 //		else if (mx > x + width) { Gdx.input.setCursorPosition(x, Gdx.graphics.getHeight() - my); this.prevMousePosition.x = x; }
 //		if (my < y) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y - height); this.prevMousePosition.y = Gdx.graphics.getHeight() - y - height; }
 //		else if (my > y + height) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y); this.prevMousePosition.y = Gdx.graphics.getHeight() - y; }
-		float scale = screenViewport.camera.position.dst(this.isFocused() ? this._gizmoStart : this._gizmoRenderPosition) / 15.0F;
+		float scale = screenViewport.camera.position.dst(this.isFocused() ? this._gizmoStart : this._gizmoRenderPosition) / 12.5F;
 		for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.update(this._gizmoRenderPosition, scale);
 		this.xyzShape.transform.setToTranslation(this._gizmoRenderPosition).scale(scale, scale, scale);
 		this.debugDraw.update();
@@ -173,11 +169,12 @@ public class GizmosModule implements IFocusable {
 			
 			this.frameBuffer.capture(0f, 0f, 0f, 0f);
 			this.modelBatch.begin(camera);
+			//TODO Disable rendering of default xyz arrows for every type of tool, add grid rendering if tool is being interacted
 			this.modelBatch.render(this.xyzShape);
 			this.modelBatch.end();
-			this.debugDraw.drawer.begin(camera);
-			this.debugDraw.world.debugDrawWorld();
-			this.debugDraw.drawer.end();
+//			this.debugDraw.drawer.begin(camera);
+//			this.debugDraw.world.debugDrawWorld();
+//			this.debugDraw.drawer.end();
 			this.frameBuffer.endCapture();
 			
 			camera.far = prevFarValue;

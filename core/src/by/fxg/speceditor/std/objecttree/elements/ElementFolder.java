@@ -28,7 +28,7 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 			UDAElement add = new UDAElement("folder.add", "Add");
 			add.addElement(new UDAElement("folder.add.folder", "Folder"));
 			add.addElement(new UDAElement("folder.add.model", "Model"));
-			
+			add.addElement(new UDAElement("folder.add.light", "Light"));
 			items.add(new UDAElement(), add);
 		}
 	}
@@ -38,6 +38,7 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 		switch (itemID) {
 			case "folder.add.folder": this.folderStack.add(new ElementFolder("New folder")); return true;
 			case "folder.add.model": this.folderStack.add(new ElementModel("New model")); return true;
+			case "folder.add.light": this.folderStack.add(new ElementLight("New light")); return true;
 			
 			default: return super.processDropdownAction(tree, itemID);
 		}

@@ -7,15 +7,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.decals.BaseDecal;
 import by.fxg.pilesos.decals.CameraAlphaGroupStrategy;
 import by.fxg.pilesos.decals.DecalDrawer;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
+import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.g3d.IModelProvider;
+import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+import by.fxg.speceditor.std.objecttree.elements.ElementLight;
 import by.fxg.speceditor.std.render.DebugDraw3D.IDebugDraw;
+import by.fxg.speceditor.utils.Utils;
 
 public class GLTFRenderer implements IRendererType {
 	private Camera camera;
@@ -55,13 +60,13 @@ public class GLTFRenderer implements IRendererType {
 		if (object instanceof BaseDecal) this.decalDrawer.decalsToProduce.add((BaseDecal)object);
 	}
 	
-//	public void addLight(ElementLight element, boolean selected, boolean visible) {
-//		this.editorDecalDrawer.decalsToProduce.add(element.editorDecal);
-//		element.editorDecal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(String.format("defaults/sceneLight_%s_%s.png", selected, visible))));
-//		element.editorDecal.getDecal().setScale(0.0015f, 0.0015f);
-//		element.editorDecal.getDecal().setPosition(element.light.position);
-//		if (selected || visible) this.environment.add(element.light);
-//	}
+	public void addLight(ElementLight element, boolean selected) {
+		this.editorDecalDrawer.decalsToProduce.add(element._viewportDecal);
+		element._viewportDecal.setDecal(Game.storage.decals.get(Utils.format("viewport/light.", selected)));
+		element._viewportDecal.getDecal().setScale(0.0015f, 0.0015f);
+		element._viewportDecal.getDecal().setPosition(element.getTransform(GizmoTransformType.TRANSLATE));
+		this.environment.add(element.getLight(BaseLight.class));
+	}
 
 	public void update() {
 		this.clear(true);

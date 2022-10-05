@@ -7,6 +7,7 @@ import by.fxg.speceditor.api.std.objectTree.ITreeElementHandler;
 import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+import by.fxg.speceditor.std.objecttree.elements.ElementLight;
 import by.fxg.speceditor.std.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.render.IRendererType;
 
@@ -33,10 +34,11 @@ public class PrefabObjectTreeHandler implements ITreeElementHandler {
 	private void searchRenderables(IRendererType renderer, SpecObjectTree objectTree, Array<TreeElement> elements, boolean parentVisible) { 
 		for (TreeElement element : elements) {
 			if (element != null) {
-				//if (element instanceof ElementLight) renderer.addLight((ElementLight)element, parentVisible && element.isVisible(), objectTree.selectedItems.contains(element, true));
+				
 				
 				if ((parentVisible && element.isVisible() || objectTree.elementSelector.isElementSelected(element))) {
 					if (element instanceof IModelProvider || element instanceof IDebugDraw) renderer.add(element);
+					if (element instanceof ElementLight) renderer.addLight((ElementLight)element, objectTree.elementSelector.isElementSelected(element));
 					//if (element instanceof ElementDecal) renderer.add(((ElementDecal)element).decal);
 				}
 				if (element instanceof ITreeElementFolder) {
