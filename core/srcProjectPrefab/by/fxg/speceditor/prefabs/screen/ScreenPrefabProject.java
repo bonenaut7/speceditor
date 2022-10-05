@@ -40,15 +40,10 @@ public class ScreenPrefabProject extends BaseScreen {
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		if (!this.dropdownButtonApp.isDropped() && !this.dropdownButtonProject.isDropped()) {
-			int ddLine = 22;
-			int sProjManW = width / 6;
-			int sEditorW = width / 5;
-			int sExplorerH = height / 4;
-			
-			this.subObjectTree.update(batch, shape, foster, 0, 0, sProjManW, height - ddLine);
-			this.subEditorPane.update(batch, shape, foster, width - sEditorW, 0, sEditorW, height - ddLine);
-			this.unnamedUselessModule.update(batch, shape, foster, sProjManW, 0, width - sProjManW - sEditorW, sExplorerH);
-			this.subViewport.update(batch, shape, foster, sProjManW, sExplorerH, width - sProjManW - sEditorW, height - sExplorerH - ddLine);
+			this.subEditorPane.update(batch, shape, foster, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
+			this.subObjectTree.update(batch, shape, foster, this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
+			this.unnamedUselessModule.update(batch, shape, foster, this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
+			this.subViewport.update(batch, shape, foster, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 		}
 	}
 

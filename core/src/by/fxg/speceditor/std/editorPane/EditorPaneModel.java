@@ -13,7 +13,9 @@ import by.fxg.speceditor.api.std.editorPane.EditorPane;
 import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
+import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objecttree.elements.ElementModel;
+import by.fxg.speceditor.ui.SpecInterface;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UInputField;
 import by.fxg.speceditor.ui.URenderBlock;
@@ -26,7 +28,6 @@ public class EditorPaneModel extends EditorPane {
 	private UButton buttonSelectModel;
 	
 	private TransformBlock transform;
-	//private MaterialsBlock materials;
 	private EditorPaneMatsel matsel;
 	
 	public EditorPaneModel() {
@@ -34,7 +35,6 @@ public class EditorPaneModel extends EditorPane {
 		this.modelPath = new UInputField().setMaxLength(128);
 		this.buttonSelectModel = new UButton("Open file");
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
-		//this.materials = (MaterialsBlock)new MaterialsBlock(this).setDropped(true);
 		this.matsel = (EditorPaneMatsel)new EditorPaneMatsel("Material selection").setDropped(true);
 	}
 	
@@ -90,6 +90,8 @@ public class EditorPaneModel extends EditorPane {
 	private class TransformBlock extends URenderBlock {
 		private EditorPaneModel parent;
 		private UInputField[] position = new UInputField[3], rotation = new UInputField[3], scale = new UInputField[3];
+		private boolean needsUpdate = false;
+		
 		private TransformBlock(EditorPaneModel parent) {
 			super("Transforms");
 			this.parent = parent;
@@ -100,6 +102,9 @@ public class EditorPaneModel extends EditorPane {
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
+			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateValues();//this.needsUpdate = true;
+			else if (this.needsUpdate) ;
+			
 			String[] coords = {"X:", "Y:", "Z:"};
 			foster.setString("Position:").draw(this.x, (yOffset -= 22) + 7, Align.left);
 			for (int i = 0; i != 3; i++) {
@@ -107,7 +112,18 @@ public class EditorPaneModel extends EditorPane {
 				this.position[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
 				this.position[i].render(batch, shape, foster);
 			}
-			this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
+			
+			int sizePerPart = 0;
+			
+//			yOffset -= 10;
+//			for (int i = 0; i != 3; i++) {
+//				foster.setString(coords[i]).draw(this.x + 10, yOffset + 1, Align.left);
+//				this.position[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset - 10, this.width - (int)foster.getWidth() - 35, 15).update();
+//				this.position[i].render(batch, shape, foster);
+//			}
+//			yOffset -= 10;
+			if (this.position[0].isFocused() || this.position[1].isFocused() || this.position[2].isFocused())
+				this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
 
 			foster.setString("Rotation:").draw(this.x, (yOffset -= 15) + 7, Align.left);
 			for (int i = 0; i != 3; i++) {
@@ -115,7 +131,8 @@ public class EditorPaneModel extends EditorPane {
 				this.rotation[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
 				this.rotation[i].render(batch, shape, foster);
 			}
-			this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);
+			if (this.rotation[0].isFocused() || this.rotation[1].isFocused() || this.rotation[2].isFocused())
+				this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);
 			
 			foster.setString("Scale:").draw(this.x, (yOffset -= 15) + 7, Align.left);
 			for (int i = 0; i != 3; i++) {
@@ -123,7 +140,8 @@ public class EditorPaneModel extends EditorPane {
 				this.scale[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
 				this.scale[i].render(batch, shape, foster);
 			}
-			this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
+			if (this.scale[0].isFocused() || this.scale[1].isFocused() || this.scale[2].isFocused())
+				this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
 			return yOffset + 10;
 		}
 		
@@ -131,6 +149,14 @@ public class EditorPaneModel extends EditorPane {
 			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
 			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);
 			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
+		}
+		
+		private void updateValues() {
+			if (this.parent != null && this.parent.element != null) {
+				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
+				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);
+				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
+			}
 		}
 	}
 }

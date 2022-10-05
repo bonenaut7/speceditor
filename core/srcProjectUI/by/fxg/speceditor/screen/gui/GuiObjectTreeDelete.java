@@ -85,6 +85,7 @@ public class GuiObjectTreeDelete extends BaseScreen implements IFocusable {
 			}
 			this.objectTree.refreshTree();
 			Game.get.renderer.currentGui = null;
+			this.setFocused(false);
 		}
 	}
 

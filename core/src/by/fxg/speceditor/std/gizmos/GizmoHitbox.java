@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlag
 
 /** Inner bullet physics class for raycasting with mouse clicks **/
 class GizmoHitbox {
+	Vector3 tmpVector;
 	btCollisionShape shape;
 	btCollisionObject object;
 	int type;
@@ -19,6 +20,7 @@ class GizmoHitbox {
 		this.object.setCollisionShape(this.shape = new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)));
 		this.object.setCollisionFlags(CollisionFlags.CF_STATIC_OBJECT | CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		this.object.userData = this;
+		this.tmpVector = new Vector3();
 		
 		switch (this.type) {
 			case 0: this.shape.setLocalScaling(new Vector3(2.75f, 0.25f, 0.25f)); break;
@@ -28,13 +30,22 @@ class GizmoHitbox {
 	}
 	
 	/** Updates position for raycast hitbox **/
-	public void updatePosition(Vector3 position) {
+	public void update(Vector3 position, float scale) {
 		Matrix4 temp = this.object.getWorldTransform();
 		temp.setToTranslation(position);
 		switch (this.type) {
-			case 0: temp.translate(1.45f, 0f, 0f); break;
-			case 1: temp.translate(0f, 1.45f, 0f); break;
-			case 2: temp.translate(0f, 0f, 1.45f); break;
+			case 0: {
+				this.shape.setLocalScaling(this.tmpVector.set(2.75f, 0.25f, 0.25f).scl(Math.max(scale, 0.01F)));
+				temp.translate(1.45f * scale, 0f, 0f);
+			} break;
+			case 1: {
+				this.shape.setLocalScaling(this.tmpVector.set(0.25f, 2.75f, 0.25f).scl(Math.max(scale, 0.01F)));
+				temp.translate(0f, 1.45f * scale, 0f);
+			} break;
+			case 2: {
+				this.shape.setLocalScaling(this.tmpVector.set(0.25f, 0.25f, 2.75f).scl(Math.max(scale, 0.01F)));
+				temp.translate(0f, 0f, 1.45f * scale);
+			} break;
 		}
 		this.object.setWorldTransform(temp);
 	}
