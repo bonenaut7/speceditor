@@ -81,7 +81,7 @@ public class GuiObjectTreeDelete extends BaseScreen implements IFocusable {
 			for (TreeElement element : this.treeElements) {
 				element.onDelete();
 				this.objectTree.getElementSelector().deselectElement(element);
-				this.objectTree.getStack().remove(element);
+				this.objectTree.getStack().selfRemove(element); //TODO Add recursive search to ElementStack and recursive-remove method
 			}
 			this.objectTree.refreshTree();
 			Game.get.renderer.currentGui = null;

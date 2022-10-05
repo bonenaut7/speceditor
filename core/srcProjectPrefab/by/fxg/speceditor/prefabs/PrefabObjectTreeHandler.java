@@ -18,7 +18,7 @@ public class PrefabObjectTreeHandler implements ITreeElementHandler {
 	}
 	
 	public boolean onDropdownClick(SpecObjectTree objectTree, String id) {
-		this.prefabProject.renderer.clear(true); //idk check required XXX
+		//this.prefabProject.renderer.clear(true); //idk check required XXX, makes flick when adding element to objecttree
 		return false;
 	}
 	

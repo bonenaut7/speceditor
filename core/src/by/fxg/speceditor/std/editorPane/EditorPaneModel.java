@@ -105,44 +105,48 @@ public class EditorPaneModel extends EditorPane {
 			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateValues();//this.needsUpdate = true;
 			else if (this.needsUpdate) ;
 			
-			String[] coords = {"X:", "Y:", "Z:"};
+			String[] coords = {"X", "Y", "Z"};
 			foster.setString("Position:").draw(this.x, (yOffset -= 22) + 7, Align.left);
-			for (int i = 0; i != 3; i++) {
-				foster.setString(coords[i]).draw(this.x + 10, (yOffset -= 10) + 1, Align.left);
-				this.position[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
-				this.position[i].render(batch, shape, foster);
-			}
-			
-			int sizePerPart = 0;
-			
-//			yOffset -= 10;
+//			Original
 //			for (int i = 0; i != 3; i++) {
-//				foster.setString(coords[i]).draw(this.x + 10, yOffset + 1, Align.left);
-//				this.position[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset - 10, this.width - (int)foster.getWidth() - 35, 15).update();
+//				foster.setString(coords[i]).draw(this.x + 10, (yOffset -= 10) + 1, Align.left);
+//				this.position[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
 //				this.position[i].render(batch, shape, foster);
 //			}
-//			yOffset -= 10;
-			if (this.position[0].isFocused() || this.position[1].isFocused() || this.position[2].isFocused())
+			
+			foster.setString(coords[0]);
+			int sizePerPart = (this.width - 30 - (int)foster.getWidth() * 3) / 3;
+			
+			yOffset -= 10;
+			for (int i = 0; i != 3; i++) {
+				foster.setString(coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+				this.position[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).update();
+				this.position[i].render(batch, shape, foster);
+			}
+			if (this.position[0].isFocused() || this.position[1].isFocused() || this.position[2].isFocused()) 
 				this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
 
-			foster.setString("Rotation:").draw(this.x, (yOffset -= 15) + 7, Align.left);
+			foster.setString("Rotation:").draw(this.x, (yOffset -= 25) + 7, Align.left);
+			yOffset -= 10;
 			for (int i = 0; i != 3; i++) {
-				foster.setString(coords[i]).draw(this.x + 10, (yOffset -= 10) + 1, Align.left);
-				this.rotation[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
+				foster.setString(coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+				this.rotation[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).update();
 				this.rotation[i].render(batch, shape, foster);
 			}
 			if (this.rotation[0].isFocused() || this.rotation[1].isFocused() || this.rotation[2].isFocused())
 				this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);
-			
-			foster.setString("Scale:").draw(this.x, (yOffset -= 15) + 7, Align.left);
+
+			foster.setString("Scale:").draw(this.x, (yOffset -= 25) + 7, Align.left);
+			yOffset -= 10;
 			for (int i = 0; i != 3; i++) {
-				foster.setString(coords[i]).draw(this.x + 10, (yOffset -= 10) + 1, Align.left);
-				this.scale[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
+				foster.setString(coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+				this.scale[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).update();
 				this.scale[i].render(batch, shape, foster);
 			}
 			if (this.scale[0].isFocused() || this.scale[1].isFocused() || this.scale[2].isFocused())
 				this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
-			return yOffset + 10;
+			
+			return yOffset;
 		}
 		
 		private void updateBlock(ElementModel model) {
