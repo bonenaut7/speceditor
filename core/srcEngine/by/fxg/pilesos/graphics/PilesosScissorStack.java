@@ -15,27 +15,19 @@ public class PilesosScissorStack {
 		for (int i = 0; i != amount; i++) {
 			this.scissors.add(new Rectangle());
 		}
-	}
-	
-	public PilesosScissorStack setBounds(int idx, int x, int y, int sx, int sy) {
-		if (idx >= this.scissors.size) return null;
-		this.scissors.get(idx).set(x, y, sx, sy);
-		return this;
-	}
-	
-	public int pushScissors() {
-		if (this.nextIndex >= this.scissors.size) return -1;
-		ScissorStack.pushScissors(this.scissors.get(this.nextIndex));
-		this.nextIndex++;
-		return this.nextIndex - 1;
-	}
-	
-	public boolean pushScissors(int idx) {
-		if (idx >= this.scissors.size) return false;
-		return ScissorStack.pushScissors(this.scissors.get(idx));
+		this.nextIndex = amount - 1;
 	}
 
+	public boolean peekScissors(float x, float y, float width, float height) {
+		if (this.nextIndex > 0 && ScissorStack.pushScissors(this.scissors.get(this.nextIndex).set(x, y, width, height))) {
+			this.nextIndex--;
+			return true;
+		}
+		return false;
+	}
+	
 	public void popScissors() {
+		this.nextIndex++;
 		ScissorStack.popScissors();
 	}
 }

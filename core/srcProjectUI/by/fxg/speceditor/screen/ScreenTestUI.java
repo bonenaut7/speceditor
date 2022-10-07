@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.ui.STDInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.UDropdownClick;
@@ -23,6 +24,8 @@ public class ScreenTestUI extends BaseScreen {
 	public UInputField oldInputField;
 	public UCheckbox checkbox;
 	
+	public STDInputField stdField0, stdField1;
+	
 	public ScreenTestUI() {
 		
 		int width = Gdx.graphics.getWidth(), height = Gdx.graphics.getHeight();
@@ -34,6 +37,9 @@ public class ScreenTestUI extends BaseScreen {
 		this.oldInputField = new UInputField(width / 2, height / 2 - 80, 100, 20);
 		this.oldInputField.setMaxLength(32);
 		this.checkbox = new UCheckbox(width / 2 + 110, height / 2 + 24, 16, 16);
+	
+		this.stdField0 = new STDInputField(null).setMaxTextLength(32).setAllowFullfocus(false);
+		this.stdField1 = new STDInputField(null).setMaxTextLength(32);
 	}
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
@@ -43,6 +49,9 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownClick.update();
 		this.oldInputField.update();
 		this.checkbox.update();
+		
+		this.stdField0.setFoster(foster).update();
+		this.stdField1.setFoster(foster).update();
 	}
 
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
@@ -56,6 +65,9 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownClick.render(shape, foster);
 		this.oldInputField.render(batch, shape, foster);
 		this.checkbox.render(shape);
+		
+		this.stdField0.setTransforms(width / 2, height / 2 - 105, 100, 20).render(batch, shape);
+		this.stdField1.setTransforms(width / 2, height / 2 - 130, 100, 20).render(batch, shape);
 		batch.end();
 	}
 	

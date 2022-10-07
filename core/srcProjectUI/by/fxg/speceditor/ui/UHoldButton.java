@@ -3,6 +3,7 @@ package by.fxg.speceditor.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 
+import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.ui.SpecInterface.AppCursor;
@@ -49,7 +50,12 @@ public class UHoldButton extends UIElement {
 			shape.setColor(UColor.gray);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
 		}
-		foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+		shape.getBatch().flush();
+		if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
+			foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+			shape.getBatch().flush();
+			PilesosScissorStack.instance.popScissors();
+		}
 	}
 	
 	public UHoldButton setColor(Color color) {

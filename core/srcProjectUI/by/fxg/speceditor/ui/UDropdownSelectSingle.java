@@ -1,5 +1,6 @@
 package by.fxg.speceditor.ui;
 
+import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.ui.SpecInterface.AppCursor;
@@ -72,7 +73,12 @@ public class UDropdownSelectSingle extends UIElement implements IFocusable {
 				shape.setColor(UColor.overlay);
 				shape.filledRectangle(this.x, this.y, this.width, this.height);
 			}
-			foster.setString(this.variants[this.selectedVariant]).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+			shape.getBatch().flush();
+			if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
+				foster.setString(this.variants[this.selectedVariant]).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+				shape.getBatch().flush();
+				PilesosScissorStack.instance.popScissors();
+			}
 		}
 	}
 	

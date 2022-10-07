@@ -8,9 +8,9 @@ import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.api.std.editorPane.EditorPane;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.STDManager;
+import by.fxg.speceditor.std.editorPane.EditorPane;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.ui.SpecInterface;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -33,7 +33,7 @@ public class SubscreenPrefabEditorModuleObjectExplorer extends BaseSubscreen {
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		if (this.currentEditorPane != null) {
 			batch.flush();
-			if (PilesosScissorStack.instance.setBounds(2, x, y, width, height).pushScissors(2)) {
+			if (PilesosScissorStack.instance.peekScissors(x, y, width, height)) {
 				int paneY = y + (int)this.scroll.x;
 				this.scroll.y = Math.max(0.01f, this.currentEditorPane.updateAndRender(batch, shape, foster, x, paneY, width - 4, height, paneY + height) - paneY - height * 2);
 				float yScrollHeight = Interpolation.linear.apply(3, height, Math.min(height / (height + this.scroll.y), 1));

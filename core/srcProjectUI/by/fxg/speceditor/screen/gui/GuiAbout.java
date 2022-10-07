@@ -64,7 +64,7 @@ public class GuiAbout extends BaseScreen implements IFocusable {
 		shape.setColor(1, 0, 0, 0.5F);
 		shape.filledRectangle(x + 5, y + 8, foster.getWidth() + 2, 4);
 		batch.flush();
-		if (PilesosScissorStack.instance.setBounds(5, x + 5, y + 5, (int)foster.getWidth() + 2, 11).pushScissors(5)) {
+		if (PilesosScissorStack.instance.peekScissors(x + 5, y + 5, (int)foster.getWidth() + 2, 11)) {
 			shape.setColor(0, 0, 0, 0.25F);
 			shape.filledRectangle(MathUtils.map(0, 45, x - 6, x + foster.getWidth() + 7, Game.get.getTick() % 45L), y + 5, 11, 11);
 			batch.flush();

@@ -17,6 +17,7 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.ui.SpecInterface.AppCursor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
+@Deprecated
 public class UInputField implements SpecInterface.IFocusable {
 	public static final int GLYPH_SIZE = 6;//8;
 	public int x, y, width, height;
@@ -121,7 +122,7 @@ public class UInputField implements SpecInterface.IFocusable {
 					int espr = this.renderOffset + (GDXUtil.getMouseX() - this.x - 2) / GLYPH_SIZE;
 					this.pointer = espr > this.text.length() ? this.text.length() : espr;
 				}
-			} 
+			} //0123456789
 		} else {
 			if (this.allSelected) this.allSelected = false;
 			if (input.isMouseDown(0, false) && GDXUtil.isMouseInArea(this.x, this.y, this.width, this.height)) {
@@ -137,23 +138,23 @@ public class UInputField implements SpecInterface.IFocusable {
 		shape.rectangle(this.x + 1, this.y, this.width - 1, this.height - 1); // maybe move text -1 by Y axis
 		batch.flush();
 
-		if (PilesosScissorStack.instance.setBounds(0, this.x + 2, this.y + 2, this.width - 4, this.height - 4).pushScissors(0)) {
-			if (this.allSelected) {
-				shape.setColor(0.1f, 0.25f, 0.75f, 1f);
-				shape.filledRectangle(this.x + 2, this.y + 2, this.width, 16);
-			}
-			foster.setString(this.text).draw(this.x + 6 - this.renderOffset * GLYPH_SIZE, this.y + 5 + GLYPH_SIZE, Align.left);
-			
-			if (this.isFocused() && this.flashTimer < 50) { // pointer
-				int xPos = this.x + 6 + this.pointer * GLYPH_SIZE - this.renderOffset * GLYPH_SIZE;
-				float prevColor = shape.getPackedColor();
-				shape.setColor(1, 1, 1, 1);
-				shape.line(xPos, this.y + 3, xPos, this.y + this.height - 3);
-				shape.setColor(prevColor);
-			}
-			batch.flush();
-			PilesosScissorStack.instance.popScissors();
-		}
+//		if (PilesosScissorStack.instance.setBounds(0, this.x + 2, this.y + 2, this.width - 4, this.height - 4).pushScissors(0)) {
+//			if (this.allSelected) {
+//				shape.setColor(0.1f, 0.25f, 0.75f, 1f);
+//				shape.filledRectangle(this.x + 2, this.y + 2, this.width, 16);
+//			}
+//			foster.setString(this.text).draw(this.x + 6 - this.renderOffset * GLYPH_SIZE, this.y + 5 + GLYPH_SIZE, Align.left);
+//			
+//			if (this.isFocused() && this.flashTimer < 50) { // pointer
+//				int xPos = this.x + 6 + this.pointer * GLYPH_SIZE - this.renderOffset * GLYPH_SIZE;
+//				float prevColor = shape.getPackedColor();
+//				shape.setColor(1, 1, 1, 1);
+//				shape.line(xPos, this.y + 3, xPos, this.y + this.height - 3);
+//				shape.setColor(prevColor);
+//			}
+//			batch.flush();
+//			PilesosScissorStack.instance.popScissors();
+//		}
 	}
 	
 	public void onFocusRemoved() {
