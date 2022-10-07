@@ -1,6 +1,4 @@
-package by.fxg.speceditor.api.std.objectTree;
-
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+package by.fxg.speceditor.std.objectTree;
 
 public interface ITreeElementHandler {
 	/** Called when DropDown clicked. Return true to cancel default action. **/

@@ -16,7 +16,7 @@ import by.fxg.speceditor.GInputProcessor.IMouseController;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.render.IRendererType;
 import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;
 import by.fxg.speceditor.ui.SpecInterface.UColor;

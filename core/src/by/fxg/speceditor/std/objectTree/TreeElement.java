@@ -1,4 +1,4 @@
-package by.fxg.speceditor.api.std.objectTree;
+package by.fxg.speceditor.std.objectTree;
 
 import java.util.UUID;
 
@@ -10,8 +10,6 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
-import by.fxg.speceditor.std.objecttree.ElementStack;
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 
 public abstract class TreeElement {

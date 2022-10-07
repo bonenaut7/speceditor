@@ -2,12 +2,12 @@ package by.fxg.speceditor.prefabs;
 
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.api.std.objectTree.ITreeElementFolder;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementHandler;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.g3d.IModelProvider;
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.elements.ElementLight;
+import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
+import by.fxg.speceditor.std.objectTree.ITreeElementHandler;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.objectTree.elements.ElementLight;
 import by.fxg.speceditor.std.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.render.IRendererType;
 

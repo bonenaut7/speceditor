@@ -1,4 +1,4 @@
-package by.fxg.speceditor.api.std.objectTree;
+package by.fxg.speceditor.std.objectTree;
 
 public interface ITreeElementSelector<T extends TreeElement> {
 	int size();

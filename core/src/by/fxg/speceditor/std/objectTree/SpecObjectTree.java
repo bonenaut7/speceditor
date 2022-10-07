@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.objecttree;
+package by.fxg.speceditor.std.objectTree;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -14,11 +14,7 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementFolder;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementHandler;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.objecttree.impl.ObjectTreeElementSelectorObjects;
+import by.fxg.speceditor.std.objectTree.impl.DefaultTreeElementSelector;
 import by.fxg.speceditor.ui.SpecInterface;
 import by.fxg.speceditor.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.ui.SpecInterface.IFocusable;
@@ -33,7 +29,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 	private GInputProcessor input;
 	public UDropdownArea dropdownArea;
 	public ITreeElementHandler elementHandler;
-	public ITreeElementSelector<? extends TreeElement> elementSelector = new ObjectTreeElementSelectorObjects(); //FIXME replace to abstract one
+	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector(); //FIXME replace to abstract one
 	
 	private ElementStack elementStack = new ElementStack();
 	/** [scroll]Scrolls, [canvas]Size of rendered elements in list for scrolls, [renderPosition]Position buffer for elements to render **/

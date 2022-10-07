@@ -1,13 +1,13 @@
-package by.fxg.speceditor.std.objecttree.elements;
+package by.fxg.speceditor.std.objectTree.elements;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementFolder;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.objecttree.ElementStack;
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.ElementStack;
+import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 

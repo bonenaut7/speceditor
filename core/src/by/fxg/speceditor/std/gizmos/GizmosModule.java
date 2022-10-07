@@ -21,9 +21,9 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.render.DebugDraw3D;
 import by.fxg.speceditor.ui.SpecInterface;
 import by.fxg.speceditor.ui.SpecInterface.AppCursor;
@@ -85,6 +85,7 @@ public class GizmosModule implements IFocusable {
 				this.updateGizmosPosition();
 				float mx = Interpolation.linear.apply(0, Utils.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 				float my = Interpolation.linear.apply(0, Utils.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
+				//possible solution for cancelling slide of value can be Vector2 with prev. tick mouse position, and then we can compare current mouse position with previous, and if they're equal - cancel update
 				Ray ray = screenViewport.camera.getPickRay(mx, my);
 				GizmoInteractType hitType = this.isRayCastedGizmo(ray);
 				if (hitType != GizmoInteractType.NONE) {
@@ -94,8 +95,6 @@ public class GizmosModule implements IFocusable {
 						this._gizmoStart.set(this._gizmoRenderPosition);
 						ray.getEndPoint(this._gizmoClickOffset, screenViewport.camera.position.dst(this._gizmoRenderPosition));
 						this._gizmoClickOffset.sub(this._gizmoRenderPosition);
-						//Utils.logDebug("", this._gizmoRenderPosition, "(", this._tmpVector, ") * ", screenViewport.camera.position.dst(this._gizmoRenderPosition), " = ", this._gizmoClickOffset);
-						
 						this.interactType = hitType;
 						this.setFocused(true);
 					}

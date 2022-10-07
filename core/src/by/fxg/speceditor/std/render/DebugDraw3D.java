@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btNNCGConstraintSolver;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 
 public class DebugDraw3D {
 	public DebugDrawer drawer;

@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.objecttree.elements;
+package by.fxg.speceditor.std.objectTree.elements;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -8,10 +8,10 @@ import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.ResourceManager;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
+import by.fxg.speceditor.std.objectTree.TreeElement;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 public class ElementModel extends TreeElement implements ITreeElementGizmos, IModelProvider {

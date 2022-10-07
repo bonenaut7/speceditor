@@ -1,6 +1,4 @@
-package by.fxg.speceditor.api.std.objectTree;
-
-import by.fxg.speceditor.std.objecttree.ElementStack;
+package by.fxg.speceditor.std.objectTree;
 
 public interface ITreeElementFolder {
 	boolean isFolderAccepting(TreeElement element);

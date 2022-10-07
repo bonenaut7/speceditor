@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.objecttree.elements;
+package by.fxg.speceditor.std.objectTree.elements;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
@@ -8,9 +8,9 @@ import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.pilesos.decals.BaseDecal;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
+import by.fxg.speceditor.std.objectTree.TreeElement;
 
 public class ElementLight extends TreeElement implements ITreeElementGizmos {
 	public ElementLightType type;

@@ -7,12 +7,11 @@ import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.api.std.editorPane.EditorPane;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
-import by.fxg.speceditor.std.objecttree.elements.ElementLight;
-import by.fxg.speceditor.std.objecttree.elements.ElementLight.ElementLightType;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.std.objectTree.elements.ElementLight;
+import by.fxg.speceditor.std.objectTree.elements.ElementLight.ElementLightType;
 import by.fxg.speceditor.ui.SpecInterface;
 import by.fxg.speceditor.ui.UInputField;
 import by.fxg.speceditor.ui.URenderBlock;

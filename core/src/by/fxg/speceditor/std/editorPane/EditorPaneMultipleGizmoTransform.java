@@ -3,10 +3,9 @@ package by.fxg.speceditor.std.editorPane;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.api.std.editorPane.EditorPane;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.std.objectTree.TreeElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneMultipleGizmoTransform extends EditorPane {

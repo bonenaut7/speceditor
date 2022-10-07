@@ -3,8 +3,7 @@ package by.fxg.speceditor.std;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.api.std.editorPane.EditorPane;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.std.editorPane.EditorPane;
 import by.fxg.speceditor.std.editorPane.EditorPaneFolder;
 import by.fxg.speceditor.std.editorPane.EditorPaneLight;
 import by.fxg.speceditor.std.editorPane.EditorPaneModel;
@@ -17,6 +16,7 @@ import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleColorAttrib
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleDepthTestAttribute;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleFloatAttribute;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleTextureAttribute;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 
 public class STDManager {
 	public static STDManager INSTANCE;

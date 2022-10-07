@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.elements.ElementFolder;
 import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
 import by.fxg.speceditor.ui.UDropdownClick;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;

@@ -9,12 +9,11 @@ import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.api.std.editorPane.EditorPane;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
-import by.fxg.speceditor.std.objecttree.elements.ElementModel;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.std.objectTree.elements.ElementModel;
 import by.fxg.speceditor.ui.SpecInterface;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UInputField;

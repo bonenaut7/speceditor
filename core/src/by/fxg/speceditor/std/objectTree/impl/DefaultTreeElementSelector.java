@@ -1,11 +1,11 @@
-package by.fxg.speceditor.std.objecttree.impl;
+package by.fxg.speceditor.std.objectTree.impl;
 
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.std.objectTree.TreeElement;
 
-public class ObjectTreeElementSelectorObjects implements ITreeElementSelector<TreeElement> {
+public class DefaultTreeElementSelector implements ITreeElementSelector<TreeElement> {
 	private Array<TreeElement> array = new Array<>();
 	
 	public int size() {

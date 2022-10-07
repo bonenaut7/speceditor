@@ -28,8 +28,6 @@ public class Game extends Apparat<GInputProcessor> {
 	
 	public void create() {
 		this.onCreate(get = this);
-		if (this.hasProgramArgument("-UITest")) this.renderer.currentScreen = new ScreenTestUI();
-		if (this.hasProgramArgument("-debug")) DEBUG = true;
 		
 		Gdx.input.setInputProcessor(super.input = new GInputProcessor());
 		this.input.setCursorCatched(false);
@@ -49,6 +47,8 @@ public class Game extends Apparat<GInputProcessor> {
 		STDManager.INSTANCE.postInit();
 		
 		this.renderer = new RenderManager(this);
+		if (this.hasProgramArgument("-UITest")) this.renderer.currentScreen = new ScreenTestUI();
+		if (this.hasProgramArgument("-debug")) DEBUG = true;
 	}
 	
 	public void update(int width, int height) {

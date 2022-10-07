@@ -1,11 +1,9 @@
-package by.fxg.speceditor.std.objecttree;
+package by.fxg.speceditor.std.objectTree;
 
 import java.util.UUID;
 
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.api.std.objectTree.ITreeElementFolder;
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
 import by.fxg.speceditor.utils.Utils;
 
 public class ElementStack {

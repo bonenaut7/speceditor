@@ -12,9 +12,9 @@ import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.api.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.objecttree.ElementStack;
-import by.fxg.speceditor.std.objecttree.elements.ElementFolder;
+import by.fxg.speceditor.std.objectTree.ElementStack;
+import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
 import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;
 
 public class PrefabProjectIO {

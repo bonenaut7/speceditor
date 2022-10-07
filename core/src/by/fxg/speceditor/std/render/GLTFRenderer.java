@@ -17,8 +17,8 @@ import by.fxg.pilesos.graphics.TextureFrameBuffer;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
-import by.fxg.speceditor.std.objecttree.elements.ElementLight;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.elements.ElementLight;
 import by.fxg.speceditor.std.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.utils.Utils;
 

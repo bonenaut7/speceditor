@@ -57,5 +57,5 @@ public class Utils {
 		System.err.println(String.format("[ERROR] %s: %s", tag, format(objects)));
 		if (Game.DEBUG && throwable != null) throwable.printStackTrace();
 	}
-	public static void logDebug(String tag, Object... objects) { if (Game.DEBUG) System.err.println(String.format("[DEBUG] %s: %s", tag, format(objects))); }	
+	public static void logDebug(Object... objects) { if (Game.DEBUG) System.err.println(String.format("[DEBUG] %s", format(objects))); }	
 }

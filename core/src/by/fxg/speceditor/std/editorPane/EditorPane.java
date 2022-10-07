@@ -1,4 +1,4 @@
-package by.fxg.speceditor.api.std.editorPane;
+package by.fxg.speceditor.std.editorPane;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.api.std.objectTree.ITreeElementSelector;
+import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.ui.UInputField;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

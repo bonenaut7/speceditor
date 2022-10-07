@@ -2,7 +2,7 @@ package by.fxg.speceditor.project;
 
 import com.badlogic.gdx.graphics.Camera;
 
-import by.fxg.speceditor.std.objecttree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.render.DefaultRenderer;
 import by.fxg.speceditor.std.render.IRendererType;
 
