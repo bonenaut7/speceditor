@@ -7,10 +7,10 @@ import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;
+import by.fxg.speceditor.ui.STDInputField;
 import by.fxg.speceditor.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
-import by.fxg.speceditor.ui.UInputField;
 import by.fxg.speceditor.ui.URenderBlock;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -21,11 +21,11 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 	
 	protected UCheckbox hitboxSelectionCheckbox;
 	protected UButton button;
-	protected UInputField hbLineInput;
-	protected UInputField[] bufferColorInput = new UInputField[4];
-	protected UInputField[] cameraSettingsInput = new UInputField[3];
-	protected UInputField[] fogInput = new UInputField[4];
-	protected UInputField[] ambientLightInput = new UInputField[3];
+	protected STDInputField hbLineInput;
+	protected STDInputField[] bufferColorInput = new STDInputField[4];
+	protected STDInputField[] cameraSettingsInput = new STDInputField[3];
+	protected STDInputField[] fogInput = new STDInputField[4];
+	protected STDInputField[] ambientLightInput = new STDInputField[3];
 	
 	public SubscreenPrefabEditorModuleViewport(SubscreenPrefabEditor parent) {
 		this.parent = parent;
@@ -34,11 +34,11 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 		this.hitboxSelectionCheckbox = new UCheckbox(false, 0, 0, 0, 0);
 		this.button = new UButton("", 0, 0, 0, 0);
 		String numeral = "0123456789-.";
-		this.hbLineInput = new UInputField(0, 0, 0, 0).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.bufferColorInput.length; i++) this.bufferColorInput[i] = new UInputField(0, 0, 0, 0).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.cameraSettingsInput.length; i++) this.cameraSettingsInput[i] = new UInputField(0, 0, 0, 0).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.fogInput.length; i++) this.fogInput[i] = new UInputField(0, 0, 0, 0).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.ambientLightInput.length; i++) this.ambientLightInput[i] = new UInputField(0, 0, 0, 0).setAllowedCharacters(numeral).setMaxLength(10);
+		this.hbLineInput = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
+		for (int i = 0; i != this.bufferColorInput.length; i++) this.bufferColorInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
+		for (int i = 0; i != this.cameraSettingsInput.length; i++) this.cameraSettingsInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
+		for (int i = 0; i != this.fogInput.length; i++) this.fogInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
+		for (int i = 0; i != this.ambientLightInput.length; i++) this.ambientLightInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
 		
 		this.blocks[0] = new URenderBlock("Hitbox selection") { //1 boolean, 1 input
 			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int y) {
@@ -53,8 +53,8 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 				shape.setColor(UColor.aquablack);
 				shape.filledRectangle(this.x + (int)foster.getWidth() + 5, y - 11, this.width - (int)foster.getWidth() - 5, 15);
 				hbLineInput.setTransforms(this.x + (int)foster.getWidth() + 5, y - 11, this.width - (int)foster.getWidth() - 5, 15);
-				hbLineInput.update();
-				hbLineInput.render(batch, shape, foster);
+				hbLineInput.setFoster(foster).update();
+				hbLineInput.render(batch, shape);
 				
 				ViewportSettings.viewportHitboxWidth = resetInputField(hbLineInput, ViewportSettings.viewportHitboxWidth);
 				return y;
@@ -78,8 +78,8 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 					shape.setColor(i == 0 ? UColor.redblack : i == 1 ? UColor.greenblack : i == 2 ? UColor.blueblack : UColor.aquablack);
 					shape.filledRectangle(this.x + 40, y - 20, this.width - 40, 15);
 					bufferColorInput[i].setTransforms(this.x + 40, y -= 20, this.width - 40, 15);
-					bufferColorInput[i].update();
-					bufferColorInput[i].render(batch, shape, foster);
+					bufferColorInput[i].setFoster(foster).update();
+					bufferColorInput[i].render(batch, shape);
 				}
 				
 				ViewportSettings.bufferColor.r = resetInputField(bufferColorInput[0], ViewportSettings.bufferColor.r);
@@ -106,8 +106,8 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 					shape.setColor(UColor.yellowblack);
 					shape.filledRectangle(this.x + (int)foster.getWidth() + 22, y - 20, this.width - (int)foster.getWidth() - 22, 15);
 					cameraSettingsInput[i].setTransforms(this.x + (int)foster.getWidth() + 22, y -= 20, this.width - (int)foster.getWidth() - 22, 15);
-					cameraSettingsInput[i].update();
-					cameraSettingsInput[i].render(batch, shape, foster);
+					cameraSettingsInput[i].setFoster(foster).update();
+					cameraSettingsInput[i].render(batch, shape);
 				}
 				
 				ViewportSettings.cameraSettings.x = resetInputField(cameraSettingsInput[0], ViewportSettings.cameraSettings.x);
@@ -147,8 +147,8 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 						shape.setColor(i == 0 ? UColor.redblack : i == 1 ? UColor.greenblack : i == 2 ? UColor.blueblack : UColor.aquablack);
 						shape.filledRectangle(this.x + 40, y - 20, this.width - 40, 15);
 						fogInput[i].setTransforms(this.x + 40, y -= 20, this.width - 40, 15);
-						fogInput[i].update();
-						fogInput[i].render(batch, shape, foster);
+						fogInput[i].setFoster(foster).update();
+						fogInput[i].render(batch, shape);
 					}
 					button.setTransforms(this.x, (y -= 5) - 10, this.width, 10).setName("Remove attribute");
 					button.render(shape, foster);
@@ -199,8 +199,8 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 						shape.setColor(i == 0 ? UColor.redblack : i == 1 ? UColor.greenblack : UColor.blueblack);
 						shape.filledRectangle(this.x + 40, y - 20, this.width - 40, 15);
 						ambientLightInput[i].setTransforms(this.x + 40, y -= 20, this.width - 40, 15);
-						ambientLightInput[i].update();
-						ambientLightInput[i].render(batch, shape, foster);
+						ambientLightInput[i].setFoster(foster).update();
+						ambientLightInput[i].render(batch, shape);
 					}
 					button.setTransforms(this.x, (y -= 5) - 10, this.width, 10).setName("Remove attribute");
 					button.render(shape, foster);
@@ -235,7 +235,7 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 		for (URenderBlock block : this.blocks) hOffset = block.render(batch, shape, foster, hOffset) - 15;
 	}
 	
-	private float resetInputField(UInputField field, float value) {
+	private float resetInputField(STDInputField field, float value) {
 		if (!field.isFocused()) {
 			field.setText(String.valueOf(value));
 		} else {

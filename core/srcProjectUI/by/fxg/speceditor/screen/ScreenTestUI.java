@@ -12,7 +12,6 @@ import by.fxg.speceditor.ui.UDropdownClick;
 import by.fxg.speceditor.ui.UDropdownSelectMultiple;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import by.fxg.speceditor.ui.UHoldButton;
-import by.fxg.speceditor.ui.UInputField;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class ScreenTestUI extends BaseScreen {
@@ -21,7 +20,6 @@ public class ScreenTestUI extends BaseScreen {
 	public UDropdownSelectSingle dropdownSelectSingle;
 	public UDropdownSelectMultiple dropdownSelectMultiple;
 	public UDropdownClick dropdownClick;
-	public UInputField oldInputField;
 	public UCheckbox checkbox;
 	
 	public STDInputField stdField0, stdField1;
@@ -34,12 +32,10 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownSelectSingle = new UDropdownSelectSingle(width / 2 - 60, height / 2 + 20, 50, 20, 20, "Dropdown select single", "OK", "FALSE", "TRUE");
 		this.dropdownSelectMultiple = new UDropdownSelectMultiple(width / 2 - 120, height / 2 + 20, 50, 20, 20, "Dropdown select multiple", "ABBA", "ITCHY", "SCRATCHY");
 		this.dropdownClick = new UDropdownClick("Dropdown Click", width / 2 - 180, height / 2 + 20, 50, 20, 20, "Open", "Save", "Save as", "Exit");
-		this.oldInputField = new UInputField(width / 2, height / 2 - 80, 100, 20);
-		this.oldInputField.setMaxLength(32);
 		this.checkbox = new UCheckbox(width / 2 + 110, height / 2 + 24, 16, 16);
 	
-		this.stdField0 = new STDInputField(null).setMaxTextLength(32).setAllowFullfocus(false);
-		this.stdField1 = new STDInputField(null).setMaxTextLength(32);
+		this.stdField0 = new STDInputField(null).setMaxLength(32).setAllowFullfocus(false);
+		this.stdField1 = new STDInputField(null).setMaxLength(32);
 	}
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
@@ -47,7 +43,6 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownSelectSingle.update();
 		this.dropdownSelectMultiple.update(foster);
 		this.dropdownClick.update();
-		this.oldInputField.update();
 		this.checkbox.update();
 		
 		this.stdField0.setFoster(foster).update();
@@ -63,7 +58,6 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownSelectSingle.render(shape, foster);
 		this.dropdownSelectMultiple.render(shape, foster);
 		this.dropdownClick.render(shape, foster);
-		this.oldInputField.render(batch, shape, foster);
 		this.checkbox.render(shape);
 		
 		this.stdField0.setTransforms(width / 2, height / 2 - 105, 100, 20).render(batch, shape);
