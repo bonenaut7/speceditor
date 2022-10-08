@@ -1,10 +1,10 @@
-package by.fxg.speceditor.ui;
+package by.fxg.speceditor.std.ui;
 
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.Game;
 
-abstract class UIElement {
+public abstract class UIElement {
 	protected int x, y, width, height;
 	
 	public boolean isMouseOver(int x, int y, int width, int height) {

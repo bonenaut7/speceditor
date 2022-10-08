@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.ui.STDInputField;
+import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -20,7 +20,7 @@ public class ScreenCreateProject extends BaseScreen {
 		int x = Gdx.graphics.getWidth() / 2 - 250 / 2, y = Gdx.graphics.getHeight() / 2 - 100;
 		this.bCreate = new UButton("Create", x + 130, y + 5, 100, 20);
 		this.bBack = new UButton("Back", x + 20, y + 5, 100, 20);
-		this.iNameField = new STDInputField(null).setTransforms(x + 84, y + 200 - 22, 160, 18).setMaxLength(32);
+		this.iNameField = new STDInputField().setTransforms(x + 84, y + 200 - 22, 160, 18).setMaxLength(32);
 		this.cBackup = new UCheckbox(false, x + 98, y + 160, 12, 12);
 	}
 	

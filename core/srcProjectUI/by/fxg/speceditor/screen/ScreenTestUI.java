@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.ui.STDInputField;
+import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.UDropdownClick;
@@ -34,8 +34,8 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownClick = new UDropdownClick("Dropdown Click", width / 2 - 180, height / 2 + 20, 50, 20, 20, "Open", "Save", "Save as", "Exit");
 		this.checkbox = new UCheckbox(width / 2 + 110, height / 2 + 24, 16, 16);
 	
-		this.stdField0 = new STDInputField(null).setMaxLength(32).setAllowFullfocus(false);
-		this.stdField1 = new STDInputField(null).setMaxLength(32);
+		this.stdField0 = new STDInputField().setMaxLength(32).setAllowFullfocus(false);
+		this.stdField1 = new STDInputField().setMaxLength(32);
 	}
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {

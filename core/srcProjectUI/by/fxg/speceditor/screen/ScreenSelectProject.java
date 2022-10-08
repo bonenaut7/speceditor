@@ -12,7 +12,7 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.project.BasicProject;
 import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.project.ProjectManager.IProjectSolver;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.utils.Utils;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UHoldButton;

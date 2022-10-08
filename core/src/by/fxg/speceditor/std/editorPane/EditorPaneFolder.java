@@ -7,16 +7,17 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
-import by.fxg.speceditor.ui.ISTDInputFieldListener;
-import by.fxg.speceditor.ui.STDInputField;
+import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDInputField;
+import by.fxg.speceditor.ui.ColoredInputField;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneFolder extends EditorPane implements ISTDInputFieldListener {
 	private TreeElement folder = null;
 	private STDInputField elementName;
-	
+
 	public EditorPaneFolder() {
-		this.elementName = new STDInputField(null).setAllowFullfocus(false).setMaxLength(32);
+		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
 	}
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {

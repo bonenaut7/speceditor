@@ -3,9 +3,11 @@ package by.fxg.speceditor.ui;
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.ui.SpecInterface.AppCursor;
-import by.fxg.speceditor.ui.SpecInterface.IFocusable;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.UIElement;
+import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
+import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UDropdownClick extends UIElement implements IFocusable {

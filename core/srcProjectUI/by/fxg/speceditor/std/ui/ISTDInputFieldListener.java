@@ -1,4 +1,4 @@
-package by.fxg.speceditor.ui;
+package by.fxg.speceditor.std.ui;
 
 /** Listener for {@link STDInputField}
  *  Can be used for multiple input fields, because they're using ID system with strings

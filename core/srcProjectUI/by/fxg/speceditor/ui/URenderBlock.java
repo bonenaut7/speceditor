@@ -6,10 +6,11 @@ import com.badlogic.gdx.utils.Align;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-//debug code: float c=shape.getPackedColor();shape.setColor(1,0,0,1);shape.rectangle(x+5,yOffset,1,1);shape.setColor(c);
+//debug code: float c=shape.getPackedColor();shape.setColor(1,0,0,1);shape.rectangle(x+3,yOffset,1,1);shape.setColor(c);
 public abstract class URenderBlock {
 	protected String name;
 	protected int x, width;
@@ -23,13 +24,13 @@ public abstract class URenderBlock {
 	}
 
 	public int render(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-		if (Game.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(this.x, yOffset - 13, this.width, 13)) {
+		if (SpecInterface.isFocused(this) && Game.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(this.x, yOffset - 13, this.width, 13)) {
 			this.isDropped = !this.isDropped;
 		}
 		
 		if (this.isDropped) {
 			final int prevY = yOffset;
-			yOffset = this.renderInside(batch, shape, foster, yOffset);
+			yOffset = this.renderInside(batch, shape, foster, yOffset - 14);
 			shape.setColor(UColor.gray);
 			shape.rectangle(this.x - 5, prevY - 5, this.width + 10, yOffset - prevY - 10);
 			

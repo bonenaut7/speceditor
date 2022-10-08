@@ -6,8 +6,10 @@ import com.badlogic.gdx.math.Interpolation;
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.ui.SpecInterface.AppCursor;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UHoldButton extends UIElement {

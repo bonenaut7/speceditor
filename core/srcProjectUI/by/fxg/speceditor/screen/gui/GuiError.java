@@ -9,7 +9,7 @@ import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.screen.BaseScreen;
-import by.fxg.speceditor.ui.SpecInterface.IFocusable;
+import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;

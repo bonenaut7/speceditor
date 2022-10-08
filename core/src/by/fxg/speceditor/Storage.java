@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 
 import by.fxg.pilesos.graphics.SpriteStack;
-import by.fxg.speceditor.ui.SpecInterface.AppCursor;
+import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 
 public class Storage {
 	private final File settingsFile;

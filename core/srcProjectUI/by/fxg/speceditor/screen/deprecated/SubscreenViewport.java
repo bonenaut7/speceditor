@@ -19,7 +19,7 @@ import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.render.IRendererType;
 import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;

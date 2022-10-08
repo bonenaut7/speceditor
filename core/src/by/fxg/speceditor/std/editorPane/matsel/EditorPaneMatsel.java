@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.STDManager;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDropdownArea;
 import by.fxg.speceditor.ui.UDropdownArea.IUDropdownAreaListener;
@@ -55,7 +55,7 @@ public class EditorPaneMatsel extends URenderBlock implements IUDropdownAreaList
 
 	//FIXME requires UI reworking and nice offsets
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-		foster.setString("Material:").draw(this.x, (yOffset -= 15), Align.left);
+		foster.setString("Material:").draw(this.x, yOffset -= 2, Align.left);
 		this.selectedMaterial.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - 11, this.width - (int)foster.getWidth() - 5, 14);
 	
 		if (!this.selectedMaterial.isDropped()) {

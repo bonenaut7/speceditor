@@ -1,31 +1,39 @@
 package by.fxg.speceditor.prefabs.screen;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;
-import by.fxg.speceditor.ui.STDInputField;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDInputField;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.ui.ColoredInputField;
+import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.URenderBlock;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
+public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen implements ISTDInputFieldListener {
+	private final String[] colors = {"R", "G", "B", "A"}, cameraSettings = {"FOV", "Far", "Near"};
+	private final Color[] fieldColors = {UColor.redblack, UColor.greenblack, UColor.blueblack, UColor.suboverlay};
 	public SubscreenPrefabEditor parent;
 	public URenderBlock[] blocks = new URenderBlock[5];
 	
 	protected UCheckbox hitboxSelectionCheckbox;
 	protected UButton button;
-	protected STDInputField hbLineInput;
-	protected STDInputField[] bufferColorInput = new STDInputField[4];
-	protected STDInputField[] cameraSettingsInput = new STDInputField[3];
-	protected STDInputField[] fogInput = new STDInputField[4];
-	protected STDInputField[] ambientLightInput = new STDInputField[3];
+	protected STDInputField hitboxWidth;
+	protected STDInputField[] bufferColor = new STDInputField[4];
+	protected STDInputField[] camera = new STDInputField[3];
+	protected STDInputField[] fog = new STDInputField[4];
+	protected STDInputField[] ambientLight = new STDInputField[3];
 	
 	public SubscreenPrefabEditorModuleViewport(SubscreenPrefabEditor parent) {
 		this.parent = parent;
@@ -33,195 +41,139 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 		
 		this.hitboxSelectionCheckbox = new UCheckbox(false, 0, 0, 0, 0);
 		this.button = new UButton("", 0, 0, 0, 0);
-		String numeral = "0123456789-.";
-		this.hbLineInput = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.bufferColorInput.length; i++) this.bufferColorInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.cameraSettingsInput.length; i++) this.cameraSettingsInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.fogInput.length; i++) this.fogInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
-		for (int i = 0; i != this.ambientLightInput.length; i++) this.ambientLightInput[i] = new STDInputField(null).setAllowedCharacters(numeral).setMaxLength(10);
+
+		Builder builder = (Builder)new ColoredInputField.Builder().setFoster(Game.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
+		this.hitboxWidth = builder.setBackgroundColor(UColor.greengray).setListener(this, "hitboxWidth").build();
+		for (int i = 0; i != this.bufferColor.length; i++) this.bufferColor[i] = builder.setBackgroundColor(this.fieldColors[i]).setListener(this, "bufferColor").build();
+		for (int i = 0; i != this.camera.length; i++) this.camera[i] = builder.setBackgroundColor(UColor.yellowblack).setListener(this, "camera").build();
+		for (int i = 0; i != this.fog.length; i++) this.fog[i] = builder.setBackgroundColor(this.fieldColors[i]).setListener(this, "fog").build();
+		for (int i = 0; i != this.ambientLight.length; i++) this.ambientLight[i] = builder.setBackgroundColor(this.fieldColors[i]).setListener(this, "ambientLight").build();
+		builder.addToLink(this.bufferColor).linkFields();
+		builder.addToLink(this.camera).linkFields();
+		builder.addToLink(this.fog).linkFields();
+		builder.addToLink(this.ambientLight).linkFields();
 		
 		this.blocks[0] = new URenderBlock("Hitbox selection") { //1 boolean, 1 input
-			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int y) {
-				foster.setString("Hitbox depth:").draw(this.x, y -= 15, Align.left);
-				hitboxSelectionCheckbox.setValue(ViewportSettings.viewportHitboxDepth);
-				hitboxSelectionCheckbox.setTransforms(this.x + (int)foster.getWidth() + 5, y -= 10, 12, 12);
-				hitboxSelectionCheckbox.update();
+			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
+				foster.setString("Hitbox depth:").draw(this.x, yOffset -= 1, Align.left);
+				hitboxSelectionCheckbox.setValue(ViewportSettings.viewportHitboxDepth).setTransforms(this.x + (int)foster.getWidth() + 5, yOffset -= 10, 12, 12).update();
 				hitboxSelectionCheckbox.render(shape);
 				ViewportSettings.viewportHitboxDepth = hitboxSelectionCheckbox.getValue();
 				
-				foster.setString("Hitbox line width:").draw(this.x, y -= 5, Align.left);
-				shape.setColor(UColor.aquablack);
-				shape.filledRectangle(this.x + (int)foster.getWidth() + 5, y - 11, this.width - (int)foster.getWidth() - 5, 15);
-				hbLineInput.setTransforms(this.x + (int)foster.getWidth() + 5, y - 11, this.width - (int)foster.getWidth() - 5, 15);
-				hbLineInput.setFoster(foster).update();
-				hbLineInput.render(batch, shape);
-				
-				ViewportSettings.viewportHitboxWidth = resetInputField(hbLineInput, ViewportSettings.viewportHitboxWidth);
-				return y;
+				foster.setString("Hitbox line width:").draw(this.x, yOffset -= 5, Align.left);
+				hitboxWidth.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - 10, this.width - (int)foster.getWidth() - 5, 15).setFoster(foster).update();
+				hitboxWidth.render(batch, shape);
+				return yOffset;
 			}
 		}.setDropped(true);
 		
 		this.blocks[1] = new URenderBlock("Screen(buffer) color") { //4 input
-			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int y) {
-				foster.setString("Color:").draw(this.x, y -= 15, Align.left); y -= 8;
-				for (int i = 0; i != 4; i++) {
-					switch(i) {
-						case 0: foster.setString("R:"); break;
-						case 1: foster.setString("G:"); break;
-						case 2: foster.setString("B:"); break;
-						case 3: foster.setString("A:"); break;
-					}
-					foster.draw(this.x + 14, y - 9);
-					shape.setColor(UColor.overlay);
-					shape.rectangle(this.x + 24, y - 20, 12, 14);
-					
-					shape.setColor(i == 0 ? UColor.redblack : i == 1 ? UColor.greenblack : i == 2 ? UColor.blueblack : UColor.aquablack);
-					shape.filledRectangle(this.x + 40, y - 20, this.width - 40, 15);
-					bufferColorInput[i].setTransforms(this.x + 40, y -= 20, this.width - 40, 15);
-					bufferColorInput[i].setFoster(foster).update();
-					bufferColorInput[i].render(batch, shape);
+			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
+				int sizePerPart = (this.width - 20 - (int)foster.setString(colors[0]).getWidth() * 2) / 2;
+				foster.setString("Color:").draw(this.x, yOffset, Align.left);
+				yOffset -= 16;
+				for (int i = 0; i != 2; i++) {
+					foster.setString(colors[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+					bufferColor[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+					bufferColor[i].render(batch, shape);
 				}
-				
-				ViewportSettings.bufferColor.r = resetInputField(bufferColorInput[0], ViewportSettings.bufferColor.r);
-				ViewportSettings.bufferColor.g = resetInputField(bufferColorInput[1], ViewportSettings.bufferColor.g);
-				ViewportSettings.bufferColor.b = resetInputField(bufferColorInput[2], ViewportSettings.bufferColor.b);
-				ViewportSettings.bufferColor.a = resetInputField(bufferColorInput[3], ViewportSettings.bufferColor.a);
-				return y + 7;
+				yOffset -= 16;
+				for (int i = 0, k = 2; i != 2; i++, k++) {
+					foster.setString(colors[k]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+					bufferColor[k].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+					bufferColor[k].render(batch, shape);
+				}
+				return yOffset;
 			}
 		}.setDropped(true);
 		
 		this.blocks[2] = new URenderBlock("Camera settings") { //4 input
-			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int y) {
-				y -= 10;
+			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
+				yOffset += 3;
 				for (int i = 0; i != 3; i++) {
-					switch(i) {
-						case 0: foster.setString("FOV:"); break;
-						case 1: foster.setString("Far:"); break;
-						case 2: foster.setString("Near:"); break;
-					}
-					foster.draw(this.x, y - 9, Align.left);
-					shape.setColor(UColor.overlay);
-					shape.rectangle(this.x + (int)foster.getWidth() + 5, y - 20, 12, 14);
-					
-					shape.setColor(UColor.yellowblack);
-					shape.filledRectangle(this.x + (int)foster.getWidth() + 22, y - 20, this.width - (int)foster.getWidth() - 22, 15);
-					cameraSettingsInput[i].setTransforms(this.x + (int)foster.getWidth() + 22, y -= 20, this.width - (int)foster.getWidth() - 22, 15);
-					cameraSettingsInput[i].setFoster(foster).update();
-					cameraSettingsInput[i].render(batch, shape);
+					foster.setString(cameraSettings[i]).draw(this.x, yOffset - 7, Align.left);
+					camera[i].setTransforms(this.x + (int)foster.getWidth() + 5, yOffset -= 18, this.width - (int)foster.getWidth() - 5, 15).setFoster(foster).update();
+					camera[i].render(batch, shape);
 				}
-				
-				ViewportSettings.cameraSettings.x = resetInputField(cameraSettingsInput[0], ViewportSettings.cameraSettings.x);
-				ViewportSettings.cameraSettings.y = resetInputField(cameraSettingsInput[1], ViewportSettings.cameraSettings.y);
-				ViewportSettings.cameraSettings.z = resetInputField(cameraSettingsInput[2], ViewportSettings.cameraSettings.z);
-				parent.screenProject.subViewport.camera.fieldOfView = ViewportSettings.cameraSettings.x;
-				parent.screenProject.subViewport.camera.far = ViewportSettings.cameraSettings.y;
-				parent.screenProject.subViewport.camera.near = ViewportSettings.cameraSettings.z;
-				parent.screenProject.subViewport.camera.update();
-				return y + 7;
+				return yOffset + 10;
 			}
 		}.setDropped(true);
 		
 		this.blocks[3] = new URenderBlock("Fog") { //4 input
-			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int y) {
-				ColorAttribute attribute = null;
-				for (Attribute attribute$ : ViewportSettings.viewportAttributes) {
-					if (attribute$.type == ColorAttribute.Fog) {
-						attribute = (ColorAttribute)attribute$;
-						break;
-					}
-				}
-				
+			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
+				ColorAttribute attribute = _searchForAttribute(ColorAttribute.Fog);
 				if (attribute != null) {
-					foster.setString("Color:").draw(this.x, y -= 15, Align.left); y -= 8;
-					for (int i = 0; i != 4; i++) {
-						switch(i) {
-							case 0: foster.setString("R:"); break;
-							case 1: foster.setString("G:"); break;
-							case 2: foster.setString("B:"); break;
-							case 3: foster.setString("A:"); break;
-						}
-						foster.draw(this.x + 14, y - 9);
-						shape.setColor(UColor.overlay);
-						shape.rectangle(this.x + 24, y - 20, 12, 14);
-						
-						shape.setColor(i == 0 ? UColor.redblack : i == 1 ? UColor.greenblack : i == 2 ? UColor.blueblack : UColor.aquablack);
-						shape.filledRectangle(this.x + 40, y - 20, this.width - 40, 15);
-						fogInput[i].setTransforms(this.x + 40, y -= 20, this.width - 40, 15);
-						fogInput[i].setFoster(foster).update();
-						fogInput[i].render(batch, shape);
+					int sizePerPart = (this.width - 20 - (int)foster.setString(colors[0]).getWidth() * 2) / 2;
+					foster.setString("Fog color:").draw(this.x, yOffset, Align.left);
+					yOffset -= 16;
+					for (int i = 0; i != 2; i++) {
+						foster.setString(colors[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+						fog[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+						fog[i].render(batch, shape);
 					}
-					button.setTransforms(this.x, (y -= 5) - 10, this.width, 10).setName("Remove attribute");
+					yOffset -= 16;
+					for (int i = 0, k = 2; i != 2; i++, k++) {
+						foster.setString(colors[k]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+						fog[k].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+						fog[k].render(batch, shape);
+					}
+					yOffset -= 16;
+					button.setTransforms(this.x, yOffset - 10, this.width, 10).setName("Remove attribute");
 					button.render(shape, foster);
 					if (button.isPressed()) {
 						ViewportSettings.viewportAttributes.removeValue(attribute, true);
 						ViewportSettings.shouldUpdate = true;
 					}
-					
-					attribute.color.r = resetInputField(fogInput[0], attribute.color.r);
-					attribute.color.g = resetInputField(fogInput[1], attribute.color.g);
-					attribute.color.b = resetInputField(fogInput[2], attribute.color.b);
-					attribute.color.a = resetInputField(fogInput[3], attribute.color.a);
 				} else {
-					foster.setString("Attribute not created.").draw(this.x, y -= 15, Align.left);
-					button.setTransforms(this.x, (y -= 12) - 10, this.width, 10).setName("Create attribute");
+					foster.setString("Attribute not created.").draw(this.x, yOffset, Align.left);
+					button.setTransforms(this.x, (yOffset -= 12) - 10, this.width, 10).setName("Create attribute");
 					button.render(shape, foster);
 					if (button.isPressed()) {
 						ViewportSettings.viewportAttributes.add(ColorAttribute.createFog(ViewportSettings.bufferColor.r, ViewportSettings.bufferColor.g, ViewportSettings.bufferColor.b, ViewportSettings.bufferColor.a));
 						ViewportSettings.shouldUpdate = true;
 					}
 				}
-				return y;
+				return yOffset;
 			}
 		}.setDropped(true);
 		
 		this.blocks[4] = new URenderBlock("Ambient light") { //3 input
-			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int y) {
-				ColorAttribute attribute = null;
-				for (Attribute attribute$ : ViewportSettings.viewportAttributes) {
-					if (attribute$.type == ColorAttribute.AmbientLight) {
-						attribute = (ColorAttribute)attribute$;
-						break;
-					}
-				}
-				
+			protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
+				ColorAttribute attribute = _searchForAttribute(ColorAttribute.AmbientLight);
 				if (attribute != null) {
-					foster.setString("Color:").draw(this.x, y -= 15, Align.left); y -= 8;
-					for (int i = 0; i != 3; i++) {
-						switch(i) {
-							case 0: foster.setString("R:"); break;
-							case 1: foster.setString("G:"); break;
-							case 2: foster.setString("B:"); break;
-						}
-						foster.draw(this.x + 14, y - 9);
-						shape.setColor(UColor.overlay);
-						shape.rectangle(this.x + 24, y - 20, 12, 14);
-						
-						shape.setColor(i == 0 ? UColor.redblack : i == 1 ? UColor.greenblack : UColor.blueblack);
-						shape.filledRectangle(this.x + 40, y - 20, this.width - 40, 15);
-						ambientLightInput[i].setTransforms(this.x + 40, y -= 20, this.width - 40, 15);
-						ambientLightInput[i].setFoster(foster).update();
-						ambientLightInput[i].render(batch, shape);
+					
+					int sizePerPart = (this.width - 20 - (int)foster.setString(colors[0]).getWidth() * 2) / 2;
+					foster.setString("Ambient light color:").draw(this.x, yOffset, Align.left);
+					yOffset -= 16;
+					for (int i = 0; i != 2; i++) {
+						foster.setString(colors[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+						ambientLight[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+						ambientLight[i].render(batch, shape);
 					}
-					button.setTransforms(this.x, (y -= 5) - 10, this.width, 10).setName("Remove attribute");
+					yOffset -= 16;
+					for (int i = 0, k = 2; i != 1; i++, k++) {
+						foster.setString(colors[k]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
+						ambientLight[k].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+						ambientLight[k].render(batch, shape);
+					}
+					foster.setString("A - from buffer").draw(this.x + this.width / 2 + 7, yOffset, Align.left);
+					yOffset -= 16;
+					button.setTransforms(this.x, yOffset - 10, this.width, 10).setName("Remove attribute");
 					button.render(shape, foster);
 					if (button.isPressed()) {
 						ViewportSettings.viewportAttributes.removeValue(attribute, true);
 						ViewportSettings.shouldUpdate = true;
 					}
-					
-					attribute.color.r = resetInputField(ambientLightInput[0], attribute.color.r);
-					attribute.color.g = resetInputField(ambientLightInput[1], attribute.color.g);
-					attribute.color.b = resetInputField(ambientLightInput[2], attribute.color.b);
 				} else {
-					foster.setString("Attribute not created.").draw(this.x, y -= 15, Align.left);
-					button.setTransforms(this.x, (y -= 12) - 10, this.width, 10).setName("Create attribute");
+					foster.setString("Attribute not created.").draw(this.x, yOffset, Align.left);
+					button.setTransforms(this.x, (yOffset -= 12) - 10, this.width, 10).setName("Create attribute");
 					button.render(shape, foster);
 					if (button.isPressed()) {
 						ViewportSettings.viewportAttributes.add(ColorAttribute.createAmbientLight(0, 0, 0, 1));
 						ViewportSettings.shouldUpdate = true;
 					}
 				}
-				return y;
+				return yOffset;
 			}
 		}.setDropped(true);
 	}
@@ -232,17 +184,101 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
 
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		int hOffset = y + height - 5;
-		for (URenderBlock block : this.blocks) hOffset = block.render(batch, shape, foster, hOffset) - 15;
-	}
-	
-	private float resetInputField(STDInputField field, float value) {
-		if (!field.isFocused()) {
-			field.setText(String.valueOf(value));
-		} else {
-			try { return Float.valueOf(field.getText()); } catch (Exception e) {}
-		}
-		return value;
+		for (URenderBlock block : this.blocks) hOffset = block.render(batch, shape, foster, hOffset);
 	}
 
+	public void whileFocused(STDInputField inputField, String id) {
+		switch (id) {
+			case "hitboxWidth": ViewportSettings.viewportHitboxWidth = this._convertTextToFloat(this.hitboxWidth, ViewportSettings.viewportHitboxWidth); break;
+			case "bufferColor": this._convertTextToColor(ViewportSettings.bufferColor, this.bufferColor[0], this.bufferColor[1], this.bufferColor[2], this.bufferColor[3]); break;
+			case "camera": {
+				this._convertTextToVector3(ViewportSettings.cameraSettings, this.camera[0], this.camera[1], this.camera[2]);
+				this.parent.screenProject.subViewport.camera.fieldOfView = ViewportSettings.cameraSettings.x;
+				this.parent.screenProject.subViewport.camera.far = ViewportSettings.cameraSettings.y;
+				this.parent.screenProject.subViewport.camera.near = ViewportSettings.cameraSettings.z;
+				this.parent.screenProject.subViewport.camera.update();
+			} break;
+			case "fog": {
+				ColorAttribute fog = this._searchForAttribute(ColorAttribute.Fog);
+				if (fog != null) this._convertTextToColor(fog.color, this.fog[0], this.fog[1], this.fog[2], this.fog[3]);
+			} break;
+			case "ambientLight": {
+				ColorAttribute ambientLight = this._searchForAttribute(ColorAttribute.AmbientLight);
+				if (ambientLight != null) this._convertTextToColor(ambientLight.color, this.ambientLight[0], this.ambientLight[1], this.ambientLight[2], this.bufferColor[3]);
+			} break;
+		}
+	}
+
+	public void whileNotFocused(STDInputField inputField, String id) {
+		switch (id) {
+			case "hitboxWidth": this.hitboxWidth.setText(String.valueOf(ViewportSettings.viewportHitboxWidth)).dropOffset(); break;
+			case "bufferColor": this._convertColorToText(ViewportSettings.bufferColor, this.bufferColor[0], this.bufferColor[1], this.bufferColor[2], this.bufferColor[3], true); break;
+			case "camera": this._convertVector3ToText(ViewportSettings.cameraSettings, this.camera[0], this.camera[1], this.camera[2], true); break;
+			case "fog": {
+				ColorAttribute fog = this._searchForAttribute(ColorAttribute.Fog);
+				if (fog != null) this._convertColorToText(fog.color, this.fog[0], this.fog[1], this.fog[2], this.fog[3], true);
+			} break;
+			case "ambientLight": {
+				ColorAttribute ambientLight = this._searchForAttribute(ColorAttribute.AmbientLight);
+				if (ambientLight != null) this._convertColorToText(ambientLight.color, this.ambientLight[0], this.ambientLight[1], this.ambientLight[2], this.bufferColor[3], true); //bufferColor's alpha
+			} break;
+		}
+	}
+	
+	@Deprecated
+	private ColorAttribute _searchForAttribute(long type) {
+		ColorAttribute attribute = null;
+		for (Attribute attribute$ : ViewportSettings.viewportAttributes) {
+			if (attribute$.type == type) {
+				attribute = (ColorAttribute)attribute$;
+				break;
+			}
+		}
+		return attribute;
+	}
+	
+	private void _convertColorToText(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA, boolean withPointer) {
+		if (withPointer) {
+			fieldR.setTextWithPointer(String.valueOf(color.r)).dropOffset();
+			fieldG.setTextWithPointer(String.valueOf(color.g)).dropOffset();
+			fieldB.setTextWithPointer(String.valueOf(color.b)).dropOffset();
+			fieldA.setTextWithPointer(String.valueOf(color.a)).dropOffset();	
+		} else {
+			fieldR.setText(String.valueOf(color.r));
+			fieldG.setText(String.valueOf(color.g));
+			fieldB.setText(String.valueOf(color.b));
+			fieldA.setText(String.valueOf(color.a));
+		}
+	}
+	
+	private void _convertVector3ToText(Vector3 vec, STDInputField fieldX, STDInputField fieldY, STDInputField fieldZ, boolean withPointer) {
+		if (withPointer) {
+			fieldX.setText(String.valueOf(vec.x)).dropOffset();
+			fieldY.setText(String.valueOf(vec.y)).dropOffset();
+			fieldZ.setText(String.valueOf(vec.z)).dropOffset();
+		} else {
+			fieldX.setText(String.valueOf(vec.x));
+			fieldY.setText(String.valueOf(vec.y));
+			fieldZ.setText(String.valueOf(vec.z));
+		}
+	}
+	
+	private void _convertTextToColor(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA) {
+		color.set(this._convertTextToFloat(fieldR, color.r), this._convertTextToFloat(fieldG, color.g), this._convertTextToFloat(fieldB, color.b), this._convertTextToFloat(fieldA, color.a));
+	}
+	
+	private void _convertTextToVector3(Vector3 vec, STDInputField fieldX, STDInputField fieldY, STDInputField fieldZ) {
+		vec.set(this._convertTextToFloat(fieldX, vec.x), this._convertTextToFloat(fieldY, vec.y), this._convertTextToFloat(fieldZ, vec.z));
+	}
+	
+	private float _convertTextToFloat(STDInputField field, float failValue) {
+		try {
+			return Float.valueOf(field.getText());
+		} catch (NullPointerException | NumberFormatException e) {
+			if (!field.isFocused()) field.setText(String.valueOf(failValue));
+			return failValue;
+		}
+	}
+	
 	public void resize(int subX, int subY, int subWidth, int subHeight) {}
 }

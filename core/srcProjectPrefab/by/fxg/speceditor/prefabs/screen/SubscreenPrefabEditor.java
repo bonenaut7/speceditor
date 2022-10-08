@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.screen.deprecated.ModuleProject;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;

@@ -3,7 +3,7 @@ package by.fxg.speceditor.screen.deprecated;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

@@ -25,9 +25,9 @@ import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.render.DebugDraw3D;
-import by.fxg.speceditor.ui.SpecInterface;
-import by.fxg.speceditor.ui.SpecInterface.AppCursor;
-import by.fxg.speceditor.ui.SpecInterface.IFocusable;
+import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
+import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.utils.Utils;
 
 public class GizmosModule implements IFocusable {

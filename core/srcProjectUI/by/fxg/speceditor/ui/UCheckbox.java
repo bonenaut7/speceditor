@@ -1,8 +1,10 @@
 package by.fxg.speceditor.ui;
 
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.ui.SpecInterface.AppCursor;
-import by.fxg.speceditor.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.UIElement;
+import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UCheckbox extends UIElement {

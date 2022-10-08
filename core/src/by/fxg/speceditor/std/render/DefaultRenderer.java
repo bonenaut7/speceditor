@@ -3,6 +3,7 @@ package by.fxg.speceditor.std.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -75,6 +76,9 @@ public class DefaultRenderer implements IRendererType {
 	public void update() {
 		this.clear(true);
 		this.pmObjectExplorer.refreshTree();
+		if (this.camera instanceof PerspectiveCamera) ((PerspectiveCamera)this.camera).fieldOfView = ViewportSettings.cameraSettings.x;
+		this.camera.far = ViewportSettings.cameraSettings.y;
+		this.camera.near = ViewportSettings.cameraSettings.z;
 		this.camera.update();
 	}
 

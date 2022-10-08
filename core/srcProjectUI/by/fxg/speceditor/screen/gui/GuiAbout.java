@@ -13,7 +13,7 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.screen.BaseScreen;
-import by.fxg.speceditor.ui.SpecInterface.IFocusable;
+import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.ui.UButton;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

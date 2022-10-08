@@ -14,9 +14,12 @@ import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.objectTree.elements.ElementModel;
-import by.fxg.speceditor.ui.ISTDInputFieldListener;
-import by.fxg.speceditor.ui.STDInputField;
-import by.fxg.speceditor.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDInputField;
+import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.ui.ColoredInputField;
+import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.URenderBlock;
 import by.fxg.speceditor.utils.Utils;
@@ -31,8 +34,8 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 	private EditorPaneMatsel matsel;
 	
 	public EditorPaneModel() {
-		this.elementName = new STDInputField(null).setAllowFullfocus(false).setMaxLength(32);
-		this.modelPath = new STDInputField(null).setAllowFullfocus(false).setMaxLength(128).setPreviousField(this.elementName);
+		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
+		this.modelPath = new ColoredInputField().setAllowFullfocus(false).setListener(this, "path").setMaxLength(128).setPreviousField(this.elementName);
 		this.elementName.setNextField(this.modelPath);
 		
 		this.buttonSelectModel = new UButton("Open file");
@@ -103,49 +106,40 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 			super("Transforms");
 			this.parent = parent;
 
-			STDInputField.Builder builder = new STDInputField.Builder().setAllowFullfocus(false).setNumeralInput(true).setMaxLength(15); //FIXME not sure about 16, check later
-			for (int i = 0; i != 3; i++) this.position[i] = builder.setListener(this, "position").build();
-			for (int i = 0; i != 3; i++) this.rotation[i] = builder.setListener(this, "rotation").build();
-			for (int i = 0; i != 3; i++) this.scale[i] = builder.setListener(this, "scale").build();
+			ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
+			for (int i = 0; i != 3; i++) this.position[i] = builder.setBackgroundColor(UColor.redblack).setListener(this, "position").build();
+			for (int i = 0; i != 3; i++) this.rotation[i] = builder.setBackgroundColor(UColor.greenblack).setListener(this, "rotation").build();
+			for (int i = 0; i != 3; i++) this.scale[i] = builder.setBackgroundColor(UColor.blueblack).setListener(this, "scale").build();
 			builder.addToLink(this.position).addToLink(this.rotation).addToLink(this.scale).linkFields();
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
 			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateGizmoValues();
-			foster.setString("Position:").draw(this.x, (yOffset -= 22) + 7, Align.left);
-//			Original
-//			for (int i = 0; i != 3; i++) {
-//				foster.setString(coords[i]).draw(this.x + 10, (yOffset -= 10) + 1, Align.left);
-//				this.position[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 10, this.width - (int)foster.getWidth() - 35, 15).update();
-//				this.position[i].render(batch, shape, foster);
-//			}
+			foster.setString("Position:").draw(this.x, yOffset, Align.left);
+			int sizePerPart = (this.width - 30 - (int)foster.setString(this.coords[0]).getWidth() * 3) / 3;
 			
-			foster.setString(this.coords[0]);
-			int sizePerPart = (this.width - 30 - (int)foster.getWidth() * 3) / 3;
-			
-			yOffset -= 10;
+			yOffset -= 16;
 			for (int i = 0; i != 3; i++) {
 				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
 				this.position[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
 				this.position[i].render(batch, shape);
 			}
 
-			foster.setString("Rotation:").draw(this.x, (yOffset -= 25) + 7, Align.left);
-			yOffset -= 10;
+			foster.setString("Rotation:").draw(this.x, yOffset -= 18, Align.left);
+			yOffset -= 16;
 			for (int i = 0; i != 3; i++) {
 				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
 				this.rotation[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
 				this.rotation[i].render(batch, shape);
 			}
 
-			foster.setString("Scale:").draw(this.x, (yOffset -= 25) + 7, Align.left);
-			yOffset -= 10;
+			foster.setString("Scale:").draw(this.x, yOffset -= 18, Align.left);
+			yOffset -= 16;
 			for (int i = 0; i != 3; i++) {
 				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
 				this.scale[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
 				this.scale[i].render(batch, shape);
 			}
-			
 			return yOffset;
 		}
 		
@@ -158,16 +152,16 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		}
 		
 		private void updateBlock(ElementModel model) {
-			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
-			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);
-			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
+			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
+			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);
+			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], true);
 		}
 		
 		private void updateGizmoValues() {
 			if (this.parent != null && this.parent.element != null) {
-				this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]);
-				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]);
-				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]);
+				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], false);
+				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], false);
+				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], false);
 			}
 		}
 	}

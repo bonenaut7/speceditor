@@ -11,7 +11,7 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.editorPane.EditorPane;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
-import by.fxg.speceditor.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

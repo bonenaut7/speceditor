@@ -16,12 +16,13 @@ import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.screen.ScreenTestUI;
 import by.fxg.speceditor.std.STDManager;
-import by.fxg.speceditor.ui.SpecInterface;
+import by.fxg.speceditor.std.ui.SpecInterface;
 
 public class Game extends Apparat<GInputProcessor> {
 	public static boolean DEBUG = false;
 	public static Game get;
 	public static Storage storage;
+	public static Foster fosterNoDraw;
 	public BitmapFont appFont, bigFont;
 	public ResourceManager resourceManager;
 	public RenderManager renderer;
@@ -40,6 +41,7 @@ public class Game extends Apparat<GInputProcessor> {
 		this.bigFont = fontGenerator.createFont(PilesosInputImpl.ALLOWED_CHARACTERS, Gdx.files.internal("assets/font/monogram.ttf"), "basefont-small", 32);
 		this.resourceManager = new ResourceManager().loadSounds();
 		storage = new Storage(this.resourceManager);
+		fosterNoDraw = new Foster();
 		
 		new ProjectManager();
 		new STDManager();
