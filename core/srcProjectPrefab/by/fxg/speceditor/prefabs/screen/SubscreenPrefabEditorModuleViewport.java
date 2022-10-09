@@ -225,7 +225,7 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen implement
 		}
 	}
 	
-	@Deprecated
+	/** FIXME needs refactoring**/ @Deprecated
 	private ColorAttribute _searchForAttribute(long type) {
 		ColorAttribute attribute = null;
 		for (Attribute attribute$ : ViewportSettings.viewportAttributes) {
@@ -237,40 +237,45 @@ public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen implement
 		return attribute;
 	}
 	
+	/** FIXME needs refactoring**/ @Deprecated
 	private void _convertColorToText(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA, boolean withPointer) {
 		if (withPointer) {
-			fieldR.setTextWithPointer(String.valueOf(color.r)).dropOffset();
-			fieldG.setTextWithPointer(String.valueOf(color.g)).dropOffset();
-			fieldB.setTextWithPointer(String.valueOf(color.b)).dropOffset();
-			fieldA.setTextWithPointer(String.valueOf(color.a)).dropOffset();	
+			if (!fieldR.isFocused()) fieldR.setTextWithPointer(String.valueOf(color.r)).dropOffset();
+			if (!fieldG.isFocused()) fieldG.setTextWithPointer(String.valueOf(color.g)).dropOffset();
+			if (!fieldB.isFocused()) fieldB.setTextWithPointer(String.valueOf(color.b)).dropOffset();
+			if (!fieldA.isFocused()) fieldA.setTextWithPointer(String.valueOf(color.a)).dropOffset();	
 		} else {
-			fieldR.setText(String.valueOf(color.r));
-			fieldG.setText(String.valueOf(color.g));
-			fieldB.setText(String.valueOf(color.b));
-			fieldA.setText(String.valueOf(color.a));
+			if (!fieldR.isFocused()) fieldR.setText(String.valueOf(color.r));
+			if (!fieldG.isFocused()) fieldG.setText(String.valueOf(color.g));
+			if (!fieldB.isFocused()) fieldB.setText(String.valueOf(color.b));
+			if (!fieldA.isFocused()) fieldA.setText(String.valueOf(color.a));
 		}
 	}
 	
+	/** FIXME needs refactoring**/ @Deprecated
 	private void _convertVector3ToText(Vector3 vec, STDInputField fieldX, STDInputField fieldY, STDInputField fieldZ, boolean withPointer) {
 		if (withPointer) {
-			fieldX.setText(String.valueOf(vec.x)).dropOffset();
-			fieldY.setText(String.valueOf(vec.y)).dropOffset();
-			fieldZ.setText(String.valueOf(vec.z)).dropOffset();
+			if (!fieldX.isFocused()) fieldX.setText(String.valueOf(vec.x)).dropOffset();
+			if (!fieldY.isFocused()) fieldY.setText(String.valueOf(vec.y)).dropOffset();
+			if (!fieldZ.isFocused()) fieldZ.setText(String.valueOf(vec.z)).dropOffset();
 		} else {
-			fieldX.setText(String.valueOf(vec.x));
-			fieldY.setText(String.valueOf(vec.y));
-			fieldZ.setText(String.valueOf(vec.z));
+			if (!fieldX.isFocused()) fieldX.setText(String.valueOf(vec.x));
+			if (!fieldY.isFocused()) fieldY.setText(String.valueOf(vec.y));
+			if (!fieldZ.isFocused()) fieldZ.setText(String.valueOf(vec.z));
 		}
 	}
-	
+
+	/** FIXME needs refactoring**/ @Deprecated
 	private void _convertTextToColor(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA) {
 		color.set(this._convertTextToFloat(fieldR, color.r), this._convertTextToFloat(fieldG, color.g), this._convertTextToFloat(fieldB, color.b), this._convertTextToFloat(fieldA, color.a));
 	}
 	
+	/** FIXME needs refactoring**/ @Deprecated
 	private void _convertTextToVector3(Vector3 vec, STDInputField fieldX, STDInputField fieldY, STDInputField fieldZ) {
 		vec.set(this._convertTextToFloat(fieldX, vec.x), this._convertTextToFloat(fieldY, vec.y), this._convertTextToFloat(fieldZ, vec.z));
 	}
 	
+	/** FIXME needs refactoring**/ @Deprecated
 	private float _convertTextToFloat(STDInputField field, float failValue) {
 		try {
 			return Float.valueOf(field.getText());
