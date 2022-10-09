@@ -11,11 +11,11 @@ import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.project.BasicProject;
 import by.fxg.speceditor.project.ProjectManager;
-import by.fxg.speceditor.project.ProjectManager.IProjectSolver;
+import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
-import by.fxg.speceditor.utils.Utils;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UHoldButton;
+import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 /** (TODO) This one sucks, needed to be totally rewritten, low quality and no gui adaptation code **/
@@ -32,13 +32,13 @@ public class ScreenSelectProject extends BaseScreen {
 		for (FileHandle candidate : candidates) {
 			FileHandle projectConfig = candidate.child("project.ini");
 			if (candidate.isDirectory() && projectConfig.exists() && !projectConfig.isDirectory()) {
-				IProjectSolver solver = ProjectManager.INSTANCE.discoveryProject(projectConfig);
+				ProjectSolver solver = ProjectManager.INSTANCE.discoverProject(projectConfig);
 				if (solver != null) {
 					this.projects.add(solver.preLoadProject(projectConfig));
 				}
 			}
 		}
-		Utils.logDebug("Project Loading Screen", String.format("Projects discovered to loading: %d; candidates: %d", this.projects.size, candidates.length));
+		Utils.logDebug("[ScreenSelectProject] Projects discovered to loading: ", this.projects.size, "; candidates: ", candidates.length);
 		
 		int width = Gdx.graphics.getWidth(), height = Gdx.graphics.getHeight();
 		int ix = width / 2 + 200 / 2 + 10, iy = height / 2 - 100 / 2 + 15;

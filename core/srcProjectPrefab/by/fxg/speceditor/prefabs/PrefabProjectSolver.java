@@ -1,16 +1,14 @@
 package by.fxg.speceditor.prefabs;
 
-import org.ini4j.Ini;
-
 import com.badlogic.gdx.files.FileHandle;
 
 import by.fxg.speceditor.project.BasicProject;
-import by.fxg.speceditor.project.DefaultProjectSolver;
+import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.utils.Utils;
 
-public class PrefabProjectSolver extends DefaultProjectSolver {
-	public PrefabProjectSolver(Ini solverConfig) {
-		super(solverConfig);
+public class PrefabProjectSolver extends ProjectSolver {
+	public PrefabProjectSolver() {
+		super("Prefab", "STD-PREFAB");
 	}
 	
 	public boolean canLoadProject(FileHandle projectFile) {

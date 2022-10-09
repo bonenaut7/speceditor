@@ -1,14 +1,11 @@
 package by.fxg.speceditor;
 
-import org.jrenner.smartfont.SmartFontGenerator;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.physics.bullet.Bullet;
 
 import by.fxg.pilesos.Apparat;
-import by.fxg.pilesos.PilesosInputImpl;
 import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.addon.AddonManager;
@@ -17,40 +14,44 @@ import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.screen.ScreenTestUI;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.utils.Utils;
 
 public class Game extends Apparat<GInputProcessor> {
 	public static boolean DEBUG = false;
 	public static Game get;
 	public static Storage storage;
 	public static Foster fosterNoDraw;
-	public BitmapFont appFont, bigFont;
+	public BitmapFont appFont, mid, bigFont;
 	public ResourceManager resourceManager;
 	public RenderManager renderer;
 	
 	public void create() {
 		this.onCreate(get = this);
+		if (this.hasProgramArgument("-debug")) DEBUG = true;
 		
 		Gdx.input.setInputProcessor(super.input = new GInputProcessor());
-		this.input.setCursorCatched(false);
 		Bullet.init();
 		SpecInterface.init();
 		SpriteStack.DEFAULT_PATH = Gdx.files.internal("assets/");
-		
-		SmartFontGenerator fontGenerator = new SmartFontGenerator();
-		Foster.defaultFont = this.appFont = fontGenerator.createFont(PilesosInputImpl.ALLOWED_CHARACTERS, Gdx.files.internal("assets/font/monogram.ttf"), "basefont-small", 16);
-		this.bigFont = fontGenerator.createFont(PilesosInputImpl.ALLOWED_CHARACTERS, Gdx.files.internal("assets/font/monogram.ttf"), "basefont-small", 32);
-		this.resourceManager = new ResourceManager().loadSounds();
+		this.resourceManager = new ResourceManager();
+		Foster.defaultFont = this.appFont = this.resourceManager.generateFont(Gdx.files.internal("assets/font/monogram.ttf"), 16);
+		this.mid = this.resourceManager.generateFont(Gdx.files.internal("assets/font/monogram.ttf"), 24);
+		this.bigFont = this.resourceManager.generateFont(Gdx.files.internal("assets/font/monogram.ttf"), 32);
 		storage = new Storage(this.resourceManager);
 		fosterNoDraw = new Foster();
 		
 		new ProjectManager();
 		new STDManager();
 		new AddonManager();
+		ProjectManager.INSTANCE.postInit();
 		STDManager.INSTANCE.postInit();
+		AddonManager.INSTANCE.postInit();
+		
 		
 		this.renderer = new RenderManager(this);
+		this.input.setCursorCatched(false);
+		
 		if (this.hasProgramArgument("-UITest")) this.renderer.currentScreen = new ScreenTestUI();
-		if (this.hasProgramArgument("-debug")) DEBUG = true;
 	}
 	
 	public void update(int width, int height) {

@@ -419,9 +419,11 @@ public class STDInputField extends UIElement implements IFocusable {
 
 	/** Be careful using this method, TODO needs optimizations **/
 	protected int getPointerPosition(Foster foster, int fieldX) {
-		int prevWidth = 0, width = 0, halfPart;
+		int prevWidth = 0, width = (int)foster.setString(this.currentString).getWidth() - this.xTextOffset, halfPart;
+		//if (fieldX < 1) return 0; else //checking for 0 position || removed because can cause errors if xTextOffset is not zero
+		if (width < fieldX) return this.currentString.length(); //checking max length
 		for (int i = 1; i != this.currentString.length(); i++) {
-			width = (int)foster.setString(this.currentString.substring(0, i)).getWidth() - this.xTextOffset;
+			width = MathUtils.ceil(foster.setString(this.currentString.substring(0, i)).getWidth()) - this.xTextOffset;
 			/** Split3 method, splits difference by 3 and looks only backwards. Less correct than active variant, but faster
 			halfPart = (width - prevWidth) / 3;
 			if (width - halfPart > fieldX) {
@@ -433,6 +435,7 @@ public class STDInputField extends UIElement implements IFocusable {
 			if (width - halfPart <= fieldX && fieldX <= width + halfPart) {
 				return i;
 			}
+			if (width-halfPart > fieldX) return i-1;
 			prevWidth = width;
 		}
 		if (width < fieldX) return this.currentString.length();

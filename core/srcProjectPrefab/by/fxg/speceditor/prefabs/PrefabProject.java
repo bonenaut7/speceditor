@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.prefabs.screen.ScreenPrefabProject;
 import by.fxg.speceditor.project.BasicProject;
-import by.fxg.speceditor.project.ProjectManager.IProjectSolver;
+import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.screen.gui.GuiError;
 import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
@@ -25,7 +25,7 @@ public class PrefabProject extends BasicProject {
 	
 	private ElementStack tmpObjectTree; //used on loading to load stack, then use it in #onProjectOpened
 	
-	public PrefabProject(IProjectSolver solver) {
+	public PrefabProject(ProjectSolver solver) {
 		super(solver);
 		this.tmpObjectTree = new ElementStack();
 		

@@ -9,12 +9,11 @@ import org.ini4j.Profile.Section;
 import com.badlogic.gdx.files.FileHandle;
 
 import by.fxg.speceditor.Storage;
-import by.fxg.speceditor.project.ProjectManager.IProjectSolver;
 import by.fxg.speceditor.utils.Utils;
 
 public abstract class BasicProject {
 	/** Project-solver of this project **/
-	protected IProjectSolver solver;
+	protected ProjectSolver solver;
 	/** Loaded project-header of this project. Contains project settings and info. **/
 	protected Ini config;
 	protected FileHandle projectFolder;
@@ -24,12 +23,12 @@ public abstract class BasicProject {
 	protected long backupInterval; //in seconds
 	
 	/** Constructor for project load **/
-	public BasicProject(IProjectSolver solver) {
+	public BasicProject(ProjectSolver solver) {
 		this.solver = solver;
 	}
 	
 	/** Constructor for project creation process **/
-	public BasicProject(IProjectSolver solver, String name, String folderName, boolean backupSaving, long backupInterval) {
+	public BasicProject(ProjectSolver solver, String name, String folderName, boolean backupSaving, long backupInterval) {
 		this.solver = solver;
 		this.type = solver.getTypeName();
 		this.name = name;

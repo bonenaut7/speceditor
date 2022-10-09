@@ -1,6 +1,7 @@
 package by.fxg.speceditor.std.editorPane;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -55,20 +56,21 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Select model:").draw(x + 5, (yOffset -= 10) + 1, Align.left);
 		this.buttonSelectModel.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= 10, width - (int)foster.getWidth() - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
-			try {
-				FileHandle handle = Utils.selectFileDialog("Supported models (*.obj; *.gltf)", "obj", "gltf");
+			try { //working fine, hm, maybe problem with mesh hitbox
+				FileHandle handle = Utils.selectFileDialog("Supported models (*.obj; *.gltf)", "obj", "gltf", "g3db", "g3dj");
+				AssetManager manager = Game.get.resourceManager.assetManager;
 				AssetDescriptor<Model> assetDescriptor = new AssetDescriptor<Model>(handle, Model.class);
-				if (Game.get.resourceManager.assetManager.isLoaded(assetDescriptor)) {
-					Game.get.resourceManager.assetManager.unload(handle.path());
-				}
-				Game.get.resourceManager.assetManager.load(assetDescriptor);
-				Game.get.resourceManager.assetManager.finishLoading();
-				if (Game.get.resourceManager.assetManager.isLoaded(assetDescriptor)) {
+				if (manager.isLoaded(assetDescriptor)) manager.unload(handle.path());
+				manager.load(assetDescriptor);
+				manager.finishLoading();
+				if (manager.isLoaded(assetDescriptor)) {
 					this.element.modelHandle = handle;
-					this.element.modelInstance = new ModelInstance(Game.get.resourceManager.assetManager.get(assetDescriptor));
+					this.element.modelInstance = new ModelInstance(manager.get(assetDescriptor));
 					this.matsel.update(this.element.modelInstance.materials);
 				}
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				Utils.logError(e, "EditorPaneMatsel#updateAndRender", "Error happened when tried to load asset");
+			}
 		}
 		
 		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);

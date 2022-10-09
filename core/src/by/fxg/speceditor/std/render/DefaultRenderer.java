@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
-import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.decals.BaseDecal;
@@ -44,9 +44,14 @@ public class DefaultRenderer implements IRendererType {
 		this.pmObjectExplorer = pmObjectExplorer;
 		
 		this.frameBuffer = new TextureFrameBuffer().flip(false, true);
-		this.modelBatch = new ModelBatch(new DefaultShaderProvider(new DefaultShader.Config() {{
-			this.numPointLights = 16;
-		}}));
+//		this.modelBatch = new ModelBatch(new DefaultShaderProvider(new DefaultShader.Config() {{
+//			this.numPointLights = 16;
+//		}}));
+		this.modelBatch = new ModelBatch(new DefaultShaderProvider(Gdx.files.internal("assets/phong.vert"), Gdx.files.internal("assets/phong.frag")));
+		ShaderProgram test = new ShaderProgram(Gdx.files.internal("assets/phong.vert").readString(), Gdx.files.internal("assets/phong.frag").readString());
+		if (!test.isCompiled()) {
+			Utils.logDebug(test.getLog());
+		} else Utils.logDebug("OKOK");
 		this.debugDraw = new DebugDraw3D();
 		
 		this.editorDecalDrawer = new DecalDrawer(new CameraAlphaGroupStrategy(camera));

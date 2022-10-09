@@ -6,10 +6,17 @@ import java.util.Map;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.PixmapPacker;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 
+import by.fxg.pilesos.PilesosInputImpl;
 import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.i18n.I18n.I18nPool;
 import by.fxg.pilesos.i18n.I18nPoolLoader;
@@ -56,15 +63,23 @@ public class ResourceManager {
 		}
 	}
 	
-	public ResourceManager loadSounds() {
-		return this;
-	}
-	
 	public Model getModel(String model, boolean animated) {
 		return this.assetManager.get("assets/" + model + (animated ? ".g3db" : ".obj"), Model.class);
 	}
 	
 	public <T> T get(String object, Class<T> clazz) {
 		return this.assetManager.get("assets/" + object, clazz);
+	}
+	
+	public BitmapFont generateFont(FileHandle fontFile, int size) {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.packer = new PixmapPacker(4096, 4096, Format.RGBA8888, 2, false);
+		parameter.hinting = Hinting.AutoSlight;
+		parameter.flip = false;
+		parameter.size = size;
+		parameter.characters = PilesosInputImpl.ALLOWED_CHARACTERS;
+		parameter.incremental = true;
+		return generator.generateFont(parameter);
 	}
 }
