@@ -55,45 +55,44 @@ public class EditorPaneMatsel extends URenderBlock implements IUDropdownAreaList
 
 	//FIXME requires UI reworking and nice offsets
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-		foster.setString("Material:").draw(this.x, yOffset -= 2, Align.left);
-		this.selectedMaterial.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - 11, this.width - (int)foster.getWidth() - 5, 14);
+		foster.setString("Material:").draw(this.x, yOffset -= foster.getHeight() + 4, Align.left);
+		this.selectedMaterial.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - (int)foster.getHalfHeight(), this.width - (int)foster.getWidth() - 5, 14);
 	
 		if (!this.selectedMaterial.isDropped()) {
 			Material material = this.getCurrentMaterial();
 			if (material != null) {
 				shape.setColor(UColor.gray);
-				shape.line(this.x, yOffset -= 15, this.x + this.width, yOffset);
-				this.buttonAddAttribute.setTransforms(this.x, (yOffset -= 7) - 11, 14, 14).render(shape, foster);
+				shape.line(this.x, yOffset -= 7, this.x + this.width, yOffset);
+				this.buttonAddAttribute.setTransforms(this.x, yOffset -= 17, 14, 14).render(shape, foster);
 				if (this.buttonAddAttribute.isPressed()) {
 					Array<UDAElement> elements = new Array<>();
 					STDManager.INSTANCE.getEditorPaneMatselModules().forEach(editorPaneMatselModule -> editorPaneMatselModule.onAttributeCreationPress(elements));
 					this.dropdownArea.set(foster, elements).open(this.x + 1, yOffset + 3);
 				}
-				foster.setString("Attrib:").draw(this.x + 18, yOffset, Align.left);
-				this.selectedAttribute.setTransforms(this.x + (int)foster.getWidth() + 23, yOffset - 11, this.width - (int)foster.getWidth() - 23, 15);
 				
+				foster.setString("Attrib:").draw(this.x + 18, yOffset + foster.getHalfHeight(), Align.left);
+				this.selectedAttribute.setTransforms(this.x + (int)foster.getWidth() + 23, yOffset, this.width - (int)foster.getWidth() - 23, 14);
 				if (!this.selectedAttribute.isDropped()) {
 					if (this.currentModule != null) {
 						shape.setColor(UColor.gray);
-						shape.line(this.x, (yOffset -= 5) - 10, this.x + this.width, yOffset - 10);
-						yOffset -= 12; //:(
+						shape.line(this.x, (yOffset -= 8) + 4, this.x + this.width, yOffset + 4);
 						try {
 							yOffset = this.currentModule.renderModule(batch, shape, foster, yOffset, this.x, this.width);
 						} catch (Exception e) {
 							Utils.logError(e, "EditorPaneMatsel#renderInside", "Unrepeatable bug caused an error");
 						}
-						yOffset += 6; //:(
+						yOffset -= 4;
 					} else if (this.selectedAttribute.getVariant() > 0) {
 						shape.setColor(UColor.gray);
-						shape.line(this.x, (yOffset -= 5) - 10, this.x + this.width, yOffset - 10);
-						foster.setString("Module not found for this attribute").draw(this.x + this.width / 2, yOffset - 12);
-						yOffset -= 12; //:(
+						shape.line(this.x, (yOffset -= 3), this.x + this.width, yOffset);
+						foster.setString("Module not found for this attribute").draw(this.x + this.width / 2, yOffset -= foster.getHeight() + 2);
+						yOffset -= 4;
 					}
 					Attribute attribute = this.getCurrentAttribute(material);
 					if (this.selectedAttribute.getVariant() > 0 && attribute != null) {
 						shape.setColor(UColor.gray);
-						shape.line(this.x, (yOffset -= 5) - 5, this.x + this.width, yOffset - 5);
-						this.buttonRemoveAttribute.setTransforms(this.x, (yOffset -= 10) - 10, this.width, 12).update();
+						shape.line(this.x, yOffset, this.x + this.width, yOffset);
+						this.buttonRemoveAttribute.setTransforms(this.x, yOffset -= 15, this.width, 12).update();
 						this.buttonRemoveAttribute.render(shape, foster);
 						if (this.buttonRemoveAttribute.isPressed()) {
 							material.remove(attribute.type);
@@ -104,7 +103,7 @@ public class EditorPaneMatsel extends URenderBlock implements IUDropdownAreaList
 				this.selectedAttribute.update();
 				this.selectedAttribute.render(shape, foster);
 			}
-		} else yOffset -= this.selectedMaterial.getVariants().length * 15 + 2;
+		} else yOffset -= this.selectedMaterial.getVariants().length * 15 + 5;
 		this.selectedMaterial.update();
 		this.selectedMaterial.render(shape, foster);
 		return yOffset;

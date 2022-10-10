@@ -112,7 +112,7 @@ public class UDropdownArea implements IFocusable {
 				}
 				shape.setColor(UColor.overlay);
 				shape.rectangle(area.x + xOffset, y, targetWidth, area.dropHeight);
-				foster.setString(this.name).draw(area.x + targetWidth / 2 + xOffset, y + area.dropHeight / 2 + foster.getHalfHeight());
+				foster.setString(this.name).draw(area.x + targetWidth / 2 + xOffset, y + area.dropHeight / 2 - foster.getHalfHeight());
 				
 				if (this.elements.size > 0) {
 					float xp = area.x + targetWidth - 8 + xOffset;

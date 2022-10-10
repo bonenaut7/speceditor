@@ -32,7 +32,7 @@ public class ColoredInputField extends STDInputField {
 				shape.setColor(this.backgroundColor);
 				shape.filledRectangle(this.x, this.y, this.width, this.height);
 			}
-			this.foster.setString(this.currentString).draw(this.x - this.xTextOffset, this.y + this.height / 2 + this.foster.getHeight() / 2, Align.left);
+			this.foster.setString(this.currentString).draw(this.x - this.xTextOffset, this.y + this.height / 2 - this.foster.getHalfHeight(), Align.left);
 			if (this.havePointerSelection()) {
 				shape.setColor(0.25F, 0.25F, 1.0F, 0.5F);
 				int from = (int)this.foster.setString(this.currentString.substring(0, this.selectPointerFrom)).getWidth() - this.xTextOffset;

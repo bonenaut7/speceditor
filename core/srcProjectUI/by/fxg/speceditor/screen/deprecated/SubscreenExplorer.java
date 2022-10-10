@@ -24,7 +24,7 @@ public class SubscreenExplorer extends BaseSubscreen {
 		shape.filledRectangle(x, y, width, height);
 		shape.setColor(UColor.gray);
 		shape.rectangle(x + 1, y + 1, width - 2, height - 2);
-		foster.setString("Explorer").draw(x + width / 2, y + height / 2);
+		foster.setString("Explorer").draw(x + width / 2, y + height / 2 - foster.getHalfHeight());
 		batch.end();
 	}
 

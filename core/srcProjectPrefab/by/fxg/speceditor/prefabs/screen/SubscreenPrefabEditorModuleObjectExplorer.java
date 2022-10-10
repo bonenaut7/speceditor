@@ -44,7 +44,7 @@ public class SubscreenPrefabEditorModuleObjectExplorer extends BaseSubscreen {
 				batch.flush();
 				PilesosScissorStack.instance.popScissors();
 			}
-		} else foster.setString("Editor pane not found for element(s)").draw(x + width / 2, y + height / 2);
+		} else foster.setString("Editor pane not found for element(s)").draw(x + width / 2, y + height / 2 - foster.getHalfHeight());
 	}
 	
 	protected void updateEditorPane(ITreeElementSelector<?> treeElementSelector) {

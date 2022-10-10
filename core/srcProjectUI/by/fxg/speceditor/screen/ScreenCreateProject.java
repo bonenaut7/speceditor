@@ -42,10 +42,11 @@ public class ScreenCreateProject extends BaseScreen {
 		batch.begin();
 		int wsx = 250, wsy = 200;
 		int wx = width / 2 - wsx / 2, wy = height / 2 - wsy / 2;
+		int textY = wy + wsy;
 		shape.setColor(1, 1, 1, 1);
 		shape.rectangle(wx, wy, wsx, wsy);
-		foster.setString("Project name").draw(wx + 7, wy + wsy - 9, Align.left);
-		foster.setString("Enable backups").draw(wx + 7, wy + wsy - 30, Align.left);
+		foster.setString("Project name").draw(wx + 7, textY -= foster.getHeight() + 8, Align.left);
+		foster.setString("Enable backups").draw(wx + 7, textY -= foster.getHeight() + 8, Align.left);
 		
 		this.bCreate.render(shape, foster);
 		this.bBack.render(shape, foster);
@@ -59,6 +60,6 @@ public class ScreenCreateProject extends BaseScreen {
 		this.bCreate.setTransforms(x + 130, y + 5, 100, 20);
 		this.bBack.setTransforms(x + 20, y + 5, 100, 20);
 		this.iNameField.setTransforms(x + 84, y + 200 - 22, 160, 18);
-		this.cBackup.setTransforms(x + 98, y + 160, 12, 12);
+		this.cBackup.setTransforms(x + 98, y + 166, 12, 12);
 	}
 }

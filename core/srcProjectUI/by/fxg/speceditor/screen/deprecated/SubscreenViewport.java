@@ -115,10 +115,10 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 		batch.draw(this.gizmosModule.getTexture(), x + 3, y + 3, width - 6, height - 6);
 		
 		shape.filledRectangle(x + 2, y + height - 12, 50, 10);
-		foster.setString("Viewport").draw(x + 4, y + height - 3, Align.left);
+		foster.setString("Viewport").draw(x + 4, y + height - 10, Align.left);
 		if (Game.get.getInput().isCursorCatched()) {
 			shape.filledRectangle(x + 52, y + height - 12, 50, 10);
-			foster.setString("captured").draw(x + 54, y + height - 3, Align.left);
+			foster.setString("captured").draw(x + 54, y + height - 10, Align.left);
 		}
 		
 		shape.setColor(0.12f, 0.12f, 0.12f, 0.5f);

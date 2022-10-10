@@ -50,7 +50,7 @@ public class UDropdownClick extends UIElement implements IFocusable {
 			shape.rectangle(this.x, this.y, this.width, this.height, 2f);
 			shape.setColor(UColor.overlay);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
-			foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+			foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 - foster.getHalfHeight());
 			for (int i = 0; i != this.variants.length; i++) {
 				shape.setColor(UColor.gray);
 				shape.filledRectangle(this.x, this.y - this.dropHeight * i - this.dropHeight - 2, this.width, this.dropHeight);
@@ -61,7 +61,7 @@ public class UDropdownClick extends UIElement implements IFocusable {
 				}
 				shape.setColor(UColor.overlay);
 				shape.rectangle(this.x, this.y - this.dropHeight * i - this.dropHeight - 2, this.width, this.dropHeight);
-				foster.setString(this.variants[i]).draw(this.x + this.width / 2, this.y - this.dropHeight * i - this.dropHeight - 2 + this.dropHeight / 2 + foster.getHalfHeight());
+				foster.setString(this.variants[i]).draw(this.x + this.width / 2, this.y - this.dropHeight * i - this.dropHeight - 2 + this.dropHeight / 2 - foster.getHalfHeight());
 			}
 		} else {
 			shape.setColor(UColor.gray);
@@ -73,7 +73,7 @@ public class UDropdownClick extends UIElement implements IFocusable {
 			}
 			shape.getBatch().flush();
 			if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
-				foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+				foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 - foster.getHalfHeight());
 				shape.getBatch().flush();
 				PilesosScissorStack.instance.popScissors();
 			}

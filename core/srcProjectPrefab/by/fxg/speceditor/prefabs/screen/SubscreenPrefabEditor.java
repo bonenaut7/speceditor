@@ -50,8 +50,8 @@ public class SubscreenPrefabEditor extends BaseSubscreen {
 		shape.rectangle(x + 1, y + 1, width - 2, height - 2);
 		
 		
-		foster.setString("Editor").draw(x + 5, y + height - 7, Align.left);
-		foster.setString("Mode:").draw(x + width - 160, y + height - 7, Align.right);
+		foster.setString("Editor").draw(x + 5, y + height - 11 - foster.getHalfHeight(), Align.left);
+		foster.setString("Mode:").draw(x + width - 160, y + height - 11 - foster.getHalfHeight(), Align.right);
 		
 		int ix = x + 1, iy = y + 1, iw = width - 2, ih = height - 23;
 		shape.rectangle(ix, iy, iw, ih, 1);

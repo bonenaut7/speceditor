@@ -56,7 +56,7 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 			shape.rectangle(this.x, this.y, this.width, this.height, 2f);
 			shape.setColor(UColor.overlay);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
-			foster.setString(this.displayString).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+			foster.setString(this.displayString).draw(this.x + this.width / 2, this.y + this.height / 2 - foster.getHalfHeight());
 			for (int i = 0; i != this.variants.length; i++) {
 				if (this.variantValues[i]) shape.setColor(UColor.greenblack);
 				else shape.setColor(UColor.gray);
@@ -68,7 +68,7 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 				}
 				shape.setColor(UColor.overlay);
 				shape.rectangle(this.x, this.y - this.dropHeight * i - this.dropHeight - 2, this.width, this.dropHeight);
-				foster.setString(this.variants[i]).draw(this.x + this.width / 2, this.y - this.dropHeight * i - this.dropHeight - 2 + this.dropHeight / 2 + foster.getHalfHeight());
+				foster.setString(this.variants[i]).draw(this.x + this.width / 2, this.y - this.dropHeight * i - this.dropHeight - 2 + this.dropHeight / 2 - foster.getHalfHeight());
 			}
 		} else {
 			shape.setColor(UColor.gray);
@@ -78,7 +78,7 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 				shape.setColor(UColor.overlay);
 				shape.filledRectangle(this.x, this.y, this.width, this.height);
 			}
-			foster.setString(this.displayString).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+			foster.setString(this.displayString).draw(this.x + this.width / 2, this.y + this.height / 2 - foster.getHalfHeight());
 		}
 	}
 	

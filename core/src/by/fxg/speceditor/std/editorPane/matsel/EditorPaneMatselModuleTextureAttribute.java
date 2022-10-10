@@ -29,8 +29,8 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 	public int renderModule(Batch batch, ShapeDrawer shape, Foster foster, int yOffset, int x, int width) {
 		Material material = this.matsel.getCurrentMaterial();
 		TextureLinkedAttribute attribute = (TextureLinkedAttribute)this.matsel.getCurrentAttribute(material);
-		foster.setString("Texture:").draw(x, yOffset -= 3, Align.left);
-		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - 10, width - (int)foster.getWidth() - 10, 12);
+		foster.setString("Texture:").draw(x, yOffset -= foster.getHeight() + 1, Align.left);
+		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 10, 12);
 		this.buttonSelectTexture.render(shape, foster);
 		if (this.buttonSelectTexture.isPressed()) {
 			try {
@@ -40,9 +40,9 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		
-		foster.setString("UV Flip:").draw(x, yOffset -= 17, Align.left);
+		foster.setString("UV Flip:").draw(x, (yOffset -= foster.getHeight() + 8) - 1, Align.left);
 		int totalWidth = (width - (int)foster.getWidth() - 15) / 2;
-		this.buttonFlipTextureX.setTransforms(x + (int)foster.getWidth() + 10, (yOffset -= 10), totalWidth, 12).render(shape, foster);
+		this.buttonFlipTextureX.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), totalWidth, 12).render(shape, foster);
 		this.buttonFlipTextureY.setTransforms(x + (int)foster.getWidth() + totalWidth - 5, yOffset, totalWidth, 12).render(shape, foster);
 		if (this.buttonFlipTextureX.isPressed()) attribute.setFlip(true, false);
 		if (this.buttonFlipTextureY.isPressed()) attribute.setFlip(false, true);

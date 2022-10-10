@@ -30,18 +30,18 @@ public abstract class URenderBlock {
 		
 		if (this.isDropped) {
 			final int prevY = yOffset;
-			yOffset = this.renderInside(batch, shape, foster, yOffset - 14);
+			yOffset = this.renderInside(batch, shape, foster, yOffset - 14) + 10;
 			shape.setColor(UColor.gray);
 			shape.rectangle(this.x - 5, prevY - 5, this.width + 10, yOffset - prevY - 10);
 			
 			shape.setColor(UColor.white);
 			shape.filledTriangle(this.x - 1, prevY - 1, this.x + 7, prevY - 1, this.x + 3, prevY - 10);
-			foster.setString(this.name).draw(this.x + 10, prevY - 1, Align.left);
+			foster.setString(this.name).draw(this.x + 10, prevY - foster.getHeight() - 1, Align.left);
 			shape.line(this.x + foster.getWidth() + 15, prevY - 5, this.x + this.width, prevY - 5, 3F);
 		} else {
 			shape.setColor(UColor.white);
 			shape.filledTriangle(this.x, yOffset, this.x + 6, yOffset - 5, this.x, yOffset - 10);
-			foster.setString(this.name).draw(this.x + 10, yOffset - 1, Align.left);
+			foster.setString(this.name).draw(this.x + 10, yOffset - foster.getHeight() - 1, Align.left);
 			shape.line(this.x + foster.getWidth() + 15, yOffset - 5, this.x + this.width, yOffset - 5, 3F);
 		}
 		return yOffset -= 17;

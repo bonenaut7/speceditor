@@ -54,7 +54,7 @@ public class UHoldButton extends UIElement {
 		}
 		shape.getBatch().flush();
 		if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
-			foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 + foster.getHalfHeight());
+			foster.setString(this.name).draw(this.x + this.width / 2, this.y + this.height / 2 - foster.getHalfHeight());
 			shape.getBatch().flush();
 			PilesosScissorStack.instance.popScissors();
 		}

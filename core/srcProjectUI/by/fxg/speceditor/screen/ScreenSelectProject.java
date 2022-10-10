@@ -89,13 +89,14 @@ public class ScreenSelectProject extends BaseScreen {
 		int isx = 200, isy = 100;
 		int ix = width / 2 + psx / 2 + 10, iy = height / 2 - isy / 2 + psy;
 		if (this.selectedProject != null) {
-			foster.setString(this.selectedProject.getProjectName()).draw(ix + 5, iy + isy - 5, Align.left);
-			foster.setString(String.format("Type: %s", this.selectedProject.getProjectType())).draw(ix + 5, iy + isy - 15, Align.left);
-			foster.setString(String.format("Last save: %s", this.selectedProject.getSaveDate())).draw(ix + 5, iy + isy - 25, Align.left);
+			int textHeight = iy + isy - 5;
+			foster.setString(this.selectedProject.getProjectName()).draw(ix + 5, textHeight -= foster.getHeight(), Align.left);
+			foster.setString(String.format("Type: %s", this.selectedProject.getProjectType())).draw(ix + 5, textHeight -= foster.getHeight() + 3, Align.left);
+			foster.setString(String.format("Last save: %s", this.selectedProject.getSaveDate())).draw(ix + 5, textHeight -= foster.getHeight() + 3, Align.left);
 			shape.rectangle(ix, iy, Math.max(isx, foster.getWidth() + 10), isy);
-			if (this.selectedProject.isBackupsEnabled()) foster.setString("Backups: enabled").draw(ix + 5, iy + isy - 35, Align.left);
+			if (this.selectedProject.isBackupsEnabled()) foster.setString("Backups: enabled").draw(ix + 5, textHeight -= foster.getHeight() + 3, Align.left);
 			else foster.setString("Backups: disabled").draw(ix + 5, iy + isy - 35, Align.left);
-			foster.setString(String.format("Dir: %s", this.selectedProject.getProjectFolder().toString())).draw(ix + 5, iy + isy - 45, Align.left);
+			foster.setString(String.format("Dir: %s", this.selectedProject.getProjectFolder().toString())).draw(ix + 5, textHeight -= foster.getHeight() + 3, Align.left);
 		} else shape.rectangle(ix, iy, isx, isy);
 		
 		foster.setString("Select project").draw(px + psx / 2, sy + psy + 20);
@@ -110,7 +111,7 @@ public class ScreenSelectProject extends BaseScreen {
 						shape.setColor(0.25f, 0.25f, 0.25f, 1f);
 						shape.filledRectangle(px, sy - psy * i + 1, psx - 1, psy - 1);
 					}
-					foster.setString("[" + project.getProjectType() + "] " + project.getProjectName()).draw(px + 5, sy - psy * i + 12, Align.left);
+					foster.setString("[" + project.getProjectType() + "] " + project.getProjectName()).draw(px + 5, sy - psy * i + 5, Align.left);
 					
 					if (Game.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(px, sy - psy * i, psx, psy)) {
 						this.selectedProject = project;

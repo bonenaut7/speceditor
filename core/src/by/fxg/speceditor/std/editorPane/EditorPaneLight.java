@@ -34,8 +34,9 @@ public class EditorPaneLight extends EditorPane implements ISTDInputFieldListene
 	}
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
-		foster.setString("Name:").draw(x + 5, (yOffset -= 10) + 1, Align.left);
-		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= 10, width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
+		yOffset -= 8;
+		foster.setString("Name:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
+		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
 		
 		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
@@ -86,47 +87,47 @@ public class EditorPaneLight extends EditorPane implements ISTDInputFieldListene
 			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateGizmoValues();
 			int sizePerPart = (this.width - 30 - (int)foster.setString(this.coords[0]).getWidth() * 3) / 3;
 			
-			foster.setString("Position:").draw(this.x, yOffset, Align.left);
-			yOffset -= 16;
+			foster.setString("Position:").draw(this.x, yOffset -= foster.getHeight(), Align.left);
+			yOffset -= 19; //16 size of box + 3 offset
 			for (int i = 0; i != 3; i++) {
-				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
-				this.position[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+				this.position[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 				this.position[i].render(batch, shape);
 			}
 
 			if (this.lightType == ElementLightType.SPOT) {
-				foster.setString("Rotation:").draw(this.x, yOffset -= 18, Align.left);
-				yOffset -= 16;
+				foster.setString("Rotation:").draw(this.x, yOffset -= foster.getHeight() + 5, Align.left);
+				yOffset -= 19;
 				for (int i = 0; i != 3; i++) {
-					foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
-					this.rotation[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+					foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+					this.rotation[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 					this.rotation[i].render(batch, shape);
 				}
 			}
 			
 			sizePerPart = (this.width - 20 - (int)foster.setString(this.colors[0]).getWidth() * 2) / 2;
-			foster.setString("Color:").draw(this.x, yOffset -= 18, Align.left);
-			yOffset -= 16;
+			foster.setString("Color:").draw(this.x, yOffset -= foster.getHeight() + 5, Align.left);
+			yOffset -= 19;
 			for (int i = 0; i != 2; i++) {
-				foster.setString(this.colors[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
-				this.color[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+				foster.setString(this.colors[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+				this.color[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 				this.color[i].render(batch, shape);
 			}
 			yOffset -= 16;
 			for (int i = 0, k = 2; i != 2; i++, k++) {
-				foster.setString(this.colors[k]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + 1);
-				this.color[k].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset - 10, sizePerPart, 15).setFoster(foster).update();
+				foster.setString(this.colors[k]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+				this.color[k].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 				this.color[k].render(batch, shape);
 			}
 
-			foster.setString("Parameters:").draw(this.x, yOffset -= 18, Align.left);
-			yOffset -= 16;
+			foster.setString("Parameters:").draw(this.x, yOffset -= foster.getHeight() + 5, Align.left);
+			yOffset -= 19;
 			for (int i = 0; i != (this.lightType == ElementLightType.POINT ? 1 : 3); i++) {
-				foster.setString(this.params[i]).draw(this.x + 10, yOffset -= 5, Align.left);
-				this.parameters[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset -= 11, this.width - (int)foster.getWidth() - 35, 15).setFoster(foster).update();
+				foster.setString(this.params[i]).draw(this.x + 10, yOffset + foster.getHalfHeight(), Align.left);
+				this.parameters[i].setTransforms(this.x + (int)foster.getWidth() + 35, yOffset, this.width - (int)foster.getWidth() - 35, 15).setFoster(foster).update();
 				this.parameters[i].render(batch, shape);
 			}
-			return yOffset + 11;
+			return yOffset;
 		}
 		
 		public void whileFocused(STDInputField inputField, String id) {

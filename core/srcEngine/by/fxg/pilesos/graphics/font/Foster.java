@@ -8,50 +8,61 @@ import com.badlogic.gdx.utils.Align;
 public class Foster {
 	public static BitmapFont defaultFont = null;
 	private static GlyphLayout layout = new GlyphLayout();
-	private Batch batch = null;
-	private BitmapFont font;
-	private String string;
 	
-	public Foster() { this(defaultFont, null); }
-	public Foster(String str) { this(defaultFont, str); }
-	public Foster(BitmapFont font) { this(font, null); }
-	public Foster(BitmapFont font, String str) {
-		this.font = font;
-		this.string = str;
-		if (this.string != null) this.updateLayout();
+	private Batch batch = null;
+	private BitmapFont font = null;
+	private String string = "";
+	private float fontHeight, fontHalfHeight, stringWidth, stringHalfWidth;
+	
+	public Foster() { this(null, defaultFont); }
+	public Foster(BitmapFont font) { this(null, font); }
+	public Foster(Batch batch) { this(batch, defaultFont); }
+	public Foster(Batch batch, BitmapFont font) {
+		this.setBatch(batch);
+		this.setFont(font);
 	}
 	
+	public BitmapFont getFont() { return this.font; }
+	public Foster setFont(BitmapFont font) {
+		this.font = font;
+		this.fontHalfHeight = (this.fontHeight = font.getCapHeight()) / 2.0F;
+		return this;
+	}
+	
+	public Batch getBatch() { return this.batch; }
 	public Foster setBatch(Batch batch) {
 		this.batch = batch;
 		return this;
 	}
 	
+	public String getString() { return this.string; }
 	public Foster setString(String str) {
 		this.string = str;
+		layout.setText(this.font, str);
+		this.stringWidth = layout.width;
 		return this;
 	}
 
-	public Foster draw(float x, float y) { return this.draw(this.batch, x, y, Align.center); }
-	public Foster draw(float x, float y, int align) { return this.draw(this.batch, x, y, align); }
-	public Foster draw(Batch batch, float x, float y) { return this.draw(batch, x, y, Align.center); }
-	public Foster draw(Batch batch, float x, float y, int align) {
-		this.font.draw(batch, this.string, x, y, 0, align, false);
+	/** Draws string with Y offset(font height) **/
+	public Foster draw(float x, float y) {
+		return this.drawRaw(x, y + this.fontHeight, Align.center);
+	}
+	
+	/** Draws string with Y offset(font height) **/
+	public Foster draw(float x, float y, int align) {
+		return this.drawRaw(x, y + this.fontHeight, align);
+	}
+	
+	/** Draws string without Y offset(font height) **/
+	public Foster drawRaw(float x, float y) { return this.drawRaw(x, y, Align.center); }
+	/** Draws string without Y offset(font height) **/
+	public Foster drawRaw(float x, float y, int align) {
+		this.font.draw(this.batch, this.string, x, y, 0, align, false);
 		return this;
 	}
 
-	public String getString() { return this.string; }
-	public float getHalfHeight() { return this.getHeight() / 2; }
-	public float getHalfWidth() { return this.getWidth() / 2; }
-	
-	public float getHeight() {
-		this.updateLayout();
-		return layout.height;
-	}
-	
-	public float getWidth() {
-		this.updateLayout();
-		return layout.width;
-	}
-	
-	private void updateLayout() { layout.setText(this.font, this.string); }
+	public float getHalfHeight() { return this.fontHalfHeight; }
+	public float getHalfWidth() { return this.stringHalfWidth; }
+	public float getHeight() { return this.fontHeight; }
+	public float getWidth() { return this.stringWidth; }
 }

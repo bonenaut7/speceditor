@@ -39,7 +39,7 @@ public class SubscreenProjectManager extends BaseSubscreen {
 		shape.setColor(UColor.gray);
 		shape.rectangle(x + 1, y + 1, width - 2, height - 2);
 		
-		foster.setString("Explorer").draw(x + 10, y + height - 7, Align.left);
+		foster.setString("Explorer").draw(x + 10, y + height - 11 - foster.getHalfHeight(), Align.left);
 		this.objectTree.render(batch, shape, foster);
 		this.projectExplorerAddButton.render(shape, foster);
 		batch.end();

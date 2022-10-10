@@ -13,6 +13,7 @@ import by.fxg.speceditor.screen.deprecated.SubscreenExplorer;
 import by.fxg.speceditor.screen.deprecated.SubscreenProjectManager;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.screen.gui.GuiAbout;
+import by.fxg.speceditor.screen.gui.GuiError;
 import by.fxg.speceditor.ui.UDropdownClick;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

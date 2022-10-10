@@ -78,7 +78,7 @@ public class GuiError extends BaseScreen implements IFocusable {
 		shape.setColor(1, 1, 1, 1);
 		shape.rectangle(x, y, boxSizeX, boxSizeY, 2f);
 		for (int i = 0; i != this.strings.size; i++) {
-			foster.setString(this.strings.get(i)).draw(x + boxSizeX / 2, y + boxSizeY - 10 - (12 * i));
+			foster.setString(this.strings.get(i)).draw(x + boxSizeX / 2, y + boxSizeY - 20 - (foster.getHeight() + 2) * i);
 		}
 		this.buttonClose.render(shape, foster);
 		batch.end();

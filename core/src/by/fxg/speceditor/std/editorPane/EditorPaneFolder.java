@@ -21,8 +21,9 @@ public class EditorPaneFolder extends EditorPane implements ISTDInputFieldListen
 	}
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
-		foster.setString("Name:").draw(x + 5, (yOffset -= 10) + 1, Align.left);
-		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= 10, width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
+		yOffset -= 8;
+		foster.setString("Name:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
+		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
 		return yOffset;
 	}

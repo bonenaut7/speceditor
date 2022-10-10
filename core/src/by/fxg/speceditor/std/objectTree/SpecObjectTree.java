@@ -221,7 +221,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 			sprite.setPosition(vector.x - (sprite.getWidth() - 16) / 2 + 1, vector.y - (sprite.getHeight() - 16) / 2 + 1);
 			sprite.setScale(1.0F / (sprite.getWidth() / 16.0F));
 			sprite.draw(batch);
-			foster.setString(element.getName()).draw(vector.x + 20, vector.y + Foster.defaultFont.getCapHeight() + 5, Align.left);
+			foster.setString(element.getName()).draw(vector.x + 20, vector.y + 9 - foster.getHalfHeight(), Align.left);
 			vector.add(0, -22); 
 			
 			//sub-elements render
