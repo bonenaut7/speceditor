@@ -6,11 +6,12 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 import com.badlogic.gdx.utils.Array;
 
+import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
@@ -38,7 +40,7 @@ public class GizmosModule implements IFocusable {
 	private ModelBatch modelBatch;
 	private DebugDraw3D debugDraw;
 	private GizmoHitbox[] hitboxes = new GizmoHitbox[3];
-	private ModelInstance grid, translation, rotation, scale;
+	private ModelInstance[] gizmoModel = new ModelInstance[3];
 	
 	/** Current selected tool in Viewport, e.g. It can be null as None tool selected, or Translation tool for example. <br>
 	 * Also this enum used for specifying available transform actions in {@link ITreeElementGizmos#isTransformSupported(GizmoTransformType)} **/
@@ -70,8 +72,13 @@ public class GizmosModule implements IFocusable {
 			this.debugDraw.world.addCollisionObject(this.hitboxes[i].object);
 		}
 
-		ModelBuilder mb = new ModelBuilder();
-		this.translation = new ModelInstance(mb.createXYZCoordinates(3f, 0.125f, 0.375f, 5, GL20.GL_TRIANGLES, new Material(), Usage.Position | Usage.Normal | Usage.ColorPacked));
+		TextureRegion gizmoDiffuse = SpriteStack.getTextureRegion("defaults/gizmo.diffuse.png");
+		gizmoDiffuse.flip(false, true);
+		String[] modelName = {"translate", "rotate", "scale"};
+		for (int i = 0; i != this.gizmoModel.length; i++) {
+			this.gizmoModel[i] = new ModelInstance(Game.get.resourceManager.get(Utils.format("defaults/gizmo.", modelName[i], ".obj"), Model.class));
+			this.gizmoModel[i].materials.get(0).set(TextureAttribute.createDiffuse(gizmoDiffuse));
+		}
 	}
 	
 	public void update(SubscreenViewport screenViewport, int x, int y, int width, int height) {
@@ -86,7 +93,6 @@ public class GizmosModule implements IFocusable {
 				}
 			} else if (SpecInterface.isFocused(null)) {
 				//just waiting for click here
-				this.updateGizmosPosition();
 				float mx = Interpolation.linear.apply(0, Utils.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 				float my = Interpolation.linear.apply(0, Utils.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
 				//possible solution for cancelling slide of value can be Vector2 with prev. tick mouse position, and then we can compare current mouse position with previous, and if they're equal - cancel update
@@ -112,10 +118,13 @@ public class GizmosModule implements IFocusable {
 //		else if (mx > x + width) { Gdx.input.setCursorPosition(x, Gdx.graphics.getHeight() - my); this.prevMousePosition.x = x; }
 //		if (my < y) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y - height); this.prevMousePosition.y = Gdx.graphics.getHeight() - y - height; }
 //		else if (my > y + height) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y); this.prevMousePosition.y = Gdx.graphics.getHeight() - y; }
-		float scale = this.camera.position.dst(this.isFocused() ? this._gizmoStart : this._gizmoRenderPosition) / 12.5F;
-		for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.update(this._gizmoRenderPosition, scale);
-		this.translation.transform.setToTranslation(this._gizmoRenderPosition).scale(scale, scale, scale);
-		this.debugDraw.update();
+		if (this.selectedTool != null) {
+			this.updateGizmosPosition();
+			float scale = this.camera.position.dst(this.isFocused() ? this._gizmoStart : this._gizmoRenderPosition) / 6.725F;
+			for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.update(this._gizmoRenderPosition, scale);
+			this.gizmoModel[this.selectedTool.ordinal()].transform.setToTranslation(this._gizmoRenderPosition).scale(scale, scale, scale);
+			this.debugDraw.update();
+		}
 	}
 	
 	/** Processing of gizmo with translation mode **/
@@ -163,12 +172,6 @@ public class GizmosModule implements IFocusable {
 		//i think we can do scaling the same as translation?
 	}
 	
-	public void preRenderPass(Camera camera) {
-		this.modelBatch.begin(camera);
-		this.modelBatch.render(this.grid);
-		this.modelBatch.end();
-	}
-	
 	/** Renders gizmo arrows to {@link #framebuffer} **/
 	public void passRender(Camera camera) {		
 		if (!this.elements.isEmpty()) {
@@ -179,11 +182,14 @@ public class GizmosModule implements IFocusable {
 			this.framebuffer.capture(0f, 0f, 0f, 0f);
 			this.modelBatch.begin(camera);
 			//TODO Disable rendering of default xyz arrows for every type of tool, add grid rendering if tool is being interacted
-			this.modelBatch.render(this.translation);
+			if (this.selectedTool != null) {
+				this.modelBatch.render(this.gizmoModel[this.selectedTool.ordinal()]);
+			}
+			//this.modelBatch.render(this.translation);
 			this.modelBatch.end();
-//			this.debugDraw.drawer.begin(camera);
-//			this.debugDraw.world.debugDrawWorld();
-//			this.debugDraw.drawer.end();
+			this.debugDraw.drawer.begin(camera);
+			this.debugDraw.world.debugDrawWorld();
+			this.debugDraw.drawer.end();
 			this.framebuffer.endCapture();
 			camera.far = prevFarValue;
 			camera.update();
@@ -242,8 +248,8 @@ public class GizmosModule implements IFocusable {
 	}
 	
 	private void roundVector(final Vector3 vector, float precision) {
-		vector.x = MathUtils.round(vector.x * precision) / precision;
-		vector.y = MathUtils.round(vector.x * precision) / precision;
-		vector.z = MathUtils.round(vector.x * precision) / precision;
+		vector.x = MathUtils.round(vector.x / precision) * precision;
+		vector.y = MathUtils.round(vector.y / precision) * precision;
+		vector.z = MathUtils.round(vector.z / precision) * precision;
 	}
 }

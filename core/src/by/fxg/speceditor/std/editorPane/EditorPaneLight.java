@@ -79,8 +79,7 @@ public class EditorPaneLight extends EditorPane implements ISTDInputFieldListene
 			this.parameters[0] = builder.setBackgroundColor(UColor.yellowblack).setListener(this, "intensity").build();
 			this.parameters[1] = builder.setBackgroundColor(UColor.yellowblack).setListener(this, "cutoffangle").build();
 			this.parameters[2] = builder.setBackgroundColor(UColor.yellowblack).setListener(this, "exponent").build();
-			builder.addToLink(this.position).addToLink(this.rotation).addToLink(this.color).addToLink(this.parameters[0]); //other components are not available for every type of light present here
-			builder.linkFields();
+			builder.addToLink(this.position).addToLink(this.rotation).addToLink(this.color).addToLink(this.parameters[0]).linkFields(); //other components are not available for every type of light present here
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
