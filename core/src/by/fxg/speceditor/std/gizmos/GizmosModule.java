@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -21,21 +23,22 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.Game;
+import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.render.DebugDraw3D;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.utils.Utils;
 
 public class GizmosModule implements IFocusable {
-	private TextureFrameBuffer frameBuffer;
+	private PerspectiveCamera camera;
+	private TextureFrameBuffer framebuffer;
 	private ModelBatch modelBatch;
 	private DebugDraw3D debugDraw;
 	private GizmoHitbox[] hitboxes = new GizmoHitbox[3];
-	private ModelInstance xyzShape;
+	private ModelInstance grid, translation, rotation, scale;
 	
 	/** Current selected tool in Viewport, e.g. It can be null as None tool selected, or Translation tool for example. <br>
 	 * Also this enum used for specifying available transform actions in {@link ITreeElementGizmos#isTransformSupported(GizmoTransformType)} **/
@@ -56,8 +59,9 @@ public class GizmosModule implements IFocusable {
 	/** current selected elements that can be interacted with gizmos **/
 	private Array<ITreeElementGizmos> elements = new Array<>();
 	
-	public GizmosModule() {
-		this.frameBuffer = new TextureFrameBuffer().flip(false, true);
+	public GizmosModule(PerspectiveCamera camera) {
+		this.camera = camera;
+		this.framebuffer = new TextureFrameBuffer().flip(false, true);
 		this.modelBatch = new ModelBatch();
 		this.debugDraw = new DebugDraw3D();
 		
@@ -67,7 +71,7 @@ public class GizmosModule implements IFocusable {
 		}
 
 		ModelBuilder mb = new ModelBuilder();
-		this.xyzShape = new ModelInstance(mb.createXYZCoordinates(3f, 0.125f, 0.375f, 5, GL20.GL_TRIANGLES, new Material(), Usage.Position | Usage.Normal | Usage.ColorPacked));
+		this.translation = new ModelInstance(mb.createXYZCoordinates(3f, 0.125f, 0.375f, 5, GL20.GL_TRIANGLES, new Material(), Usage.Position | Usage.Normal | Usage.ColorPacked));
 	}
 	
 	public void update(SubscreenViewport screenViewport, int x, int y, int width, int height) {
@@ -76,9 +80,9 @@ public class GizmosModule implements IFocusable {
 			if (this.isFocused()) {
 				SpecInterface.setCursor(AppCursor.GRABBING);
 				switch (this.selectedTool) {
-					case TRANSLATE: this.processTranslation(screenViewport.camera, x, y, width, height); break;
-					case ROTATE: this.processRotation(screenViewport.camera, x, y, width, height); break;
-					case SCALE: this.processScaling(screenViewport.camera, x, y, width, height); break;
+					case TRANSLATE: this.processTranslation(this.camera, x, y, width, height); break;
+					case ROTATE: this.processRotation(this.camera, x, y, width, height); break;
+					case SCALE: this.processScaling(this.camera, x, y, width, height); break;
 				}
 			} else if (SpecInterface.isFocused(null)) {
 				//just waiting for click here
@@ -86,14 +90,14 @@ public class GizmosModule implements IFocusable {
 				float mx = Interpolation.linear.apply(0, Utils.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 				float my = Interpolation.linear.apply(0, Utils.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
 				//possible solution for cancelling slide of value can be Vector2 with prev. tick mouse position, and then we can compare current mouse position with previous, and if they're equal - cancel update
-				Ray ray = screenViewport.camera.getPickRay(mx, my);
+				Ray ray = this.camera.getPickRay(mx, my);
 				GizmoInteractType hitType = this.isRayCastedGizmo(ray);
 				if (hitType != GizmoInteractType.NONE) {
 					SpecInterface.setCursor(AppCursor.GRAB);
 					if (Game.get.getInput().isMouseDown(0, false)) {
 						callback.getHitPointWorld(this._tmpVector);
 						this._gizmoStart.set(this._gizmoRenderPosition);
-						ray.getEndPoint(this._gizmoClickOffset, screenViewport.camera.position.dst(this._gizmoRenderPosition));
+						ray.getEndPoint(this._gizmoClickOffset, this.camera.position.dst(this._gizmoRenderPosition));
 						this._gizmoClickOffset.sub(this._gizmoRenderPosition);
 						this.interactType = hitType;
 						this.setFocused(true);
@@ -108,9 +112,9 @@ public class GizmosModule implements IFocusable {
 //		else if (mx > x + width) { Gdx.input.setCursorPosition(x, Gdx.graphics.getHeight() - my); this.prevMousePosition.x = x; }
 //		if (my < y) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y - height); this.prevMousePosition.y = Gdx.graphics.getHeight() - y - height; }
 //		else if (my > y + height) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y); this.prevMousePosition.y = Gdx.graphics.getHeight() - y; }
-		float scale = screenViewport.camera.position.dst(this.isFocused() ? this._gizmoStart : this._gizmoRenderPosition) / 12.5F;
+		float scale = this.camera.position.dst(this.isFocused() ? this._gizmoStart : this._gizmoRenderPosition) / 12.5F;
 		for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.update(this._gizmoRenderPosition, scale);
-		this.xyzShape.transform.setToTranslation(this._gizmoRenderPosition).scale(scale, scale, scale);
+		this.translation.transform.setToTranslation(this._gizmoRenderPosition).scale(scale, scale, scale);
 		this.debugDraw.update();
 	}
 	
@@ -159,28 +163,33 @@ public class GizmosModule implements IFocusable {
 		//i think we can do scaling the same as translation?
 	}
 	
-	/** Renders gizmo arrows to {@link #frameBuffer} **/
-	public void passRender(Camera camera) {
+	public void preRenderPass(Camera camera) {
+		this.modelBatch.begin(camera);
+		this.modelBatch.render(this.grid);
+		this.modelBatch.end();
+	}
+	
+	/** Renders gizmo arrows to {@link #framebuffer} **/
+	public void passRender(Camera camera) {		
 		if (!this.elements.isEmpty()) {
 			float prevFarValue = camera.far;
 			camera.far = 500.0F;
 			camera.update();
 			
-			this.frameBuffer.capture(0f, 0f, 0f, 0f);
+			this.framebuffer.capture(0f, 0f, 0f, 0f);
 			this.modelBatch.begin(camera);
 			//TODO Disable rendering of default xyz arrows for every type of tool, add grid rendering if tool is being interacted
-			this.modelBatch.render(this.xyzShape);
+			this.modelBatch.render(this.translation);
 			this.modelBatch.end();
 //			this.debugDraw.drawer.begin(camera);
 //			this.debugDraw.world.debugDrawWorld();
 //			this.debugDraw.drawer.end();
-			this.frameBuffer.endCapture();
-			
+			this.framebuffer.endCapture();
 			camera.far = prevFarValue;
 			camera.update();
 		} else {
-			this.frameBuffer.capture(0f, 0f, 0f, 0f);
-			this.frameBuffer.endCapture();
+			this.framebuffer.capture(0f, 0f, 0f, 0f);
+			this.framebuffer.endCapture();
 		}
 	}
 	
@@ -198,8 +207,8 @@ public class GizmosModule implements IFocusable {
 	}
 	
 	/** Returns rendered gizmo arrows as TextureRegion for further rendering **/
-	public TextureRegion getTexture() {
-		return this.frameBuffer.getTexture();
+	public TextureRegion getRenderPassTexture() {
+		return this.framebuffer.getTexture();
 	}
 	
 	private static final ClosestRayResultCallback callback = new ClosestRayResultCallback(new Vector3(), new Vector3());

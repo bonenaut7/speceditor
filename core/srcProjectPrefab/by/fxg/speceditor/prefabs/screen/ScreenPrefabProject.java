@@ -13,7 +13,6 @@ import by.fxg.speceditor.screen.deprecated.SubscreenExplorer;
 import by.fxg.speceditor.screen.deprecated.SubscreenProjectManager;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.screen.gui.GuiAbout;
-import by.fxg.speceditor.screen.gui.GuiError;
 import by.fxg.speceditor.ui.UDropdownClick;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -33,10 +32,10 @@ public class ScreenPrefabProject extends BaseScreen {
 		this.dropdownButtonProject = new UDropdownClick("Project", 92, height - 21, 75, 20, 20, "Save", "Export as", "Open folder", "Backups");
 		
 		this.updateDimensions(width, height);
-		this.subObjectTree = new SubscreenProjectManager(this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
+		this.subObjectTree = new SubscreenProjectManager(project.objectTree, this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
 		this.unnamedUselessModule = new SubscreenExplorer(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
 		this.subEditorPane = new SubscreenPrefabEditor(this, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
-		this.subViewport = new SubscreenViewport(this.project.renderer, this.subObjectTree.objectTree, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
+		this.subViewport = new SubscreenViewport(project.renderer, project.objectTree, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 	}
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
@@ -47,7 +46,6 @@ public class ScreenPrefabProject extends BaseScreen {
 			this.subViewport.update(batch, shape, foster, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 		}
 	}
-
 	
 	private int sObjectTreeX, sObjectTreeY, sObjectTreeW, sObjectTreeH, sUUMX, sUUMY, sUUMW, sUUMH;
 	private int sEditorX, sEditorY, sEditorW, sEditorH, sViewportX, sViewportY, sViewportW, sViewportH;
@@ -81,7 +79,7 @@ public class ScreenPrefabProject extends BaseScreen {
 					//this.project.saveHeader();
 					//this.project.saveProject(this.subObjectExplorer.objectExplorer);
 					//SAVE PROJECT
-					this.project.io.writeProjectData(this.subObjectTree.objectTree.getStack());
+					this.project.io.writeProjectData(this.project.renderer, this.project.objectTree.getStack());
 				} break;
 				case 1: {
 	//				FileHandle inputFolder = null;

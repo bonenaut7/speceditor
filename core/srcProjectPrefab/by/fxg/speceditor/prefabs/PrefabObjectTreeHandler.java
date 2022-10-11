@@ -2,14 +2,14 @@ package by.fxg.speceditor.prefabs;
 
 import com.badlogic.gdx.utils.Array;
 
+import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.ITreeElementHandler;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight;
-import by.fxg.speceditor.std.render.DebugDraw3D.IDebugDraw;
-import by.fxg.speceditor.std.render.IRendererType;
+import by.fxg.speceditor.std.viewport.IViewportRenderer;
 
 public class PrefabObjectTreeHandler implements ITreeElementHandler {
 	private PrefabProject prefabProject;
@@ -27,18 +27,18 @@ public class PrefabObjectTreeHandler implements ITreeElementHandler {
 		this.prefabProject.projectScreen.subEditorPane.updateSelectableEditorPane(objectTree.elementSelector);
 		this.prefabProject.projectScreen.subViewport.gizmosModule.updateSelectorMode(objectTree.elementSelector);
 
-		this.prefabProject.renderer.clear(true);
+		this.prefabProject.renderer.clear();
 		this.searchRenderables(this.prefabProject.renderer, objectTree, objectTree.getStack().getElements(), true);
 	}
 	
-	private void searchRenderables(IRendererType renderer, SpecObjectTree objectTree, Array<TreeElement> elements, boolean parentVisible) { 
+	private void searchRenderables(IViewportRenderer renderer, SpecObjectTree objectTree, Array<TreeElement> elements, boolean parentVisible) { 
 		for (TreeElement element : elements) {
 			if (element != null) {
 				
 				
 				if ((parentVisible && element.isVisible() || objectTree.elementSelector.isElementSelected(element))) {
 					if (element instanceof IModelProvider || element instanceof IDebugDraw) renderer.add(element);
-					if (element instanceof ElementLight) renderer.addLight((ElementLight)element, objectTree.elementSelector.isElementSelected(element));
+					if (element instanceof ElementLight) renderer.add(element, objectTree.elementSelector.isElementSelected(element));
 					//if (element instanceof ElementDecal) renderer.add(((ElementDecal)element).decal);
 				}
 				if (element instanceof ITreeElementFolder) {

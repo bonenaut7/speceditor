@@ -7,15 +7,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
-import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
-import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;
+import by.fxg.speceditor.std.viewport.IViewportRenderer;
+import by.fxg.speceditor.utils.IOUtils;
 
 public class PrefabProjectIO {
 	private PrefabProject project;
@@ -28,64 +25,50 @@ public class PrefabProjectIO {
 	}
 	
 	/** Returns true if loading was successful **/
-	public boolean loadProjectData(ElementStack inputStack) {
+	public boolean loadProjectData(IViewportRenderer viewportRenderer, ElementStack inputStack) {
 		try {
 			ByteArrayInputStream bais = new ByteArrayInputStream(this.projectFile.readBytes());
 			DataInputStream dis = new DataInputStream(bais);
-			ReaderUtil util = new ReaderUtil(this.project.getProjectFolder(), dis);
+			IOUtils util = new IOUtils(this.project.getProjectFolder(), dis);
 			
 			dis.skip(8); //skip magic and version
 			util.readCheckID();
-			ViewportSettings.viewportHitboxDepth = dis.readBoolean();
-			ViewportSettings.viewportHitboxWidth = dis.readFloat();
-			ViewportSettings.bufferColor = util.readColor();
-			ViewportSettings.cameraSettings = util.readVector3();
-			ViewportSettings.viewportAttributes.add(new BlendingAttribute(1f), FloatAttribute.createAlphaTest(0.5f));
-			int attributesSize = dis.readInt();
-			for (int i = 0; i != attributesSize; i++) {
-				Attribute attribute = util.readAttribute();
-				if (!this.hasAttribute(ViewportSettings.viewportAttributes, attribute)) ViewportSettings.viewportAttributes.add(attribute);
-			}
+			String viewportClass = dis.readUTF();
+			long viewportData = dis.readLong();
+			if (viewportRenderer.getClass().getName().equals(viewportClass)) {
+				viewportRenderer.readData(util, dis);
+			} else dis.skip(viewportData);
 			
 			util.readCheckID();
 			this.readStack(dis, util, null, inputStack);
 			
 			dis.close();
 			bais.close();
-			
-			ViewportSettings.shouldUpdate = true;
 			return true;
 		} catch (Throwable exception) {
 			exception.printStackTrace();
-			ViewportSettings.viewportAttributes.add(new BlendingAttribute(1f), FloatAttribute.createAlphaTest(0.5f));
-			ViewportSettings.shouldUpdate = true;
 			this.lastException = exception;
 		}
 		return false;
 	}
 	
 	/** Returns true if loading was successful **/
-	public boolean writeProjectData(ElementStack outStack) {
+	public boolean writeProjectData(IViewportRenderer viewportRenderer, ElementStack outStack) {
 		try {
 			this.project.getProjectFolder().file().mkdirs();
 			this.projectFile.file().createNewFile();
 			FileOutputStream fos = new FileOutputStream(this.projectFile.file());
 			DataOutputStream dos = new DataOutputStream(fos);
-			ReaderUtil util = new ReaderUtil(this.project.getProjectFolder(), dos);
+			IOUtils util = new IOUtils(this.project.getProjectFolder(), dos);
 			
 			dos.write(0xBADF0002);
 			dos.writeInt(0);
 			
 			util.writeCheckID(); //viewport data
-			dos.writeBoolean(ViewportSettings.viewportHitboxDepth);
-			dos.writeFloat(ViewportSettings.viewportHitboxWidth);
-			util.writeColor(ViewportSettings.bufferColor);
-			util.writeVector3(ViewportSettings.cameraSettings);
-			dos.writeInt(ViewportSettings.viewportAttributes.size);
-			for (Attribute attribute : ViewportSettings.viewportAttributes) {
-				util.writeAttribute(attribute);
-			}
-			
+			dos.writeUTF(viewportRenderer.getClass().getName());
+			dos.writeLong(viewportRenderer.dataSizeBytes(util));
+			viewportRenderer.writeData(util, dos);
+
 			util.writeCheckID();
 			this.writeStack(dos, util, outStack);
 			
@@ -99,7 +82,7 @@ public class PrefabProjectIO {
 		return false;
 	}
 	
-	private void readStack(DataInputStream dis, ReaderUtil util, TreeElement parent, ElementStack stack) throws IOException {
+	private void readStack(DataInputStream dis, IOUtils util, TreeElement parent, ElementStack stack) throws IOException {
 		try {
 			int size = dis.readInt();
 			for (int i = 0; i != size; i++) {
@@ -240,7 +223,7 @@ public class PrefabProjectIO {
 		}
 	}
 	
-	private void writeStack(DataOutputStream dos, ReaderUtil util, ElementStack stack) throws IOException {
+	private void writeStack(DataOutputStream dos, IOUtils util, ElementStack stack) throws IOException {
 		dos.writeInt(stack.getElements().size);
 		for (TreeElement element : stack.getElements()) {
 			if (element instanceof ElementFolder) {
@@ -351,12 +334,5 @@ public class PrefabProjectIO {
 		if (handle == null) return "-";
 		FileHandle projectHandle = this.project.getProjectFolder();
 		return handle.path().contains(projectHandle.path()) ? handle.path().substring(projectHandle.path().length() + 1) : handle.path();
-	}
-	
-	private boolean hasAttribute(Array<Attribute> array, Attribute attribute) {
-		for (Attribute attribute$ : array) {
-			if (attribute$.type == attribute.type) return true;
-		}
-		return false;
 	}
 }

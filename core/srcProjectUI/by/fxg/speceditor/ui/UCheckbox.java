@@ -10,8 +10,9 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 public class UCheckbox extends UIElement {
 	private boolean enabled = true, value = false;
 
-	public UCheckbox(int x, int y, int width, int height) { this(false, x, y, width, height); }
-	public UCheckbox(boolean value, int x, int y, int width, int height) {
+	public UCheckbox(int x, int y, int width, int height) { this(false); this.setTransforms(x, y, width, height); }
+	public UCheckbox(boolean value, int x, int y, int width, int height) { this(value); this.setTransforms(x, y, width, height); }
+	public UCheckbox(boolean value) {
 		this.value = value;
 		this.setTransforms(x, y, width, height);
 	}

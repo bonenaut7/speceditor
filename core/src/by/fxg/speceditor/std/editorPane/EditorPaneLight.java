@@ -144,6 +144,10 @@ public class EditorPaneLight extends EditorPane implements ISTDInputFieldListene
 			}
 		}
 		
+		public void onFocusRemoved(STDInputField inputField, String id) {
+			try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
+		}
+		
 		private void updateBlock(ElementLight light) {
 			this.lightType = light.type;
 			this.light = light.getLight(BaseLight.class);

@@ -208,7 +208,7 @@ public class STDInputField extends UIElement implements IFocusable {
 	public float getTextAsNumber(float failValue) {
 		try {
 			return Float.valueOf(this.currentString);
-		} catch (Exception e) {
+		} catch (NullPointerException | NumberFormatException e) {
 			return failValue;
 		}
 	}

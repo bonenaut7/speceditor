@@ -102,7 +102,7 @@ public class EditorPaneMatsel extends URenderBlock implements IUDropdownAreaList
 				} else yOffset -= this.selectedAttribute.getVariants().length * 15 + 2;
 				this.selectedAttribute.update();
 				this.selectedAttribute.render(shape, foster);
-			}
+			} else yOffset -= 3;
 		} else yOffset -= this.selectedMaterial.getVariants().length * 15 + 5;
 		this.selectedMaterial.update();
 		this.selectedMaterial.render(shape, foster);

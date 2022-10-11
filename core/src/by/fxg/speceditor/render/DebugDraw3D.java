@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.render;
+package by.fxg.speceditor.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;

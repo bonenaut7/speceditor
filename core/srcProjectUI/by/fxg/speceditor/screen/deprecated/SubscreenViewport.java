@@ -17,26 +17,25 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
-import by.fxg.speceditor.std.render.IRendererType;
-import by.fxg.speceditor.std.render.IRendererType.ViewportSettings;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.viewport.IViewportRenderer;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-//@Deprecated /** (TODO) DO NOT USE, MUST BE REMOVED **/
 public class SubscreenViewport extends BaseSubscreen implements IMouseController {
-	public IRendererType renderer;
-	public SpecObjectTree objectTree;
-	private UButton[] toolButtons = new UButton[4];
-	public PerspectiveCamera camera;
+	private IViewportRenderer renderer;
+	private SpecObjectTree objectTree;
 	public GizmosModule gizmosModule;
 	
 	private Vector2 lookVector = new Vector2();
 	private Vector3 posVector = new Vector3(), tmpVector = new Vector3();
 	private Matrix4 tmpMatrix = new Matrix4();
 	
-	public SubscreenViewport(IRendererType renderer, SpecObjectTree objectTree, int x, int y, int width, int height) {
+	@Deprecated
+	private UButton[] toolButtons = new UButton[4];
+	
+	public SubscreenViewport(IViewportRenderer renderer, SpecObjectTree objectTree, int x, int y, int width, int height) {
 		this.renderer = renderer;
 		this.objectTree = objectTree;
 		
@@ -45,14 +44,8 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 			this.toolButtons[i] = new UButton(text[i], 0, 0, 0, 0);
 		}
 		
-		this.camera = new PerspectiveCamera(67F, width - 6, height - 6);
-		this.camera.fieldOfView = ViewportSettings.cameraSettings.x;
-		this.camera.far = ViewportSettings.cameraSettings.y;
-		this.camera.near = ViewportSettings.cameraSettings.z;
-		this.camera.update();
-		
-		this.gizmosModule = new GizmosModule();
 		this.resize(x, y, width, height);
+		this.gizmosModule = new GizmosModule(this.renderer.getCamera());
 	}
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
@@ -75,22 +68,20 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 				this.posVector.add(this.tmpVector);
 			}
 
+			PerspectiveCamera camera = this.renderer.getCamera();
 			this.tmpMatrix = new Matrix4().setFromEulerAngles(this.lookVector.x, -this.lookVector.y, 0.0F);
-			this.camera.fieldOfView = ViewportSettings.cameraSettings.x;
-			this.camera.far = ViewportSettings.cameraSettings.y;
-			this.camera.near = ViewportSettings.cameraSettings.z;
-			this.camera.direction.set(0, 0, 1);
-			this.camera.up.set(0, 1, 0);
-			this.camera.rotate(this.tmpMatrix);
-			this.camera.position.set(this.posVector);
+			camera.direction.set(0, 0, 1);
+			camera.up.set(0, 1, 0);
+			camera.rotate(this.tmpMatrix);
+			camera.position.set(this.posVector);
+			this.renderer.updateCamera();
 			
 			this.tmpVector.setZero();
-			this.camera.update();
 		} else if (input.isMouseDown(2, false) && GDXUtil.isMouseInArea(x, y, width, height) && !Game.get.getInput().isCursorCatched()) {
 			 input.setCursorCatched(true);
 			 GInputProcessor.mouseController = this;
-		}
-		
+		} else this.renderer.updateCamera();
+
 		for (int i = 0; i != this.toolButtons.length; i++) {
 			if (this.toolButtons[i].isPressed()) {
 				if (i == 0) this.gizmosModule.selectedTool = null;
@@ -103,8 +94,8 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 	}
 
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
-		this.renderer.passRender();
-		this.gizmosModule.passRender(this.camera);
+		this.renderer.render();
+		this.gizmosModule.passRender(this.renderer.getCamera());
 		
 		batch.begin();
 		shape.setColor(UColor.background);
@@ -112,7 +103,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 		shape.setColor(UColor.gray);
 		shape.rectangle(x + 1, y + 1, width - 2, height - 2);
 		batch.draw(this.renderer.getTexture(), x + 3, y + 3, width - 6, height - 6);
-		batch.draw(this.gizmosModule.getTexture(), x + 3, y + 3, width - 6, height - 6);
+		batch.draw(this.gizmosModule.getRenderPassTexture(), x + 3, y + 3, width - 6, height - 6);
 		
 		shape.filledRectangle(x + 2, y + height - 12, 50, 10);
 		foster.setString("Viewport").draw(x + 4, y + height - 10, Align.left);
@@ -141,11 +132,9 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 	}
 
 	public void resize(int subX, int subY, int subWidth, int subHeight) {
-		this.camera.viewportWidth = subWidth - 6;
-		this.camera.viewportHeight = subHeight - 6;
-		this.camera.fieldOfView = ViewportSettings.cameraSettings.x;
-		this.camera.far = ViewportSettings.cameraSettings.y;
-		this.camera.near = ViewportSettings.cameraSettings.z;
-		this.camera.update();
+		PerspectiveCamera camera = this.renderer.getCamera();
+		camera.viewportWidth = subWidth - 6;
+		camera.viewportHeight = subHeight - 6;
+		this.renderer.updateCamera();
 	}
 }

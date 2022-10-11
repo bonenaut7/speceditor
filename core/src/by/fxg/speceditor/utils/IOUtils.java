@@ -1,8 +1,9 @@
-package by.fxg.speceditor.prefabs;
+package by.fxg.speceditor.utils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UTFDataFormatException;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -25,19 +26,19 @@ import com.badlogic.gdx.math.Vector3;
 import by.fxg.speceditor.ResourceManager;
 import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
 
-public class ReaderUtil {
+public class IOUtils {
 	private FileHandle projectFolder;
 	private DataOutputStream dataOutputStream;
 	private DataInputStream dataInputStream;
 	private int writeCheckID = 0x12BADF00;
 	private int readCheckID = 0x12BADF00;
 	
-	public ReaderUtil(FileHandle projectFolder, DataOutputStream dataOutputStream) {
+	public IOUtils(FileHandle projectFolder, DataOutputStream dataOutputStream) {
 		this.projectFolder = projectFolder;
 		this.dataOutputStream = dataOutputStream;
 	}
 	
-	public ReaderUtil(FileHandle projectFolder, DataInputStream dataInputStream) {
+	public IOUtils(FileHandle projectFolder, DataInputStream dataInputStream) {
 		this.projectFolder = projectFolder;
 		this.dataInputStream = dataInputStream;
 	}
@@ -164,9 +165,9 @@ public class ReaderUtil {
 			}
 			
 			case "environmentCubemap": break; //CubemapAttribute. Cubemaps not supported
-			case "directionalLights": break; //DirectionalLightsAttribute. Not supported
-			case "pointLights": break; //PointLightsAttribute. Not supported
-			case "spotLights": break; //SpotLightsAttribute. Not supported
+			case "directionalLights": break; //DirectionalLightsAttribute. Not supported due to lights saving from ObjectTree
+			case "pointLights": break; //PointLightsAttribute. Not supported due to lights saving from ObjectTree
+			case "spotLights": break; //SpotLightsAttribute. Not supported due to lights saving from ObjectTree
 		}
 		return null;
 	}
@@ -180,5 +181,23 @@ public class ReaderUtil {
 		int id = this.dataInputStream.readInt();
 		if (id != this.readCheckID) throw new UnsupportedOperationException("Format error on id: " + id + "/" + this.readCheckID);
 		this.readCheckID++;
+	}
+	
+	/** Calculate the length, in bytes, of a <code>String</code> in Utf8 format. <br>
+	 *  See also: {@link DataOutputStream#writeUTF(String)}
+	 *  @param value The <code>String</code> to measure
+	 *  @param start String index at which to begin count
+	 *  @param sum Starting Utf8 byte count
+	 *  @throws UTFDataFormatException if result would exceed 65535 */
+	public int getUTFlength(String value, int start, int sum) throws UTFDataFormatException {
+		int len = value.length();
+		for (int i = start; i < len && sum <= 65535; ++i) {
+			char c = value.charAt(i);
+			if (c >= '\u0001' && c <= '\u007f')	sum += 1;
+			else if (c == '\u0000' || (c >= '\u0080' && c <= '\u07ff')) sum += 2;
+			else sum += 3;
+		}
+		if (sum > 65535) throw new UTFDataFormatException();
+		return sum;
 	}
 }

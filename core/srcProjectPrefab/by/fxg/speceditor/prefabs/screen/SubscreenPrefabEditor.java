@@ -25,7 +25,7 @@ public class SubscreenPrefabEditor extends BaseSubscreen {
 		
 		this.editorModeSelector = new UDropdownSelectSingle(12, this.EDITOR_MODES).setSelectedVariant(this.EDITOR_MODES.length - 1);
 		this.moduleProject = new ModuleProject();
-		this.moduleViewport = new SubscreenPrefabEditorModuleViewport(this);
+		this.moduleViewport = new SubscreenPrefabEditorModuleViewport(this.screenProject.project.renderer);
 		this.moduleObjectExplorer = new SubscreenPrefabEditorModuleObjectExplorer();
 		this.resize(x, y, width, height);
 	}

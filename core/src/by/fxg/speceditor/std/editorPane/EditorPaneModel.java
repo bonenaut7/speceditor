@@ -154,6 +154,10 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 			}
 		}
 		
+		public void onFocusRemoved(STDInputField inputField, String id) {
+			try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
+		}
+		
 		private void updateBlock(ElementModel model) {
 			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
 			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);

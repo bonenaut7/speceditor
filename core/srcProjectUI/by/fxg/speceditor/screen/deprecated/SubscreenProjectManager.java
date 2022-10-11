@@ -12,11 +12,11 @@ import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class SubscreenProjectManager extends BaseSubscreen {
-	public SpecObjectTree objectTree;
+	private SpecObjectTree objectTree;
 	private UDropdownClick projectExplorerAddButton;
 	
-	public SubscreenProjectManager(int x, int y, int width, int height) {
-		this.objectTree = new SpecObjectTree();
+	public SubscreenProjectManager(SpecObjectTree objectTree, int x, int y, int width, int height) {
+		this.objectTree = objectTree;
 		this.projectExplorerAddButton = new UDropdownClick("Add element", 12, "Folder");
 		this.resize(x, y, width, height);
 	}
