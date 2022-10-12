@@ -27,9 +27,12 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 		if (tree.elementSelector.size() == 1) {
 			UDAElement add = new UDAElement("folder.add", "Add");
 			add.addElement(new UDAElement("folder.add.folder", "Folder"));
+			add.addElement(new UDAElement("folder.add.hitboxstack", "Hitbox Stack"));
+			add.addElement(new UDAElement());
 			add.addElement(new UDAElement("folder.add.model", "Model"));
 			add.addElement(new UDAElement("folder.add.light", "Light"));
 			add.addElement(new UDAElement("folder.add.decal", "Decal"));
+			add.addElement(new UDAElement("folder.add.hitbox", "Hitbox"));
 			items.add(new UDAElement(), add);
 		}
 	}
@@ -38,9 +41,12 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
 		switch (itemID) {
 			case "folder.add.folder": this.folderStack.add(new ElementFolder()); return true;
+			case "folder.add.hitboxstack": this.folderStack.add(new ElementHitboxStack()); return true;
+			
 			case "folder.add.model": this.folderStack.add(new ElementModel()); return true;
 			case "folder.add.light": this.folderStack.add(new ElementLight()); return true;
 			case "folder.add.decal": this.folderStack.add(new ElementDecal()); return true;
+			case "folder.add.hitbox": this.folderStack.add(new ElementHitbox()); return true;
 			
 			default: return super.processDropdownAction(tree, itemID);
 		}

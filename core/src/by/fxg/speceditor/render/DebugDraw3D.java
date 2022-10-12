@@ -1,6 +1,8 @@
 package by.fxg.speceditor.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
@@ -38,6 +40,8 @@ public class DebugDraw3D {
 	}
 	
 	public static interface IDebugDraw {
-		void draw(SpecObjectTree pmoe, DebugDraw3D draw);
+		public static Matrix4 tmpMatrix = new Matrix4();
+		public static Vector3 tmpVectorMin = new Vector3(), tmpVectorMax = new Vector3();
+		void draw(SpecObjectTree objectTree, DebugDraw3D draw);
 	}
 }
