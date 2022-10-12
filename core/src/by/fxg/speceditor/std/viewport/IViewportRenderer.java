@@ -8,11 +8,12 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import by.fxg.speceditor.std.editorPane.EditorPane;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.utils.IOUtils;
 
 public interface IViewportRenderer {
 	/** Adds object to renderer **/
-	void add(Object object, Object... args);
+	void add(SpecObjectTree objectTree, Object object, Object... args);
 	/** Clears data from renderer **/
 	void clear();
 	/** Called after position and direction set to camera and before <code>camera.update();</code> **/

@@ -2,13 +2,10 @@ package by.fxg.speceditor.prefabs;
 
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
-import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.ITreeElementHandler;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.objectTree.elements.ElementLight;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 
 public class PrefabObjectTreeHandler implements ITreeElementHandler {
@@ -37,8 +34,9 @@ public class PrefabObjectTreeHandler implements ITreeElementHandler {
 				
 				
 				if ((parentVisible && element.isVisible() || objectTree.elementSelector.isElementSelected(element))) {
-					if (element instanceof IModelProvider || element instanceof IDebugDraw) renderer.add(element);
-					if (element instanceof ElementLight) renderer.add(element, objectTree.elementSelector.isElementSelected(element));
+//					if (element instanceof IModelProvider || element instanceof IDebugDraw) renderer.add(objectTree, element);
+//					if (element instanceof ElementLight) renderer.add(objectTree, element);
+					renderer.add(objectTree, element);
 					//if (element instanceof ElementDecal) renderer.add(((ElementDecal)element).decal);
 				}
 				if (element instanceof ITreeElementFolder) {

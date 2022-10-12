@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.std.editorPane.EditorPane;
+import by.fxg.speceditor.std.editorPane.EditorPaneDecal;
 import by.fxg.speceditor.std.editorPane.EditorPaneFolder;
 import by.fxg.speceditor.std.editorPane.EditorPaneLight;
 import by.fxg.speceditor.std.editorPane.EditorPaneModel;
@@ -49,7 +50,8 @@ public class STDManager {
 		this.editorPanes.addAll(
 			new EditorPaneFolder(),
 			new EditorPaneModel(),
-			new EditorPaneLight()
+			new EditorPaneLight(),
+			new EditorPaneDecal()
 			
 		);
 	}

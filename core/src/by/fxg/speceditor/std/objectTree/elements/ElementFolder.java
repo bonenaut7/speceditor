@@ -29,6 +29,7 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 			add.addElement(new UDAElement("folder.add.folder", "Folder"));
 			add.addElement(new UDAElement("folder.add.model", "Model"));
 			add.addElement(new UDAElement("folder.add.light", "Light"));
+			add.addElement(new UDAElement("folder.add.decal", "Decal"));
 			items.add(new UDAElement(), add);
 		}
 	}
@@ -36,9 +37,10 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 	/** Used after using one of dropdown items, return true to close dropdown **/
 	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
 		switch (itemID) {
-			case "folder.add.folder": this.folderStack.add(new ElementFolder("New folder")); return true;
-			case "folder.add.model": this.folderStack.add(new ElementModel("New model")); return true;
-			case "folder.add.light": this.folderStack.add(new ElementLight("New light")); return true;
+			case "folder.add.folder": this.folderStack.add(new ElementFolder()); return true;
+			case "folder.add.model": this.folderStack.add(new ElementModel()); return true;
+			case "folder.add.light": this.folderStack.add(new ElementLight()); return true;
+			case "folder.add.decal": this.folderStack.add(new ElementDecal()); return true;
 			
 			default: return super.processDropdownAction(tree, itemID);
 		}

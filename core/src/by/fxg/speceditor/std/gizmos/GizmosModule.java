@@ -3,16 +3,12 @@ package by.fxg.speceditor.std.gizmos;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -48,15 +44,14 @@ public class GizmosModule implements IFocusable {
 	
 	/** Current interaction type **/
 	private GizmoInteractType interactType = GizmoInteractType.NONE;
-	
-	private Vector3
-		_tmpVector = new Vector3(),
-		_gizmoRenderPosition = new Vector3(), //render position, posision+offset
-		_gizmoClickOffset = new Vector3(), //interact start position mouse click offset, used for offsetting current gizmo
-		_gizmoStart = new Vector3(); //interact start position, used for scaling gizmo arrows
-	
-	/** just keep it as it is, i want to make viewport-locked cursor like in blender later **/
+	/** Mouse position from previous frame, used in the position gizmo to stop translation if mouse not changed position **/
 	private Vector2 prevMousePosition = new Vector2();
+	private Vector3
+		tmpVector = new Vector3(),
+		gizmoRenderPosition = new Vector3(), //render position, posision+offset
+		gizmoClickOffset = new Vector3(), //interact start position mouse click offset, used for offsetting current gizmo
+		gizmoStart = new Vector3(); //interact start position, used for scaling gizmo arrows
+	
 
 	/** current selected elements that can be interacted with gizmos **/
 	private Array<ITreeElementGizmos> elements = new Array<>();
@@ -95,16 +90,15 @@ public class GizmosModule implements IFocusable {
 				//just waiting for click here
 				float mx = Interpolation.linear.apply(0, Utils.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 				float my = Interpolation.linear.apply(0, Utils.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
-				//possible solution for cancelling slide of value can be Vector2 with prev. tick mouse position, and then we can compare current mouse position with previous, and if they're equal - cancel update
 				Ray ray = this.camera.getPickRay(mx, my);
 				GizmoInteractType hitType = this.isRayCastedGizmo(ray);
 				if (hitType != GizmoInteractType.NONE) {
 					SpecInterface.setCursor(AppCursor.GRAB);
 					if (Game.get.getInput().isMouseDown(0, false)) {
-						callback.getHitPointWorld(this._tmpVector);
-						this._gizmoStart.set(this._gizmoRenderPosition);
-						ray.getEndPoint(this._gizmoClickOffset, this.camera.position.dst(this._gizmoRenderPosition));
-						this._gizmoClickOffset.sub(this._gizmoRenderPosition);
+						callback.getHitPointWorld(this.tmpVector);
+						this.gizmoStart.set(this.gizmoRenderPosition);
+						ray.getEndPoint(this.gizmoClickOffset, this.camera.position.dst(this.gizmoRenderPosition));
+						this.gizmoClickOffset.sub(this.gizmoRenderPosition);
 						this.interactType = hitType;
 						this.setFocused(true);
 					}
@@ -120,9 +114,9 @@ public class GizmosModule implements IFocusable {
 //		else if (my > y + height) { Gdx.input.setCursorPosition(mx, Gdx.graphics.getHeight() - y); this.prevMousePosition.y = Gdx.graphics.getHeight() - y; }
 		if (this.selectedTool != null) {
 			this.updateGizmosPosition();
-			float scale = this.camera.position.dst(this.isFocused() ? this._gizmoStart : this._gizmoRenderPosition) / 6.725F;
-			for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.update(this._gizmoRenderPosition, scale);
-			this.gizmoModel[this.selectedTool.ordinal()].transform.setToTranslation(this._gizmoRenderPosition).scale(scale, scale, scale);
+			float scale = this.camera.position.dst(this.isFocused() ? this.gizmoStart : this.gizmoRenderPosition) / 6.725F;
+			for (GizmoHitbox gizmoHitbox : this.hitboxes) gizmoHitbox.update(this.gizmoRenderPosition, scale);
+			this.gizmoModel[this.selectedTool.ordinal()].transform.setToTranslation(this.gizmoRenderPosition).scale(scale, scale, scale);
 			this.debugDraw.update();
 		}
 	}
@@ -131,31 +125,33 @@ public class GizmosModule implements IFocusable {
 	private void processTranslation(Camera camera, int x, int y, int width, int height) {
 		int mx = (int)Interpolation.linear.apply(0, Gdx.graphics.getWidth(), (GDXUtil.getMouseX() - x) / (float)width);
 		int my = (int)Interpolation.linear.apply(0, Gdx.graphics.getHeight(), 1f - ((GDXUtil.getMouseY() - y) / (float)height));
-		camera.getPickRay(mx, my).getEndPoint(this._tmpVector, camera.position.dst(this._gizmoRenderPosition));
-		this._tmpVector.sub(this._gizmoClickOffset).sub(this._gizmoRenderPosition); //FIXME NOT WORKING, cursor is doing anything except single thing needed
-		
-		if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true) && Game.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
-			this.roundVector(this._tmpVector, 10f);
-		} else if (Game.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
-			this.roundVector(this._tmpVector, 1f);
-		} else if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
-			this.roundVector(this._tmpVector, 0.1f);
-		}
-		
-		switch (this.interactType) {
-			case TRANSLATE_X: this._tmpVector.set(this._tmpVector.x, 0, 0); break;
-			case TRANSLATE_Y: this._tmpVector.set(0, this._tmpVector.y, 0); break;
-			case TRANSLATE_Z: this._tmpVector.set(0, 0, this._tmpVector.z); break;
-			default: break;
-		}
-		
-		this._gizmoRenderPosition.add(this._tmpVector);
-		for (ITreeElementGizmos gizmoElement : this.elements) {
-			if (gizmoElement.isTransformSupported(this.selectedTool)) {
-				gizmoElement.getTransform(this.selectedTool).add(this._tmpVector);
+		if (this.prevMousePosition.x != mx || this.prevMousePosition.y != my) {
+			camera.getPickRay(mx, my).getEndPoint(this.tmpVector, camera.position.dst(this.gizmoRenderPosition));
+			this.tmpVector.sub(this.gizmoClickOffset).sub(this.gizmoRenderPosition);
+			
+			if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true) && Game.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
+				this.roundVector(this.tmpVector, 10f);
+			} else if (Game.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
+				this.roundVector(this.tmpVector, 1f);
+			} else if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
+				this.roundVector(this.tmpVector, 0.1f);
 			}
+			
+			switch (this.interactType) {
+				case TRANSLATE_X: this.tmpVector.set(this.tmpVector.x, 0, 0); break;
+				case TRANSLATE_Y: this.tmpVector.set(0, this.tmpVector.y, 0); break;
+				case TRANSLATE_Z: this.tmpVector.set(0, 0, this.tmpVector.z); break;
+				default: break;
+			}
+			
+			this.gizmoRenderPosition.add(this.tmpVector);
+			for (ITreeElementGizmos gizmoElement : this.elements) {
+				if (gizmoElement.isTransformSupported(this.selectedTool)) {
+					gizmoElement.getTransform(this.selectedTool).add(this.tmpVector);
+				}
+			}
+			this.prevMousePosition.set(mx, my);
 		}
-		
 		//end of interaction
 		if (!Game.get.getInput().isMouseDown(0, true)) {
 			this.setFocused(false);
@@ -165,11 +161,18 @@ public class GizmosModule implements IFocusable {
 	/** Processing of gizmo with rotation mode **/
 	private void processRotation(Camera camera, int x, int y, int width, int height) {
 		//this must be done with screen-space maybe
+		
+		if (!Game.get.getInput().isMouseDown(0, true)) {
+			this.setFocused(false);
+		}
 	}
 	
 	/** Processing of gizmo with scaling mode **/
 	private void processScaling(Camera camera, int x, int y, int width, int height) {
-		//i think we can do scaling the same as translation?
+		
+		if (!Game.get.getInput().isMouseDown(0, true)) {
+			this.setFocused(false);
+		}
 	}
 	
 	/** Renders gizmo arrows to {@link #framebuffer} **/
@@ -181,11 +184,10 @@ public class GizmosModule implements IFocusable {
 			
 			this.framebuffer.capture(0f, 0f, 0f, 0f);
 			this.modelBatch.begin(camera);
-			//TODO Disable rendering of default xyz arrows for every type of tool, add grid rendering if tool is being interacted
+			//TODO add grid rendering if tool is being interacted
 			if (this.selectedTool != null) {
 				this.modelBatch.render(this.gizmoModel[this.selectedTool.ordinal()]);
 			}
-			//this.modelBatch.render(this.translation);
 			this.modelBatch.end();
 			this.debugDraw.drawer.begin(camera);
 			this.debugDraw.world.debugDrawWorld();
@@ -234,16 +236,16 @@ public class GizmosModule implements IFocusable {
 	}
 	
 	private void updateGizmosPosition() {
-		this._gizmoRenderPosition.set(0, 0, 0);
+		this.gizmoRenderPosition.set(0, 0, 0);
 		if (!this.elements.isEmpty()) {
 			int positions = 0;
 			for (ITreeElementGizmos gizmoElement : this.elements) {
 				if (gizmoElement.isTransformSupported(GizmoTransformType.TRANSLATE)) {
-					this._gizmoRenderPosition.add(gizmoElement.getOffsetTransform(GizmoTransformType.TRANSLATE)).add(gizmoElement.getTransform(GizmoTransformType.TRANSLATE));
+					this.gizmoRenderPosition.add(gizmoElement.getOffsetTransform(GizmoTransformType.TRANSLATE)).add(gizmoElement.getTransform(GizmoTransformType.TRANSLATE));
 					positions++;
 				}
 			}
-			this._gizmoRenderPosition.scl(1.0F / positions);
+			this.gizmoRenderPosition.scl(1.0F / positions);
 		}
 	}
 	

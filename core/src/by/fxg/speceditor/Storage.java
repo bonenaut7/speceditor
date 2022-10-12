@@ -46,6 +46,7 @@ public class Storage {
 		this.sprites.put("icons/model", new Sprite(manager.get("defaults/icons/model.png", Texture.class)));
 		this.sprites.put("icons/light", new Sprite(manager.get("defaults/icons/light.png", Texture.class)));
 		this.sprites.put("icons/hitbox", new Sprite(manager.get("defaults/icons/hitbox.png", Texture.class)));
+		this.sprites.put("icons/decal", new Sprite(manager.get("defaults/icons/decal.png", Texture.class)));
 		
 		SpriteStack.getTextureRegion("defaults/lightdecal_false.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		SpriteStack.getTextureRegion("defaults/lightdecal_true.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);

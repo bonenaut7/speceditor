@@ -34,6 +34,7 @@ import by.fxg.speceditor.std.editorPane.EditorPane;
 import by.fxg.speceditor.std.g3d.IModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.elements.ElementDecal;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight;
 import by.fxg.speceditor.utils.Utils;
 
@@ -84,17 +85,18 @@ public class DefaultRenderer implements IViewportRenderer {
 		this.modelGrid.materials.get(0).set(ColorAttribute.createDiffuse(1, 1, 1, 0.33F), new BlendingAttribute(0.5F), FloatAttribute.createAlphaTest(0.1F));
 	}
 
-	public void add(Object object, Object... objects) {
+	public void add(SpecObjectTree objectTree, Object object, Object... objects) {
 		if (object instanceof IDebugDraw) this.debugDrawables.add((IDebugDraw)object);
 		if (object instanceof IModelProvider) this.modelProviders.add((IModelProvider)object);
-		//if (object instanceof ElementDecal) this.sceneDecalDrawer.decalsToProduce.add(((ElementDecal)object)); 
 		if (object instanceof ElementLight) {
 			ElementLight element = (ElementLight)object;
 			this.editorDecalDrawer.decalsToProduce.add(element._viewportDecal);
-			element._viewportDecal.setDecal(Game.storage.decals.get(Utils.format("viewport/light.", objects[0])));
+			element._viewportDecal.setDecal(Game.storage.decals.get(Utils.format("viewport/light.", objectTree.elementSelector.isElementSelected(element))));
 			element._viewportDecal.getDecal().setScale(0.0015f, 0.0015f);
 			element._viewportDecal.getDecal().setPosition(element.getTransform(GizmoTransformType.TRANSLATE));
 			this.sceneEnvironment.add(element.getLight(BaseLight.class));
+		} else if (object instanceof ElementDecal) {
+			 this.sceneDecalDrawer.decalsToProduce.add(((ElementDecal)object).decal); 
 		}
 	}
 	

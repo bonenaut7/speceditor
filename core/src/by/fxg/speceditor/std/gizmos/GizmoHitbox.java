@@ -23,9 +23,9 @@ class GizmoHitbox {
 		this.tmpVector = new Vector3();
 		
 		switch (this.type) {
-			case 0: this.shape.setLocalScaling(new Vector3(2.75f, 0.25f, 0.25f)); break;
-			case 1: this.shape.setLocalScaling(new Vector3(0.25f, 2.75f, 0.25f)); break;
-			case 2: this.shape.setLocalScaling(new Vector3(0.25f, 0.25f, 2.75f)); break;
+			case 0: this.shape.setLocalScaling(new Vector3(2.0f, 0.25f, 0.25f)); break;
+			case 1: this.shape.setLocalScaling(new Vector3(0.25f, 2.0f, 0.25f)); break;
+			case 2: this.shape.setLocalScaling(new Vector3(0.25f, 0.25f, 2.0f)); break;
 		}
 	}
 	
@@ -35,16 +35,16 @@ class GizmoHitbox {
 		temp.setToTranslation(position);
 		switch (this.type) {
 			case 0: {
-				this.shape.setLocalScaling(this.tmpVector.set(2.75f, 0.25f, 0.25f).scl(Math.max(scale, 0.01F)));
-				temp.translate(1.45f * scale, 0f, 0f);
+				this.shape.setLocalScaling(this.tmpVector.set(1.5f, 0.25f, 0.25f).scl(Math.max(scale, 0.01F)));
+				temp.translate(0.85f * scale, 0f, 0f);
 			} break;
 			case 1: {
-				this.shape.setLocalScaling(this.tmpVector.set(0.25f, 2.75f, 0.25f).scl(Math.max(scale, 0.01F)));
-				temp.translate(0f, 1.45f * scale, 0f);
+				this.shape.setLocalScaling(this.tmpVector.set(0.25f, 1.5f, 0.25f).scl(Math.max(scale, 0.01F)));
+				temp.translate(0f, 0.85f * scale, 0f);
 			} break;
 			case 2: {
-				this.shape.setLocalScaling(this.tmpVector.set(0.25f, 0.25f, 2.75f).scl(Math.max(scale, 0.01F)));
-				temp.translate(0f, 0f, 1.45f * scale);
+				this.shape.setLocalScaling(this.tmpVector.set(0.25f, 0.25f, 1.5f).scl(Math.max(scale, 0.01F)));
+				temp.translate(0f, 0f, 0.85f * scale);
 			} break;
 		}
 		this.object.setWorldTransform(temp);

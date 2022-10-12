@@ -21,19 +21,8 @@ public class PrefabProject extends BasicProject {
 	public PrefabProject(ProjectSolver solver) {
 		super(solver);
 		this.objectTree = new SpecObjectTree().setHandler(new PrefabObjectTreeHandler(this));
-		//
-		ElementFolder folder = new ElementFolder();
-		for (int i = 0; i != 10; i++) {
-			ElementFolder _folder = new ElementFolder("Folder " + i);
-			_folder.getFolderStack().add(folder);
-			_folder.setFolderOpened(true);
-			folder = _folder;
-		}
-		this.objectTree.getStack().add(folder);
-		for (int i = 0; i != 15; i++) {
-			this.objectTree.getStack().add(new ElementFolder());
-		}
-		//
+		this.objectTree.getStack().add(new ElementFolder("Root folder"));
+
 		this.renderer = new DefaultRenderer(this.objectTree);
 	}
 	
