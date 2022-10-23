@@ -14,6 +14,8 @@ import by.fxg.speceditor.utils.Utils;
 public abstract class BasicProject {
 	/** Project-solver of this project **/
 	protected ProjectSolver solver;
+	/** Manager of project's assets **/
+	protected ProjectAssetManager assetManager = new ProjectAssetManager();
 	/** Loaded project-header of this project. Contains project settings and info. **/
 	protected Ini config;
 	protected FileHandle projectFolder;

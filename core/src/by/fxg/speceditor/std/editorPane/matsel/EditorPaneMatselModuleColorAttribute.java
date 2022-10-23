@@ -3,7 +3,6 @@ package by.fxg.speceditor.std.editorPane.matsel;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -49,7 +48,7 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 	}
 	
 	public void whileFocused(STDInputField inputField, String id) {
-		ColorAttribute attribute = (ColorAttribute)this.matsel.getCurrentAttribute(this.matsel.getCurrentMaterial());
+		ColorAttribute attribute = (ColorAttribute)this.matsel.getSelectedAttribute();
 		switch (id) {
 			case "color0": attribute.color.r = this.color[0].getTextAsNumber(attribute.color.r); break;
 			case "color1": attribute.color.g = this.color[1].getTextAsNumber(attribute.color.g); break;
@@ -75,17 +74,14 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 	}
 
 	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
-		Material material = matsel.getCurrentMaterial();
-		if (material != null) {
-			switch (id) {
-				case "default.color.diffuse": material.set(ColorAttribute.createDiffuse(1, 1, 1, 1)); break;
-				case "default.color.specular": material.set(ColorAttribute.createSpecular(1, 1, 1, 1)); break;
-				case "default.color.ambient": material.set(ColorAttribute.createAmbient(1, 1, 1, 1)); break;
-				case "default.color.emissive": material.set(ColorAttribute.createEmissive(1, 1, 1, 1)); break;
-				case "default.color.reflection": material.set(ColorAttribute.createReflection(1, 1, 1, 1)); break;
-				case "default.color.ambientLight": material.set(ColorAttribute.createAmbientLight(1, 1, 1, 1)); break;
-				case "default.color.fog": material.set(ColorAttribute.createFog(1, 1, 1, 1)); break;
-			}
+		switch (id) {
+			case "default.color.diffuse": matsel.addAttribute(ColorAttribute.createDiffuse(1, 1, 1, 1)); break;
+			case "default.color.specular": matsel.addAttribute(ColorAttribute.createSpecular(1, 1, 1, 1)); break;
+			case "default.color.ambient": matsel.addAttribute(ColorAttribute.createAmbient(1, 1, 1, 1)); break;
+			case "default.color.emissive": matsel.addAttribute(ColorAttribute.createEmissive(1, 1, 1, 1)); break;
+			case "default.color.reflection": matsel.addAttribute(ColorAttribute.createReflection(1, 1, 1, 1)); break;
+			case "default.color.ambientLight": matsel.addAttribute(ColorAttribute.createAmbientLight(1, 1, 1, 1)); break;
+			case "default.color.fog": matsel.addAttribute(ColorAttribute.createFog(1, 1, 1, 1)); break;
 		}
 	}
 

@@ -14,7 +14,6 @@ import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.screen.ScreenTestUI;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.ui.SpecInterface;
-import by.fxg.speceditor.utils.Utils;
 
 public class Game extends Apparat<GInputProcessor> {
 	public static boolean DEBUG = false;

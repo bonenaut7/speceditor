@@ -13,10 +13,16 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.project.ProjectManager;
 
 public class Utils {
-	
+	public static final String[] 
+		MODELS_EXTENSIONS = {"obj", "g3db", "g3dj", "gltf", "glb"},
+		IMAGES_EXTENSIONS = {"png", "jpg", "jpeg", "etc1"};
+	public static final String
+		MODELS_DESCRIPTION = "Supported models (*.obj; *.g3db; *.g3dj; *.gltf; *.glb)",
+		IMAGES_DESCRIPTION = "Supported images (*.png; *.jpg; *.jpeg; *.etc1)";
 	//Opens dialog to open some file
-	public static FileHandle selectFileDialog(String desc, String... extensions) { return selectFileDialog(ProjectManager.currentProject.getProjectFolder(), desc, extensions); }
-	public static FileHandle selectFileDialog(FileHandle directory, String desc, String... extensions) {
+	
+	public static FileHandle openFileSelectionDialog(String desc, String... extensions) { return openFileSelectionDialog(ProjectManager.currentProject.getProjectFolder(), desc, extensions); }
+	public static FileHandle openFileSelectionDialog(FileHandle directory, String desc, String... extensions) {
 		JFrame frame = new JFrame();
 		frame.setAlwaysOnTop(true);
 		JFileChooser fileChooser = new JFileChooser();
@@ -30,6 +36,31 @@ public class Utils {
 			if (absolute != null && absolute.path().contains(projectFolder.path())) {
 				String[] splitted = absolute.path().split(projectFolder.path());
 				return projectFolder.child(splitted[splitted.length - 1]);
+			}
+		}
+		return null;
+	}
+	
+	/** example: <br>
+	 * 	Target Handle: coreFolder/ <br>
+	 *  Absolute Path: C:/projects/coreFolder/images/file9.png <br>
+	 *  Returns: coreFolder/images/file9.png as Target Handle's child (or null if not possible) **/
+	@Deprecated //FIXME
+	public static FileHandle intersectCombinePaths(FileHandle targetHandle, String absolutePath) {
+		String targetPath = targetHandle.path(); 
+		if (absolutePath.contains(targetPath)) {
+			String[] subParts = absolutePath.split(targetPath);
+			if (subParts.length > 2) {
+				//concurrent path
+				//example: [/path/]TARGET[/]TARGET[/path.path]
+				
+				for (int i = 0; i != subParts.length; i++) {
+					//FileHandle child 
+				}
+			} else {
+				//exact path without concurrencies
+				//example: [/path/]TARGET[/path.path]
+				return targetHandle.child(subParts[subParts.length - 1]);
 			}
 		}
 		return null;
@@ -51,11 +82,11 @@ public class Utils {
 		return builder.toString();
 	}
 	
-	public static void logInfo(String tag, Object... objects) { System.err.println(String.format("[INFO] %s: %s", tag, format(objects))); }
-	public static void logWarn(String tag, Object... objects) { System.err.println(String.format("[WARN] %s: %s", tag, format(objects))); }
+	public static void logInfo(String tag, Object... objects) { System.err.println(format("[INFO] ", tag, ": ", format(objects))); }
+	public static void logWarn(String tag, Object... objects) { System.err.println(format("[WARN] ", tag, ": ", format(objects))); }
 	public static void logError(Throwable throwable, String tag, Object... objects) {
-		System.err.println(String.format("[ERROR] %s: %s", tag, format(objects)));
+		System.err.println(format("[ERROR] ", tag, ": ", format(objects)));
 		if (Game.DEBUG && throwable != null) throwable.printStackTrace();
 	}
-	public static void logDebug(Object... objects) { if (Game.DEBUG) System.err.println(String.format("[DEBUG] %s", format(objects))); }	
+	public static void logDebug(Object... objects) { if (Game.DEBUG) System.err.println(format("[DEBUG] ", format(objects))); }	
 }

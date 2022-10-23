@@ -97,7 +97,7 @@ public class UDropdownArea implements IFocusable {
 			shape.setColor(UColor.gray);
 			if (this.selectedID == -2) {
 				shape.setColor(UColor.gray);
-				shape.filledRectangle(area.x + xOffset, y, targetWidth, area.dropHeight);
+				shape.filledRectangle(area.x + xOffset, y + area.dropHeight - 9, targetWidth, 9);
 				shape.setColor(UColor.overlay);
 				shape.line(area.x + xOffset + 4, y + area.dropHeight - 4, area.x + xOffset + targetWidth - 4, y + area.dropHeight - 4, 2);
 				return 9;
@@ -120,9 +120,10 @@ public class UDropdownArea implements IFocusable {
 					shape.filledTriangle(xp, y + (area.dropHeight / 2 + 6), xp + 6, y + (area.dropHeight / 2 + 1), xp, y + (area.dropHeight / 2 - 4));
 					//FIXME IDK HOW TF THIS WORKS, IT'S STILL SELECTING 2 ITEMS I'M FUCKING HATE IT
 					if (GDXUtil.isMouseInArea(area.x + xOffset + 1, y + 1, targetWidth - 2, area.dropHeight - 2) || id == selectedID) {
+						int yPosition = y;
 						for (int i = 0; i != this.elements.size; i++) {
 							if (GDXUtil.isMouseInArea(area.x + xOffset + targetWidth, y - area.dropHeight * i, this.sizeX, area.dropHeight)) this.selectedID = i;
-							this.elements.get(i).render(area, shape, foster, y - area.dropHeight * i, this.sizeX, xOffset + targetWidth, i, this.selectedID);
+							yPosition -= this.elements.get(i).render(area, shape, foster, yPosition, this.sizeX, xOffset + targetWidth, i, this.selectedID);
 						}
 					}
 				}

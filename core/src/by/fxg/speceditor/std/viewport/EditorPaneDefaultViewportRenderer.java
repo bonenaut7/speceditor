@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Align;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.std.editorPane.EditorPane;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselEnvironment;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
@@ -27,6 +28,7 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 	protected STDInputField[] bufferColor = new STDInputField[4];
 	
 	private ViewportFeaturesBlock viewportFeatures;
+	private EditorPaneMatselEnvironment environmentMatsel;
 	
 	public EditorPaneDefaultViewportRenderer(DefaultRenderer renderer) {
 		this.renderer = renderer;
@@ -39,6 +41,7 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 		UIElement._convertVector3ToText(this.renderer.cameraSettings, this.cameraSettings[0], this.cameraSettings[1], this.cameraSettings[2], true);
 		UIElement._convertColorToText(this.renderer.bufferColor, this.bufferColor[0], this.bufferColor[1], this.bufferColor[2], this.bufferColor[3], true);
 		this.viewportFeatures = new ViewportFeaturesBlock(this);
+		this.environmentMatsel = (EditorPaneMatselEnvironment)new EditorPaneMatselEnvironment("Environment", renderer.viewportEnvironment).setDropped(true);
 	}
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
@@ -67,6 +70,8 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 		}
 		
 		yOffset = this.viewportFeatures.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 10);
+		yOffset = this.environmentMatsel.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset);
+		if (this.environmentMatsel.dropdownArea.isFocused()) this.environmentMatsel.dropdownArea.render(shape, foster);
 		return yOffset;
 	}
 	

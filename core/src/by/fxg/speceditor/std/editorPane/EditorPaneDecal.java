@@ -55,7 +55,7 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		this.buttonSelectDecal.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
 		if (this.buttonSelectDecal.isPressed()) {
 			try { //working fine, hm, maybe problem with mesh hitbox
-				FileHandle handle = Utils.selectFileDialog("Supported textures (*.png; *.jpg)", "png", "jpg", "jpeg");
+				FileHandle handle = Utils.openFileSelectionDialog("Supported textures (*.png; *.jpg)", "png", "jpg", "jpeg");
 				SpriteStack.remove(handle);
 				this.element.decal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(handle), true), handle);
 			} catch (Exception e) {

@@ -4,13 +4,13 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.ResourceManager;
+import by.fxg.speceditor.project.ProjectAssetManager;
 import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
@@ -27,16 +27,16 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 	}
 	
 	public int renderModule(Batch batch, ShapeDrawer shape, Foster foster, int yOffset, int x, int width) {
-		Material material = this.matsel.getCurrentMaterial();
-		TextureLinkedAttribute attribute = (TextureLinkedAttribute)this.matsel.getCurrentAttribute(material);
+		TextureLinkedAttribute attribute = (TextureLinkedAttribute)this.matsel.getSelectedAttribute();
 		foster.setString("Texture:").draw(x, yOffset -= foster.getHeight() + 1, Align.left);
 		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 10, 12);
 		this.buttonSelectTexture.render(shape, foster);
 		if (this.buttonSelectTexture.isPressed()) {
 			try {
-				FileHandle handle = Utils.selectFileDialog("Supported images (*.png; *.jpg)", "png", "jpg");
-				attribute = new TextureLinkedAttribute(attribute.type, new Texture(handle), handle);
-				material.set(attribute);
+				FileHandle handle = Utils.openFileSelectionDialog(Utils.IMAGES_DESCRIPTION, Utils.IMAGES_EXTENSIONS);
+				if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(attribute);
+				//attribute = new TextureLinkedAttribute(attribute.type, new Texture(handle), handle);
+				//material.set(attribute);
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		
@@ -62,24 +62,21 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 	}
 
 	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
-		Material material = matsel.getCurrentMaterial();
-		if (material != null) {
-			switch (id) {
-				case "default.texture.diffuse": material.set(TextureLinkedAttribute.createDiffuse(ResourceManager.standartDiffuse)); break;
-				case "default.texture.specular": material.set(TextureLinkedAttribute.createSpecular(ResourceManager.standartDiffuse)); break;
-				case "default.texture.bump": material.set(TextureLinkedAttribute.createBump(ResourceManager.standartDiffuse)); break;
-				case "default.texture.normal": material.set(TextureLinkedAttribute.createNormal(ResourceManager.standartDiffuse)); break;
-				case "default.texture.ambient": material.set(TextureLinkedAttribute.createAmbient(ResourceManager.standartDiffuse)); break;
-				case "default.texture.emissive": material.set(TextureLinkedAttribute.createEmissive(ResourceManager.standartDiffuse)); break;
-				case "default.texture.reflection": material.set(TextureLinkedAttribute.createReflection(ResourceManager.standartDiffuse)); break;
-			}
+		switch (id) {
+			case "default.texture.diffuse": matsel.addAttribute(TextureLinkedAttribute.createDiffuse(ResourceManager.standardTexture)); break;
+			case "default.texture.specular": matsel.addAttribute(TextureLinkedAttribute.createSpecular(ResourceManager.standardTexture)); break;
+			case "default.texture.bump": matsel.addAttribute(TextureLinkedAttribute.createBump(ResourceManager.standardTexture)); break;
+			case "default.texture.normal": matsel.addAttribute(TextureLinkedAttribute.createNormal(ResourceManager.standardTexture)); break;
+			case "default.texture.ambient": matsel.addAttribute(TextureLinkedAttribute.createAmbient(ResourceManager.standardTexture)); break;
+			case "default.texture.emissive": matsel.addAttribute(TextureLinkedAttribute.createEmissive(ResourceManager.standardTexture)); break;
+			case "default.texture.reflection": matsel.addAttribute(TextureLinkedAttribute.createReflection(ResourceManager.standardTexture)); break;
 		}
 	}
 
 	public void onSelect(EditorPaneMatsel matsel, Attribute attribute) {
 		super.onSelect(matsel, attribute);
 		if (attribute instanceof TextureAttribute && !(attribute instanceof TextureLinkedAttribute)) {
-			this.matsel.getCurrentMaterial().set(new TextureLinkedAttribute((TextureAttribute)attribute));
+			this.matsel.getSelectedAttributes().set(new TextureLinkedAttribute((TextureAttribute)attribute));
 		}
 	}
 	

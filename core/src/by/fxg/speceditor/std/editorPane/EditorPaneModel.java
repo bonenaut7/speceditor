@@ -1,16 +1,10 @@
 package by.fxg.speceditor.std.editorPane;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.Game;
-import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselMaterialArray;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -32,7 +26,7 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 	private UButton buttonSelectModel;
 	
 	private TransformBlock transform;
-	private EditorPaneMatsel matsel;
+	private EditorPaneMatselMaterialArray matsel;
 	
 	public EditorPaneModel() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
@@ -41,7 +35,7 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		
 		this.buttonSelectModel = new UButton("Open file");
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
-		this.matsel = (EditorPaneMatsel)new EditorPaneMatsel("Material selection").setDropped(true);
+		this.matsel = (EditorPaneMatselMaterialArray)new EditorPaneMatselMaterialArray("Material selection").setDropped(true);
 	}
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
@@ -57,21 +51,8 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Select model:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectModel.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
-			try { //working fine, hm, maybe problem with mesh hitbox
-				FileHandle handle = Utils.selectFileDialog("Supported models (*.obj; *.gltf)", "obj", "gltf", "g3db", "g3dj");
-				AssetManager manager = Game.get.resourceManager.assetManager;
-				AssetDescriptor<Model> assetDescriptor = new AssetDescriptor<Model>(handle, Model.class);
-				if (manager.isLoaded(assetDescriptor)) manager.unload(handle.path());
-				manager.load(assetDescriptor);
-				manager.finishLoading();
-				if (manager.isLoaded(assetDescriptor)) {
-					this.element.modelHandle = handle;
-					this.element.modelInstance = new ModelInstance(manager.get(assetDescriptor));
-					this.matsel.update(this.element.modelInstance.materials);
-				}
-			} catch (Exception e) {
-				Utils.logError(e, "EditorPaneModel#updateAndRender", "Error happened when tried to load asset");
-			}
+			this.element.setModelAsset(Utils.openFileSelectionDialog(Utils.MODELS_DESCRIPTION, Utils.MODELS_EXTENSIONS));
+			this.matsel.update(this.element.modelInstance.materials);
 		}
 		
 		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);

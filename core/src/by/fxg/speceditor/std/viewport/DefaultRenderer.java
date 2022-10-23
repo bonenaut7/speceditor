@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -31,7 +30,7 @@ import by.fxg.speceditor.Game;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.editorPane.EditorPane;
-import by.fxg.speceditor.std.g3d.IModelProvider;
+import by.fxg.speceditor.std.g3d.ITreeElementModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.elements.ElementDecal;
@@ -47,7 +46,7 @@ public class DefaultRenderer implements IViewportRenderer {
 	//Preferences
 	protected Vector3 cameraSettings = new Vector3(67F, 50.0f, 0.1f); //FOV, Far, Near
 	protected Color bufferColor = new Color(0.12F, 0.12F, 0.12F, 1.0F);
-	protected Attributes viewportAttributes = new Attributes() {{
+	protected Environment viewportEnvironment = new Environment() {{
 		set(new BlendingAttribute(1f), FloatAttribute.createAlphaTest(0.5f), ColorAttribute.createAmbientLight(0.4f, 0.4f, 0.4f, 1F));
 	}};
 	
@@ -59,8 +58,7 @@ public class DefaultRenderer implements IViewportRenderer {
 	private ModelBatch sceneModelBatch;
 	private DecalDrawer sceneDecalDrawer;
 	private DebugDraw3D sceneDebugDraw;
-	private Environment sceneEnvironment = new Environment();
-	private Array<IModelProvider> modelProviders = new Array<>();
+	private Array<ITreeElementModelProvider> modelProviders = new Array<>();
 	private Array<IDebugDraw> debugDrawables = new Array<>();
 	
 	//Renderer environment, features
@@ -87,14 +85,14 @@ public class DefaultRenderer implements IViewportRenderer {
 
 	public void add(SpecObjectTree objectTree, Object object, Object... objects) {
 		if (object instanceof IDebugDraw) this.debugDrawables.add((IDebugDraw)object);
-		if (object instanceof IModelProvider) this.modelProviders.add((IModelProvider)object);
+		if (object instanceof ITreeElementModelProvider) this.modelProviders.add((ITreeElementModelProvider)object);
 		if (object instanceof ElementLight) {
 			ElementLight element = (ElementLight)object;
 			this.editorDecalDrawer.decalsToProduce.add(element._viewportDecal);
 			element._viewportDecal.setDecal(Game.storage.decals.get(Utils.format("viewport/light.", objectTree.elementSelector.isElementSelected(element))));
 			element._viewportDecal.getDecal().setScale(0.0015f, 0.0015f);
 			element._viewportDecal.getDecal().setPosition(element.getTransform(GizmoTransformType.TRANSLATE));
-			this.sceneEnvironment.add(element.getLight(BaseLight.class));
+			this.viewportEnvironment.add(element.getLight(BaseLight.class));
 		} else if (object instanceof ElementDecal) {
 			 this.sceneDecalDrawer.decalsToProduce.add(((ElementDecal)object).decal); 
 		}
@@ -112,8 +110,8 @@ public class DefaultRenderer implements IViewportRenderer {
 		this.frameBuffer.capture(this.bufferColor);
 		this.sceneModelBatch.begin(this.camera);
 		if (this.featureRenderGrid) this.sceneModelBatch.render(this.modelGrid);
-		for (IModelProvider modelProvider : this.modelProviders) {
-			this.sceneModelBatch.render(modelProvider.applyTransforms().getDefaultModel(), this.sceneEnvironment);
+		for (ITreeElementModelProvider modelProvider : this.modelProviders) {
+			this.sceneModelBatch.render(modelProvider.applyTransforms().getRenderableProvider(), this.viewportEnvironment);
 		}
 		this.sceneModelBatch.end();
 		this.sceneModelBatch.flush();
@@ -145,9 +143,9 @@ public class DefaultRenderer implements IViewportRenderer {
 	public void clear() {
 		this.editorDecalDrawer.decalsToProduce.clear();
 		this.sceneDecalDrawer.decalsToProduce.clear();
-		this.sceneEnvironment.remove(DirectionalLightsAttribute.Type);
-		this.sceneEnvironment.remove(PointLightsAttribute.Type);
-		this.sceneEnvironment.remove(SpotLightsAttribute.Type);
+		this.viewportEnvironment.remove(DirectionalLightsAttribute.Type);
+		this.viewportEnvironment.remove(PointLightsAttribute.Type);
+		this.viewportEnvironment.remove(SpotLightsAttribute.Type);
 		this.modelProviders.clear();
 		this.debugDrawables.clear();
 	}

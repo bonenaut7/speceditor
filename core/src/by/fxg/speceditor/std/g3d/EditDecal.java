@@ -19,7 +19,7 @@ public class EditDecal extends BaseDecal {
 	public Vector2 scale;
 
 	public EditDecal() {
-		this.decal = Decal.newDecal(new TextureRegion(ResourceManager.standartDecal), true);
+		this.decal = Decal.newDecal(new TextureRegion(ResourceManager.standardDecal), true);
 		this.position = new Vector3();
 		this.rotation = new Vector3();
 		this.scale = new Vector2(0.1f, 0.1f);

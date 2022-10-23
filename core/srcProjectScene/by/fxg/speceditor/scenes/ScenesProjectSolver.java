@@ -1,4 +1,4 @@
-package by.fxg.speceditor.prefabs;
+package by.fxg.speceditor.scenes;
 
 import com.badlogic.gdx.files.FileHandle;
 
@@ -6,8 +6,8 @@ import by.fxg.speceditor.project.BasicProject;
 import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.utils.Utils;
 
-public class PrefabProjectSolver extends ProjectSolver {
-	public PrefabProjectSolver() {
+public class ScenesProjectSolver extends ProjectSolver {
+	public ScenesProjectSolver() {
 		super("Prefab", "STD-PREFAB");
 	}
 	
@@ -16,7 +16,7 @@ public class PrefabProjectSolver extends ProjectSolver {
 	}
 
 	public BasicProject preLoadProject(FileHandle projectFile) {
-		PrefabProject project = new PrefabProject(this);
+		ScenesProject project = new ScenesProject(this);
 		project.loadConfiguration(projectFile);
 		return project;
 	}

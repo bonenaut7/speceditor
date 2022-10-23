@@ -3,6 +3,7 @@ package by.fxg.speceditor;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.pilesos.PilesosInputImpl;
 import by.fxg.pilesos.graphics.SpriteStack;
@@ -23,16 +25,17 @@ import by.fxg.pilesos.i18n.I18nPoolLoader;
 import by.fxg.pilesos.utils.JarUtils;
 
 public class ResourceManager {
-	public static Texture standartDiffuse = null;
-	public static Texture standartDecal = null;
-	
-	public static Model standartModel = null;
-	
+	public static ResourceManager INSTANCE;
 	private final Map<String, Class<?>> assetMarkers = new HashMap<>();
+	
+	public static Texture standardTexture = null;
+	public static Texture standardDecal = null;
+	public static Model standardModel = null;
+	
 	public AssetManager assetManager;
-	public boolean isLoaded = false;
 	
 	public ResourceManager() {
+		INSTANCE = this;
 		this.assetManager = new AssetManager();
 		this.assetManager.setLoader(I18nPool.class, ".langpack", new I18nPoolLoader(new InternalFileHandleResolver()));
 		this.assetMarkers.put("langpack", I18nPool.class);
@@ -41,12 +44,11 @@ public class ResourceManager {
 		
 		this.loadAssetsFrom("assets/");
 		this.assetManager.finishLoading();
-		this.isLoaded = true;
 		
-		standartDiffuse = SpriteStack.getTexture("defaults/defaultdiffuse.png");
-		standartDecal = SpriteStack.getTexture("defaults/defaultdecal.png");
-		standartModel = this.assetManager.get("assets/defaults/defaultmodel.obj");
-		standartModel.materials.get(0).set(ColorAttribute.createDiffuse(1, 0, 0, 1));
+		standardTexture = SpriteStack.getTexture("defaults/defaultdiffuse.png");
+		standardDecal = SpriteStack.getTexture("defaults/defaultdecal.png");
+		standardModel = this.assetManager.get("assets/defaults/defaultmodel.obj");
+		standardModel.materials.get(0).set(ColorAttribute.createDiffuse(1, 0, 0, 1));
 	}
 	
 	private void loadAssetsFrom(String path) {
@@ -63,12 +65,29 @@ public class ResourceManager {
 		}
 	}
 	
-	public Model getModel(String model, boolean animated) {
-		return this.assetManager.get("assets/" + model + (animated ? ".g3db" : ".obj"), Model.class);
+	public boolean loadAsset(AssetDescriptor<?> descriptor) {
+		if (!this.assetManager.isLoaded(descriptor)) {
+			this.assetManager.load(descriptor);
+			this.assetManager.finishLoadingAsset(descriptor);
+			return this.assetManager.isLoaded(descriptor);
+		}
+		return false;
+	}
+	
+	public boolean unloadAsset(AssetDescriptor<?> descriptor) {
+		if (this.assetManager.isLoaded(descriptor)) {
+			this.assetManager.unload(descriptor.fileName);
+			return !this.assetManager.isLoaded(descriptor);
+		}
+		return false;
 	}
 	
 	public <T> T get(String object, Class<T> clazz) {
 		return this.assetManager.get("assets/" + object, clazz);
+	}
+	
+	public <T> T get(AssetDescriptor<T> descriptor) {
+		return this.assetManager.get(descriptor);
 	}
 	
 	public BitmapFont generateFont(FileHandle fontFile, int size) {

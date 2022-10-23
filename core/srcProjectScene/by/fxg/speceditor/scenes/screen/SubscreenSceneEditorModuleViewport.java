@@ -1,4 +1,4 @@
-package by.fxg.speceditor.prefabs.screen;
+package by.fxg.speceditor.scenes.screen;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
@@ -13,11 +13,11 @@ import by.fxg.speceditor.std.viewport.IViewportRenderer;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class SubscreenPrefabEditorModuleViewport extends BaseSubscreen {
+public class SubscreenSceneEditorModuleViewport extends BaseSubscreen {
 	private Vector2 scroll = new Vector2(); //scroll, lastHeight
 	private IViewportRenderer viewportRenderer;
 
-	public SubscreenPrefabEditorModuleViewport(IViewportRenderer viewportRenderer) {
+	public SubscreenSceneEditorModuleViewport(IViewportRenderer viewportRenderer) {
 		this.viewportRenderer = viewportRenderer;
 	}
 	

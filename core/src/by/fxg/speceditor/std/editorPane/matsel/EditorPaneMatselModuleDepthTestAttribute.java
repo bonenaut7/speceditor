@@ -2,7 +2,6 @@ package by.fxg.speceditor.std.editorPane.matsel;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute;
 import com.badlogic.gdx.utils.Array;
 
@@ -17,7 +16,7 @@ public class EditorPaneMatselModuleDepthTestAttribute extends EditorPaneMatselMo
 	}
 	
 	public int renderModule(Batch batch, ShapeDrawer shape, Foster foster, int yOffset, int x, int width) {
-		DepthTestAttribute attribute = (DepthTestAttribute)this.matsel.getCurrentAttribute(this.matsel.getCurrentMaterial());
+		DepthTestAttribute attribute = (DepthTestAttribute)this.matsel.getSelectedAttribute();
 
 		return yOffset;
 	}
@@ -27,11 +26,8 @@ public class EditorPaneMatselModuleDepthTestAttribute extends EditorPaneMatselMo
 	}
 
 	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
-		Material material = matsel.getCurrentMaterial();
-		if (material != null) {
-			switch (id) {
-				case "default.depthTest.stencil": material.set(new DepthTestAttribute(true)); break;
-			}
+		switch (id) {
+			case "default.depthTest.stencil": matsel.addAttribute(new DepthTestAttribute(true)); break;
 		}
 	}
 

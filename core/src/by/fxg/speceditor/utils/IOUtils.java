@@ -102,15 +102,15 @@ public class IOUtils {
 		} else if (attribute instanceof SpotLightsAttribute) {
 			throw new UnsupportedOperationException("SpotLights Array not supported");
 		} else if (attribute instanceof TextureAttribute) {
-			if (attribute instanceof TextureLinkedAttribute) {
-				TextureLinkedAttribute textureLinkedAttribute = ((TextureLinkedAttribute)attribute);
-				FileHandle handle = this.projectFolder;
-				String path = textureLinkedAttribute.texturePath.path();
-				path = path.contains(handle.path()) ? path.substring(handle.path().length() + 1) : path;
-				this.dataOutputStream.writeUTF(textureLinkedAttribute.texturePath != null ? path : "-");
-				this.dataOutputStream.writeBoolean(((TextureLinkedAttribute)attribute).flipX);
-				this.dataOutputStream.writeBoolean(((TextureLinkedAttribute)attribute).flipY);
-			} else throw new UnsupportedOperationException("Default TextureAttributes are not supported");
+//			if (attribute instanceof TextureLinkedAttribute) {
+//				TextureLinkedAttribute textureLinkedAttribute = ((TextureLinkedAttribute)attribute);
+//				FileHandle handle = this.projectFolder;
+//				String path = textureLinkedAttribute.texturePath.path();
+//				path = path.contains(handle.path()) ? path.substring(handle.path().length() + 1) : path;
+//				this.dataOutputStream.writeUTF(textureLinkedAttribute.texturePath != null ? path : "-");
+//				this.dataOutputStream.writeBoolean(((TextureLinkedAttribute)attribute).flipX);
+//				this.dataOutputStream.writeBoolean(((TextureLinkedAttribute)attribute).flipY);
+//			} else throw new UnsupportedOperationException("Default TextureAttributes are not supported");
 		}
 	}
 	
@@ -156,12 +156,12 @@ public class IOUtils {
 			case "ambientTexture":
 			case "emissiveTexture":
 			case "reflectionTexture": {
-				String path = this.dataInputStream.readUTF();
-				FileHandle handle = path.equals("-") ? null : this.projectFolder.child(path);
-				TextureRegion region = new TextureRegion(handle == null ? ResourceManager.standartDiffuse : new Texture(handle));
-				boolean flipX = this.dataInputStream.readBoolean(), flipY = this.dataInputStream.readBoolean();
-				region.flip(flipX, flipY);
-				return new TextureLinkedAttribute(Attribute.getAttributeType(alias), region, handle).setFlip(flipX, flipY);
+//				String path = this.dataInputStream.readUTF();
+//				FileHandle handle = path.equals("-") ? null : this.projectFolder.child(path);
+//				TextureRegion region = new TextureRegion(handle == null ? ResourceManager.standardTexture : new Texture(handle));
+//				boolean flipX = this.dataInputStream.readBoolean(), flipY = this.dataInputStream.readBoolean();
+//				region.flip(flipX, flipY);
+//				return new TextureLinkedAttribute(Attribute.getAttributeType(alias), region, handle).setFlip(flipX, flipY);
 			}
 			
 			case "environmentCubemap": break; //CubemapAttribute. Cubemaps not supported

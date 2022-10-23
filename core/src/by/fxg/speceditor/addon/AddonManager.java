@@ -6,7 +6,7 @@ import java.util.Map;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.api.addon.ISpecAddon;
-import by.fxg.speceditor.prefabs.PrefabAddon;
+import by.fxg.speceditor.scenes.ScenesAddon;
 import by.fxg.speceditor.utils.Utils;
 
 public class AddonManager {
@@ -27,7 +27,7 @@ public class AddonManager {
 	
 	private void discoverAddons() {
 		//this.addons.add(new SceneAddon()); //standard scene project addon
-		this.addons.add(new PrefabAddon()); //standard prefab project addon
+		this.addons.add(new ScenesAddon()); //standard prefab project addon
 		
 		// addons discovery
 	}

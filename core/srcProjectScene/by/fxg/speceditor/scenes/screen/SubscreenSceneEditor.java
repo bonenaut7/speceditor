@@ -1,4 +1,4 @@
-package by.fxg.speceditor.prefabs.screen;
+package by.fxg.speceditor.scenes.screen;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
@@ -11,22 +11,22 @@ import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import by.fxg.speceditor.utils.BaseSubscreen;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class SubscreenPrefabEditor extends BaseSubscreen {
+public class SubscreenSceneEditor extends BaseSubscreen {
 	private final String[] EDITOR_MODES = {"Project", "Viewport", "<PM> Selectable"};
-	protected ScreenPrefabProject screenProject;
+	protected ScreenSceneProject screenProject;
 	
 	private UDropdownSelectSingle editorModeSelector;
 	private ModuleProject moduleProject;
-	private SubscreenPrefabEditorModuleViewport moduleViewport;
-	private SubscreenPrefabEditorModuleObjectExplorer moduleObjectExplorer;
+	private SubscreenSceneEditorModuleViewport moduleViewport;
+	private SubscreenSceneEditorModuleObjectExplorer moduleObjectExplorer;
 	
-	public SubscreenPrefabEditor(ScreenPrefabProject screenProject, int x, int y, int width, int height) {
+	public SubscreenSceneEditor(ScreenSceneProject screenProject, int x, int y, int width, int height) {
 		this.screenProject = screenProject;
 		
 		this.editorModeSelector = new UDropdownSelectSingle(12, this.EDITOR_MODES).setSelectedVariant(this.EDITOR_MODES.length - 1);
 		this.moduleProject = new ModuleProject();
-		this.moduleViewport = new SubscreenPrefabEditorModuleViewport(this.screenProject.project.renderer);
-		this.moduleObjectExplorer = new SubscreenPrefabEditorModuleObjectExplorer();
+		this.moduleViewport = new SubscreenSceneEditorModuleViewport(this.screenProject.project.renderer);
+		this.moduleObjectExplorer = new SubscreenSceneEditorModuleObjectExplorer();
 		this.resize(x, y, width, height);
 	}
 
@@ -67,7 +67,7 @@ public class SubscreenPrefabEditor extends BaseSubscreen {
 	}
 
 	public void updateSelectableEditorPane(ITreeElementSelector<?> treeElementSelector) {
-		((SubscreenPrefabEditorModuleObjectExplorer)this.moduleObjectExplorer).updateEditorPane(treeElementSelector);
+		((SubscreenSceneEditorModuleObjectExplorer)this.moduleObjectExplorer).updateEditorPane(treeElementSelector);
 	}
 	
 	public void resize(int subX, int subY, int subWidth, int subHeight) {

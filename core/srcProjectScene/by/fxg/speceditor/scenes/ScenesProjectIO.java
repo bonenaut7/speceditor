@@ -1,4 +1,4 @@
-package by.fxg.speceditor.prefabs;
+package by.fxg.speceditor.scenes;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -14,12 +14,12 @@ import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 import by.fxg.speceditor.utils.IOUtils;
 
-public class PrefabProjectIO {
-	private PrefabProject project;
+public class ScenesProjectIO {
+	private ScenesProject project;
 	private FileHandle projectFile;
 	private Throwable lastException = null;
 	
-	public PrefabProjectIO(PrefabProject project) {
+	public ScenesProjectIO(ScenesProject project) {
 		this.project = project;
 		this.projectFile = project.getProjectFolder().child("data.prj");
 	}

@@ -9,7 +9,7 @@ import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 
-public class ElementDecal extends TreeElement implements ITreeElementGizmos {
+public class ElementDecal extends TreeElement implements ITreeElementGizmos,  {
 	public EditDecal decal = new EditDecal();
 	
 	public ElementDecal() { this("New decal"); }

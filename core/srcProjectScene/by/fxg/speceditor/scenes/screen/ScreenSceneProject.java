@@ -1,4 +1,4 @@
-package by.fxg.speceditor.prefabs.screen;
+package by.fxg.speceditor.scenes.screen;
 
 import java.awt.Desktop;
 
@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.prefabs.PrefabProject;
+import by.fxg.speceditor.scenes.ScenesProject;
 import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.screen.deprecated.SubscreenExplorer;
 import by.fxg.speceditor.screen.deprecated.SubscreenProjectManager;
@@ -16,16 +16,16 @@ import by.fxg.speceditor.screen.gui.GuiAbout;
 import by.fxg.speceditor.ui.UDropdownClick;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class ScreenPrefabProject extends BaseScreen {
-	public PrefabProject project;
+public class ScreenSceneProject extends BaseScreen {
+	public ScenesProject project;
 
 	private UDropdownClick dropdownButtonApp, dropdownButtonProject;
 	public SubscreenProjectManager subObjectTree;
 	public SubscreenExplorer unnamedUselessModule; //TODO do something with it lol
-	public SubscreenPrefabEditor subEditorPane;
+	public SubscreenSceneEditor subEditorPane;
 	public SubscreenViewport subViewport;
 	
-	public ScreenPrefabProject(PrefabProject project) {
+	public ScreenSceneProject(ScenesProject project) {
 		this.project = project;
 		int width = Gdx.graphics.getWidth(), height = Gdx.graphics.getHeight();
 		this.dropdownButtonApp = new UDropdownClick("Editor", 1, height - 21, 90, 20, 20, "Project select", "About");
@@ -34,7 +34,7 @@ public class ScreenPrefabProject extends BaseScreen {
 		this.updateDimensions(width, height);
 		this.subObjectTree = new SubscreenProjectManager(project.objectTree, this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
 		this.unnamedUselessModule = new SubscreenExplorer(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
-		this.subEditorPane = new SubscreenPrefabEditor(this, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
+		this.subEditorPane = new SubscreenSceneEditor(this, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
 		this.subViewport = new SubscreenViewport(project.renderer, project.objectTree, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 	}
 	

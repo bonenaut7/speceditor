@@ -1,4 +1,4 @@
-package by.fxg.speceditor.prefabs;
+package by.fxg.speceditor.scenes;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -8,10 +8,10 @@ import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 
-public class PrefabObjectTreeHandler implements ITreeElementHandler {
-	private PrefabProject prefabProject;
+public class ScenesObjectTreeHandler implements ITreeElementHandler {
+	private ScenesProject prefabProject;
 	
-	public PrefabObjectTreeHandler(PrefabProject prefabProject) {
+	public ScenesObjectTreeHandler(ScenesProject prefabProject) {
 		this.prefabProject = prefabProject;
 	}
 	
