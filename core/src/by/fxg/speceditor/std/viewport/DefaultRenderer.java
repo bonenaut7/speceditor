@@ -67,6 +67,11 @@ public class DefaultRenderer implements IViewportRenderer {
 
 	public DefaultRenderer(SpecObjectTree objectTree) {
 		this.camera = new PerspectiveCamera(67, 1, 1);
+		this.camera.fieldOfView = this.cameraSettings.x;
+		this.camera.far = this.cameraSettings.y;
+		this.camera.near = this.cameraSettings.z;
+		this.camera.update();
+		
 		this.objectTree = objectTree;
 		this.editorPaneDefaultViewportRenderer = new EditorPaneDefaultViewportRenderer(this);
 		this.frameBuffer = new TextureFrameBuffer().flip(false, true);

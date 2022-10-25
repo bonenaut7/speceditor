@@ -32,12 +32,8 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 10, 12);
 		this.buttonSelectTexture.render(shape, foster);
 		if (this.buttonSelectTexture.isPressed()) {
-			try {
-				FileHandle handle = Utils.openFileSelectionDialog(Utils.IMAGES_DESCRIPTION, Utils.IMAGES_EXTENSIONS);
-				if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(attribute);
-				//attribute = new TextureLinkedAttribute(attribute.type, new Texture(handle), handle);
-				//material.set(attribute);
-			} catch (Exception e) { e.printStackTrace(); }
+			FileHandle handle = Utils.openFileSelectionDialog(Utils.IMAGES_DESCRIPTION, Utils.IMAGES_EXTENSIONS);
+			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(attribute);
 		}
 		
 		foster.setString("UV Flip:").draw(x, (yOffset -= foster.getHeight() + 8) - 1, Align.left);

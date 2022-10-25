@@ -1,15 +1,20 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.speceditor.Game;
+import by.fxg.speceditor.project.IProjectAssetHandler;
+import by.fxg.speceditor.project.ProjectAsset;
 import by.fxg.speceditor.std.g3d.EditDecal;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 
-public class ElementDecal extends TreeElement implements ITreeElementGizmos,  {
+public class ElementDecal extends TreeElement implements ITreeElementGizmos, IProjectAssetHandler<Texture>  {
+	private ProjectAsset<Texture> decalAsset = null;
+	public String localDecalHandle = "";
 	public EditDecal decal = new EditDecal();
 	
 	public ElementDecal() { this("New decal"); }
@@ -30,4 +35,18 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos,  {
 	}
 	
 	public boolean isTransformSupported(GizmoTransformType transformType) { return transformType != GizmoTransformType.SCALE; }
+
+	public void onAssetHandlerAdded(ProjectAsset<Texture> asset) {
+		if (this.decalAsset != null) this.decalAsset.removeHandlerWithoutNotify(this);
+		this.decalAsset = asset;
+		this.onAssetLoad(asset);
+	}
+	
+	public void onAssetLoad(ProjectAsset<Texture> asset) {
+		this.decal.setTexture(asset.getAsset());
+	}
+	
+	public void onAssetUnload(ProjectAsset<Texture> asset) {
+		this.decal.setDefaultDecal();
+	}
 }

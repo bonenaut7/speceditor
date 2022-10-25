@@ -49,10 +49,43 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 		}
 	}
 	
+	public ITreeElementModelProvider applyTransforms() {
+		if (this.modelInstance != null) {
+			this.modelInstance.transform.setToTranslation(this.position);
+			this.modelInstance.transform.scale(this.scale.x, this.scale.y, this.scale.z);
+			this.modelInstance.transform.rotate(1f, 0f, 0f, this.rotation.x);
+			this.modelInstance.transform.rotate(0f, 1f, 0f, this.rotation.y);
+			this.modelInstance.transform.rotate(0f, 0f, 1f, this.rotation.z);
+		}
+		return this;
+	}
+	
+	public Vector3 getTransform(GizmoTransformType transformType) {
+		switch(transformType) {
+			case TRANSLATE: return this.position;
+			case ROTATE: return this.rotation;
+			case SCALE: return this.scale;
+			default: return gizmoVector.set(0, 0, 0);
+		}
+	}
+	
+	public Sprite getObjectTreeSprite() {
+		return Game.storage.sprites.get("icons/model");
+	}
+	
+	public void onDelete() {
+		if (this.modelAsset != null) {
+			this.modelAsset.removeHandlerWithoutNotify(this);
+		}
+	}
+	
+	public boolean isTransformSupported(GizmoTransformType transformType) { return true; }
+	public RenderableProvider getRenderableProvider() { return this.modelInstance; }
+	
 	public void onAssetHandlerAdded(ProjectAsset asset) {
 		if (this.modelAsset != null) this.modelAsset.removeHandlerWithoutNotify(this);
 		this.modelAsset = asset;
-		if (asset.isLoaded()) this.onAssetLoad(asset); //:D
+		this.onAssetLoad(asset);
 	}
 	
 	public void onAssetLoad(ProjectAsset asset) {
@@ -90,37 +123,4 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 			}
 		}
 	}
-	
-	public ITreeElementModelProvider applyTransforms() {
-		if (this.modelInstance != null) {
-			this.modelInstance.transform.setToTranslation(this.position);
-			this.modelInstance.transform.scale(this.scale.x, this.scale.y, this.scale.z);
-			this.modelInstance.transform.rotate(1f, 0f, 0f, this.rotation.x);
-			this.modelInstance.transform.rotate(0f, 1f, 0f, this.rotation.y);
-			this.modelInstance.transform.rotate(0f, 0f, 1f, this.rotation.z);
-		}
-		return this;
-	}
-	
-	public Vector3 getTransform(GizmoTransformType transformType) {
-		switch(transformType) {
-			case TRANSLATE: return this.position;
-			case ROTATE: return this.rotation;
-			case SCALE: return this.scale;
-			default: return gizmoVector.set(0, 0, 0);
-		}
-	}
-	
-	public Sprite getObjectTreeSprite() {
-		return Game.storage.sprites.get("icons/model");
-	}
-	
-	public void onDelete() {
-		if (this.modelAsset != null) {
-			this.modelAsset.removeHandlerWithoutNotify(this);
-		}
-	}
-	
-	public boolean isTransformSupported(GizmoTransformType transformType) { return true; }
-	public RenderableProvider getRenderableProvider() { return this.modelInstance; }
 }

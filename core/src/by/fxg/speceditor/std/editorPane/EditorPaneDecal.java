@@ -1,12 +1,12 @@
 package by.fxg.speceditor.std.editorPane;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.utils.Align;
 
-import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.project.ProjectAssetManager;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -25,7 +25,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListener {
 	private ElementDecal element = null;
-	private STDInputField elementName, modelPath;
+	private STDInputField elementName, decalPath;
 	private UButton buttonSelectDecal;
 	protected UCheckbox billboardDecal;
 	
@@ -33,8 +33,8 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 	
 	public EditorPaneDecal() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
-		this.modelPath = new ColoredInputField().setAllowFullfocus(false).setListener(this, "path").setMaxLength(128).setPreviousField(this.elementName);
-		this.elementName.setNextField(this.modelPath);
+		this.decalPath = new ColoredInputField().setAllowFullfocus(false).setListener(this, "path").setMaxLength(128).setPreviousField(this.elementName);
+		this.elementName.setNextField(this.decalPath);
 		
 		this.buttonSelectDecal = new UButton("Open file");
 		this.billboardDecal = new UCheckbox(false);
@@ -48,19 +48,14 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		this.elementName.render(batch, shape);
 		
 		foster.setString("EXT Path:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
-		this.modelPath.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
-		this.modelPath.render(batch, shape);
+		this.decalPath.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
+		this.decalPath.render(batch, shape);
 		
 		foster.setString("Select decal:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectDecal.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
 		if (this.buttonSelectDecal.isPressed()) {
-			try { //working fine, hm, maybe problem with mesh hitbox
-				FileHandle handle = Utils.openFileSelectionDialog("Supported textures (*.png; *.jpg)", "png", "jpg", "jpeg");
-				SpriteStack.remove(handle);
-				this.element.decal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(handle), true), handle);
-			} catch (Exception e) {
-				Utils.logError(e, "EditorPaneDecal#updateAndRender", "Error happened when tried to load asset");
-			}
+			FileHandle handle = Utils.openFileSelectionDialog(Utils.IMAGES_DESCRIPTION, Utils.IMAGES_EXTENSIONS);
+			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(this.element);
 		}
 		
 		foster.setString("Billboard decal:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
@@ -75,14 +70,14 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 	public void whileFocused(STDInputField inputField, String id) {
 		switch (id) {
 			case "name": this.element.setName(this.elementName.getText()); break;
-			case "path": this.element.decal.localDecalHandle = this.modelPath.getText(); break;
+			case "path": this.element.localDecalHandle = this.decalPath.getText(); break;
 		}
 	}
 	
 	public void updatePane(ITreeElementSelector<?> selector) {
 		this.element = (ElementDecal)selector.get(0);
 		this.elementName.setText(this.element.getName());
-		this.modelPath.setText(this.element.decal.localDecalHandle);
+		this.decalPath.setText(this.element.localDecalHandle);
 		this.billboardDecal.setValue(this.element.decal.isBillboard());
 		
 		this.transform.updateBlock(this.element);

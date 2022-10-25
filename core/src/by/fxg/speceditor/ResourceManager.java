@@ -16,7 +16,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 
 import by.fxg.pilesos.PilesosInputImpl;
 import by.fxg.pilesos.graphics.SpriteStack;
@@ -29,7 +29,7 @@ public class ResourceManager {
 	private final Map<String, Class<?>> assetMarkers = new HashMap<>();
 	
 	public static Texture standardTexture = null;
-	public static Texture standardDecal = null;
+	public static Decal standardDecal = null;
 	public static Model standardModel = null;
 	
 	public AssetManager assetManager;
@@ -46,7 +46,7 @@ public class ResourceManager {
 		this.assetManager.finishLoading();
 		
 		standardTexture = SpriteStack.getTexture("defaults/defaultdiffuse.png");
-		standardDecal = SpriteStack.getTexture("defaults/defaultdecal.png");
+		standardDecal = Decal.newDecal(SpriteStack.getTextureRegion("defaults/defaultdecal.png"), true);
 		standardModel = this.assetManager.get("assets/defaults/defaultmodel.obj");
 		standardModel.materials.get(0).set(ColorAttribute.createDiffuse(1, 0, 0, 1));
 	}
