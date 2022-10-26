@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 
 import by.fxg.speceditor.ResourceManager;
-import by.fxg.speceditor.project.IProjectAssetHandler;
-import by.fxg.speceditor.project.ProjectAsset;
+import by.fxg.speceditor.project.assets.IProjectAssetHandler;
+import by.fxg.speceditor.project.assets.ProjectAsset;
 
 /** Tips: <br>
  * 	 - To connect ProjectAsset, use {@link ProjectAsset#addHandler(IProjectAssetHandler)} with object of this class.

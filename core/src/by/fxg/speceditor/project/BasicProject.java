@@ -9,6 +9,7 @@ import org.ini4j.Profile.Section;
 import com.badlogic.gdx.files.FileHandle;
 
 import by.fxg.speceditor.Storage;
+import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.utils.Utils;
 
 public abstract class BasicProject {
@@ -32,7 +33,7 @@ public abstract class BasicProject {
 	/** Constructor for project creation process **/
 	public BasicProject(ProjectSolver solver, String name, String folderName, boolean backupSaving, long backupInterval) {
 		this.solver = solver;
-		this.type = solver.getTypeName();
+		this.type = solver.getDisplayName();
 		this.name = name;
 		this.folderName = folderName;
 		this.backupSaving = backupSaving;
@@ -55,7 +56,7 @@ public abstract class BasicProject {
 				this.lastSaveDate = headerInfo.containsKey("last-save-date") ? headerInfo.get("last-save-date") : "Undefined";
 				this.backupSaving = headerInfo.containsKey("backup-saving") ? headerInfo.get("backup-saving", boolean.class) : true;
 				this.backupInterval = 300L;//headerInfo.containsKey("backup-interval") ? : 300L; //300 seconds by default
-			} else Utils.logDebug("Project", String.format("Unable to load project with %s solver. There is no header in project file at: %s", this.solver.getTypeName(), fileHandle.path()));
+			} else Utils.logDebug("Project", String.format("Unable to load project with %s solver. There is no header in project file at: %s", this.solver.getDisplayName(), fileHandle.path()));
 		} catch (InvalidFileFormatException e) {
 			Utils.logError(e, "BasicProject#loadHeader", "IFFE unhandled exception");
 		} catch (IOException e) {
@@ -86,7 +87,7 @@ public abstract class BasicProject {
 	
 	public FileHandle getProjectFolder() { return this.projectFolder; }
 	public String getProjectName() { return this.name; }
-	public String getProjectType() { return this.solver.getTypeName(); }
+	public String getProjectType() { return this.solver.getDisplayName(); }
 	public String getSaveDate() { return this.lastSaveDate; }
 	public boolean isBackupsEnabled() { return this.backupSaving; }
 }

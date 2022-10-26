@@ -1,4 +1,4 @@
-package by.fxg.speceditor.project;
+package by.fxg.speceditor.project.assets;
 
 import java.nio.file.Path;
 import java.util.HashMap;

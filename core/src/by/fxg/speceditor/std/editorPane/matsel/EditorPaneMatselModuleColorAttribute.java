@@ -47,7 +47,7 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 		return yOffset;
 	}
 	
-	public void whileFocused(STDInputField inputField, String id) {
+	public void whileInputFieldFocused(STDInputField inputField, String id) {
 		ColorAttribute attribute = (ColorAttribute)this.matsel.getSelectedAttribute();
 		switch (id) {
 			case "color0": attribute.color.r = this.color[0].getTextAsNumber(attribute.color.r); break;
@@ -57,7 +57,7 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 		}
 	}
 	
-	public void onFocusRemoved(STDInputField inputField, String id) {
+	public void onInputFieldFocusRemoved(STDInputField inputField, String id) {
 		try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
 	}
 

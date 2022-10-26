@@ -13,8 +13,8 @@ import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.ColoredInputField;
-import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import by.fxg.speceditor.ui.URenderBlock;
+import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneHitboxStack extends EditorPane implements ISTDInputFieldListener {
@@ -38,7 +38,7 @@ public class EditorPaneHitboxStack extends EditorPane implements ISTDInputFieldL
 		return yOffset;
 	}
 
-	public void whileFocused(STDInputField inputField, String id) {
+	public void whileInputFieldFocused(STDInputField inputField, String id) {
 		switch (id) {
 			case "name": this.element.setName(this.elementName.getText()); break;
 		}
@@ -101,7 +101,7 @@ public class EditorPaneHitboxStack extends EditorPane implements ISTDInputFieldL
 			return yOffset;
 		}
 		
-		public void whileFocused(STDInputField inputField, String id) {
+		public void whileInputFieldFocused(STDInputField inputField, String id) {
 			switch (id) {
 				case "position": this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]); break;
 				case "rotation": this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]); break;
@@ -109,7 +109,7 @@ public class EditorPaneHitboxStack extends EditorPane implements ISTDInputFieldL
 			}
 		}
 		
-		public void onFocusRemoved(STDInputField inputField, String id) {
+		public void onInputFieldFocusRemoved(STDInputField inputField, String id) {
 			try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
 		}
 		

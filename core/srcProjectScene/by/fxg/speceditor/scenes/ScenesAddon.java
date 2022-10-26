@@ -9,7 +9,7 @@ public class ScenesAddon implements ISpecAddon {
 	private ScenesProjectSolver solver;
 	
 	public ScenesAddon() {
-		this.info = AddonInfo.create("STD-Scenes", "std-scene", "0.0.0", "-", "FXG");
+		this.info = AddonInfo.create("STD-Scenes", "std-scenes", "0.0.0", "-", "FXG");
 		this.solver = new ScenesProjectSolver();
 	}
 	

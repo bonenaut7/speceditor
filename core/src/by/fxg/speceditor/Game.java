@@ -11,7 +11,9 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.addon.AddonManager;
 import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.render.RenderManager;
+import by.fxg.speceditor.screen.ScreenSelectProject;
 import by.fxg.speceditor.screen.ScreenTestUI;
+import by.fxg.speceditor.screen.project.ScreenCreateProject;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.ui.SpecInterface;
 
@@ -51,6 +53,7 @@ public class Game extends Apparat<GInputProcessor> {
 		this.input.setCursorCatched(false);
 		
 		if (this.hasProgramArgument("-UITest")) this.renderer.currentScreen = new ScreenTestUI();
+		if (this.hasProgramArgument("-edit")) this.renderer.currentScreen = new ScreenCreateProject(new ScreenSelectProject());
 	}
 	
 	public void update(int width, int height) {

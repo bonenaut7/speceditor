@@ -14,9 +14,9 @@ import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.ui.ColoredInputField;
-import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.URenderBlock;
+import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneDefaultViewportRenderer extends EditorPane implements ISTDInputFieldListener {
@@ -75,14 +75,14 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 		return yOffset;
 	}
 	
-	public void whileFocused(STDInputField inputField, String id) {
+	public void whileInputFieldFocused(STDInputField inputField, String id) {
 		switch (id) {
 			case "camera": this.renderer.setCameraValues(this.cameraSettings[0].getTextAsNumber(this.renderer.cameraSettings.x), this.cameraSettings[1].getTextAsNumber(this.renderer.cameraSettings.y), this.cameraSettings[2].getTextAsNumber(this.renderer.cameraSettings.z)); break;
 			case "bufferColor": UIElement._convertTextToColor(this.renderer.bufferColor, this.bufferColor[0], this.bufferColor[1], this.bufferColor[2], this.bufferColor[3]); break;
 		}
 	}
 	
-	public void onFocusRemoved(STDInputField inputField, String id) {
+	public void onInputFieldFocusRemoved(STDInputField inputField, String id) {
 		try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
 	}
 
@@ -116,13 +116,13 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 			return yOffset - 2;
 		}
 		
-		public void whileFocused(STDInputField inputField, String id) {
+		public void whileInputFieldFocused(STDInputField inputField, String id) {
 			switch (id) {
 				case "hitboxWidth": this.parent.renderer.featureHitboxWidth = this.featureHitboxWidth.getTextAsNumber(this.parent.renderer.featureHitboxWidth); break;
 			}
 		}
 		
-		public void onFocusRemoved(STDInputField inputField, String id) {
+		public void onInputFieldFocusRemoved(STDInputField inputField, String id) {
 			try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
 		}
 	}

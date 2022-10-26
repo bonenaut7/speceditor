@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import by.fxg.speceditor.ResourceManager;
-import by.fxg.speceditor.project.IProjectAssetHandler;
-import by.fxg.speceditor.project.ProjectAsset;
+import by.fxg.speceditor.project.assets.IProjectAssetHandler;
+import by.fxg.speceditor.project.assets.ProjectAsset;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 
 /** Tips: <br>

@@ -47,8 +47,8 @@ public class SpecInterface {
 			}
 		}
 		
-		/** Applies when object takes focus **/ default void onFocusAdded() {}
-		/** Applies when object loses focus **/ default void onFocusRemoved() {}
+		/** Called when object gets focus **/ default void onFocusAdded() {}
+		/** Called when object loses focus **/ default void onFocusRemoved() {}
 		
 		default boolean isFocused() {
 			return SpecInterface.get.currentFocus == this;

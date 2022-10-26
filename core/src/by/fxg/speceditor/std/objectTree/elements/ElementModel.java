@@ -11,9 +11,9 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.Game;
 import by.fxg.speceditor.ResourceManager;
-import by.fxg.speceditor.project.IProjectAssetHandler;
-import by.fxg.speceditor.project.ProjectAsset;
-import by.fxg.speceditor.project.ProjectAssetManager;
+import by.fxg.speceditor.project.assets.IProjectAssetHandler;
+import by.fxg.speceditor.project.assets.ProjectAsset;
+import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.g3d.ITreeElementModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;

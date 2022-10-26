@@ -34,7 +34,7 @@ public class STDInputField extends UIElement implements IFocusable {
 	protected Foster foster = null;
 	protected int maxTextLength = 256;
 	protected String allowedCharacters = null; //null to allow everything
-	protected boolean allowToFullfocus = true;
+	protected boolean allowToFullfocus = false;
 	protected STDInputField prevInputField = null, nextInputField = null;
 	protected ISTDInputFieldListener listener;
 	protected String listenerID = null;
@@ -79,15 +79,15 @@ public class STDInputField extends UIElement implements IFocusable {
 			if (this.isFocused()) {
 				this.handleKeys(this.getInput());
 				if (this.listener != null) {
-					this.listener.whileFocused(this, this.listenerID);
+					this.listener.whileInputFieldFocused(this, this.listenerID);
 				}
 			} else if (this.listener != null) {
-				this.listener.whileNotFocused(this, this.listenerID);
+				this.listener.whileInputFieldNotFocused(this, this.listenerID);
 			}
 		} else if (this.isFocused()) {
 			this.setFocused(false);
 		} else if (!this.isFocused() && this.listener != null) {
-			this.listener.whileNotFocused(this, this.listenerID);
+			this.listener.whileInputFieldNotFocused(this, this.listenerID);
 		}
 	}
 	
@@ -241,11 +241,11 @@ public class STDInputField extends UIElement implements IFocusable {
 	}
 	
 	public void onFocusAdded() {
-		if (this.listener != null) this.listener.onFocusAdded(this, this.listenerID);
+		if (this.listener != null) this.listener.onInputFieldFocusAdded(this, this.listenerID);
 	}
 	
 	public void onFocusRemoved() {
-		if (this.listener != null) this.listener.onFocusRemoved(this, this.listenerID);
+		if (this.listener != null) this.listener.onInputFieldFocusRemoved(this, this.listenerID);
 	}
 	
 	/** Returns true if select pointers are active **/
@@ -332,6 +332,9 @@ public class STDInputField extends UIElement implements IFocusable {
 				this.builder.setLength(0);
 				this.moveTextPointer(this.pointer - 1);
 			}
+			if (this.listener != null) {
+				this.listener.onInputFieldTextChanged(this, this.listenerID, null);
+			}
 		}
 		
 		//move pointer
@@ -366,6 +369,9 @@ public class STDInputField extends UIElement implements IFocusable {
 					this.builder.setLength(0);
 					this.moveTextPointer(this.selectPointerFrom);
 					this.selectPointerFrom = this.selectPointerTo = -1;
+					if (this.listener != null) {
+						this.listener.onInputFieldTextChanged(this, this.listenerID, null);
+					}
 				}
 			}
 			
@@ -381,13 +387,19 @@ public class STDInputField extends UIElement implements IFocusable {
 							this.pointer = this.selectPointerFrom;
 							this.selectPointerFrom = this.selectPointerTo = -1;
 						}
-						String objString = ((String)obj).substring(0, this.maxTextLength - this.currentString.length());
+						String objString = ((String)obj);
+						if (this.currentString.length() + objString.length() > this.maxTextLength) {
+							objString = ((String)obj).substring(0, this.maxTextLength - this.currentString.length());
+						}
 						this.builder.append(this.currentString.substring(0, this.pointer));
 						this.builder.append(objString);
 						this.builder.append(this.currentString.substring(this.pointer, this.currentString.length()));
 						this.currentString = this.builder.toString();
 						this.moveTextPointer(this.pointer + objString.length());
 						this.builder.setLength(0);
+						if (this.listener != null) {
+							this.listener.onInputFieldTextChanged(this, this.listenerID, objString);
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -412,6 +424,9 @@ public class STDInputField extends UIElement implements IFocusable {
 					this.currentString = this.builder.toString();
 					this.builder.setLength(0);
 					this.moveTextPointer(this.pointer + 1);
+					if (this.listener != null) {
+						this.listener.onInputFieldTextChanged(this, this.listenerID, input.getCharTypedLast());
+					}
 				}
 			}
 		}

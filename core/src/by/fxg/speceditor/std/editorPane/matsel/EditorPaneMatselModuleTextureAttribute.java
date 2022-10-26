@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.ResourceManager;
-import by.fxg.speceditor.project.ProjectAssetManager;
+import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;

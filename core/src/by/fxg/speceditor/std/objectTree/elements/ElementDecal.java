@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.speceditor.Game;
-import by.fxg.speceditor.project.IProjectAssetHandler;
-import by.fxg.speceditor.project.ProjectAsset;
+import by.fxg.speceditor.project.assets.IProjectAssetHandler;
+import by.fxg.speceditor.project.assets.ProjectAsset;
 import by.fxg.speceditor.std.g3d.EditDecal;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;

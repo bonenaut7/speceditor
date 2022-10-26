@@ -55,4 +55,8 @@ public class ProjectManager {
 		}
 		return false;
 	}
+	
+	public Iterable<ProjectSolver> getSolvers() {
+		return this.registeredSolvers;
+	}
 }

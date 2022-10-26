@@ -1,4 +1,4 @@
-package by.fxg.speceditor.project;
+package by.fxg.speceditor.project.assets;
 
 import java.util.UUID;
 
@@ -7,6 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.ResourceManager;
+import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.utils.Utils;
 
 public class ProjectAsset<TYPE> {

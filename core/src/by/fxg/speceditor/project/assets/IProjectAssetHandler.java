@@ -1,4 +1,4 @@
-package by.fxg.speceditor.project;
+package by.fxg.speceditor.project.assets;
 
 public interface IProjectAssetHandler<TYPE> {
 	/** Calls when handler attaches to the ProjectAsset **/

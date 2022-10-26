@@ -27,7 +27,7 @@ public class EditorPaneStandardRename extends EditorPane implements ISTDInputFie
 		return yOffset;
 	}
 	
-	public void whileFocused(STDInputField inputField, String id) {
+	public void whileInputFieldFocused(STDInputField inputField, String id) {
 		switch (id) {
 			case "name": this.element.setName(this.elementName.getText()); break;
 		}

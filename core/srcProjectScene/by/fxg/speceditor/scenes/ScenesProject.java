@@ -20,10 +20,6 @@ public class ScenesProject extends BasicProject {
 	
 	public ScenesProject(ProjectSolver solver) {
 		super(solver);
-		this.objectTree = new SpecObjectTree().setHandler(new ScenesObjectTreeHandler(this));
-		this.objectTree.getStack().add(new ElementFolder("Root folder"));
-
-		this.renderer = new DefaultRenderer(this.objectTree);
 	}
 	
 	public void loadConfiguration(FileHandle fileHandle) {
@@ -32,10 +28,12 @@ public class ScenesProject extends BasicProject {
 	}
 
 	public boolean loadProject() {
-		if (!this.projectFolder.child("data.prj").exists() || !this.io.loadProjectData(this.renderer, this.objectTree.getStack())) {
-			if (this.projectFolder.child("data.prj").exists()) {
-				Game.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
-			}
+		this.objectTree = new SpecObjectTree().setHandler(new ScenesObjectTreeHandler(this));
+		this.objectTree.getStack().add(new ElementFolder("Root folder"));
+		this.renderer = new DefaultRenderer(this.objectTree);
+		
+		if (this.projectFolder.child("data.prj").exists() && !this.io.loadProjectData(this.renderer, this.objectTree.getStack())) {
+			Game.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
 		}
 		return true;
 	}	
