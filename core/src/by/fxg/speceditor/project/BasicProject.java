@@ -8,7 +8,6 @@ import org.ini4j.Profile.Section;
 
 import com.badlogic.gdx.files.FileHandle;
 
-import by.fxg.speceditor.Storage;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.utils.Utils;
 
@@ -21,7 +20,7 @@ public abstract class BasicProject {
 	protected Ini config;
 	protected FileHandle projectFolder;
 	
-	protected String type, name, folderName, lastSaveDate;
+	protected String type, name, lastSaveDate;
 	protected boolean backupSaving;
 	protected long backupInterval; //in seconds
 	
@@ -31,16 +30,15 @@ public abstract class BasicProject {
 	}
 	
 	/** Constructor for project creation process **/
-	public BasicProject(ProjectSolver solver, String name, String folderName, boolean backupSaving, long backupInterval) {
+	public BasicProject(ProjectSolver solver, FileHandle folder, String name, boolean backupSaving, long backupInterval) {
 		this.solver = solver;
 		this.type = solver.getDisplayName();
+		this.projectFolder = folder;
 		this.name = name;
-		this.folderName = folderName;
 		this.backupSaving = backupSaving;
 		this.backupInterval = backupInterval;
 		
 		this.config = new Ini();
-		this.projectFolder = Storage.projectsFolder.child(folderName);
 	}
 	
 	/** Loads project-header info, needed before project load **/
@@ -52,7 +50,6 @@ public abstract class BasicProject {
 				Section headerInfo = this.config.get("PROJECT-HEADER");
 				this.type = headerInfo.containsKey("project-type") ? headerInfo.get("project-type") : "UNDEFINED";
 				this.name = headerInfo.containsKey("project-name") ? headerInfo.get("project-name") : "Undefined";
-				this.folderName = fileHandle.parent().name();
 				this.lastSaveDate = headerInfo.containsKey("last-save-date") ? headerInfo.get("last-save-date") : "Undefined";
 				this.backupSaving = headerInfo.containsKey("backup-saving") ? headerInfo.get("backup-saving", boolean.class) : true;
 				this.backupInterval = 300L;//headerInfo.containsKey("backup-interval") ? : 300L; //300 seconds by default

@@ -3,7 +3,7 @@ package by.fxg.speceditor.std.objectTree.elements;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
@@ -53,7 +53,7 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 	}
 	
 	public Sprite getObjectTreeSprite() {
-		return Game.storage.sprites.get(Utils.format("icons/folder.", this.isFolderOpened));
+		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/folder.", this.isFolderOpened));
 	}
 	
 	public boolean isFolderAccepting(TreeElement element) {

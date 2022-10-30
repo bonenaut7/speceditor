@@ -3,7 +3,7 @@ package by.fxg.speceditor.std.objectTree.elements;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
@@ -62,7 +62,7 @@ public class ElementHitbox extends TreeElement implements ITreeElementGizmos, ID
 	}
 	
 	public Sprite getObjectTreeSprite() {
-		return Game.storage.sprites.get(Utils.format("icons/question"));
+		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/question"));
 	}
 	
 	public boolean isTransformSupported(GizmoTransformType transformType) {

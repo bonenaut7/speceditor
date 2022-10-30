@@ -104,7 +104,7 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateGizmoValues();
+			if (SpecInterface.INSTANCE.currentFocus instanceof GizmosModule) this.updateGizmoValues();
 			int sizePerPart = (this.width - 30 - (int)foster.setString(this.coords[0]).getWidth() * 3) / 3;
 			
 			foster.setString("Position:").draw(this.x, yOffset -= foster.getHeight(), Align.left);

@@ -15,7 +15,7 @@ import by.fxg.pilesos.PilesosInputImpl;
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -220,19 +220,19 @@ public class STDInputField extends UIElement implements IFocusable {
 	
 	@Override
 	public boolean isFocused() {
-		return this.allowToFullfocus ? SpecInterface.get.currentFocus == this : this._isFocused;
+		return this.allowToFullfocus ? SpecInterface.INSTANCE.currentFocus == this : this._isFocused;
 	}
 	
 	@Override
 	public void setFocused(boolean value) {
 		if (this.allowToFullfocus) {
 			if (value) {
-				if (SpecInterface.get.currentFocus != null && SpecInterface.get.currentFocus != this) SpecInterface.get.currentFocus.onFocusRemoved();
-				SpecInterface.get.currentFocus = this;
+				if (SpecInterface.INSTANCE.currentFocus != null && SpecInterface.INSTANCE.currentFocus != this) SpecInterface.INSTANCE.currentFocus.onFocusRemoved();
+				SpecInterface.INSTANCE.currentFocus = this;
 				this.onFocusAdded();
-			} else if (SpecInterface.get.currentFocus == this) { //thinking about everlasting setFocusing(false) from everywhere, so it won't break logic of other objects
-				SpecInterface.get.currentFocus.onFocusRemoved();
-				SpecInterface.get.currentFocus = null;
+			} else if (SpecInterface.INSTANCE.currentFocus == this) { //thinking about everlasting setFocusing(false) from everywhere, so it won't break logic of other objects
+				SpecInterface.INSTANCE.currentFocus.onFocusRemoved();
+				SpecInterface.INSTANCE.currentFocus = null;
 			}
 		} else {
 			if (this._isFocused = value) this.onFocusAdded();
@@ -264,7 +264,7 @@ public class STDInputField extends UIElement implements IFocusable {
 		}
 		
 		//switch between fields
-		if (input.isKeyboardDown(Keys.TAB, false) && Game.get.getTick() > LAST_TAB_CLICK_TIME) {
+		if (input.isKeyboardDown(Keys.TAB, false) && SpecEditor.get.getTick() > LAST_TAB_CLICK_TIME) {
 			if (input.isKeyboardDown(Keys.CONTROL_LEFT, true)) {
 				if (this.prevInputField != null) {
 					this.setFocused(false);
@@ -274,7 +274,7 @@ public class STDInputField extends UIElement implements IFocusable {
 				this.setFocused(false);
 				this.nextInputField.setFocused(true);
 			}
-			LAST_TAB_CLICK_TIME = Game.get.getTick();
+			LAST_TAB_CLICK_TIME = SpecEditor.get.getTick();
 		}
 		
 		//set cursor
@@ -319,7 +319,7 @@ public class STDInputField extends UIElement implements IFocusable {
 		}
 		
 		//remove character
-		if (input.isKeyboardDown(Keys.BACKSPACE, false) || input.isKeyboardDown(Keys.BACKSPACE, true) && input.getClickedKeyTime(Keys.BACKSPACE) > 30 && Game.get.getTick() % 2 == 0) {
+		if (input.isKeyboardDown(Keys.BACKSPACE, false) || input.isKeyboardDown(Keys.BACKSPACE, true) && input.getClickedKeyTime(Keys.BACKSPACE) > 30 && SpecEditor.get.getTick() % 2 == 0) {
 			if (this.havePointerSelection()) {
 				this.builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
 				this.currentString = this.builder.toString();
@@ -338,8 +338,8 @@ public class STDInputField extends UIElement implements IFocusable {
 		}
 		
 		//move pointer
-		boolean movePointerLeft = input.isKeyboardDown(Keys.LEFT, false) || input.isKeyboardDown(Keys.LEFT, true) && input.getClickedKeyTime(Keys.LEFT) > 30 && Game.get.getTick() % 2 == 0;
-		boolean movePointerRight = input.isKeyboardDown(Keys.RIGHT, false) || input.isKeyboardDown(Keys.RIGHT, true) && input.getClickedKeyTime(Keys.RIGHT) > 30 && Game.get.getTick() % 2 == 0;
+		boolean movePointerLeft = input.isKeyboardDown(Keys.LEFT, false) || input.isKeyboardDown(Keys.LEFT, true) && input.getClickedKeyTime(Keys.LEFT) > 30 && SpecEditor.get.getTick() % 2 == 0;
+		boolean movePointerRight = input.isKeyboardDown(Keys.RIGHT, false) || input.isKeyboardDown(Keys.RIGHT, true) && input.getClickedKeyTime(Keys.RIGHT) > 30 && SpecEditor.get.getTick() % 2 == 0;
 		if (movePointerLeft || movePointerRight) {
 			if (this.havePointerSelection()) {
 				this.moveTextPointer(movePointerLeft ? this.selectPointerFrom : this.selectPointerTo);

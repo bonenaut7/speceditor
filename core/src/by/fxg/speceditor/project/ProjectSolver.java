@@ -6,7 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 
 import by.fxg.speceditor.utils.BaseSubscreen;
 
-public class ProjectSolver {
+public abstract class ProjectSolver {
 	/** Display name of solver **/
 	protected String displayName;
 	/** Unique type name, used in project headers **/
@@ -30,13 +30,11 @@ public class ProjectSolver {
 
 	/** Flag for project discoverer, enables 'load project' button **/
 	public boolean canLoadProject(FileHandle projectFile) {
-		return false;
+		return true;
 	}
 
 	/** Returns project blank with loaded header. **/
-	public BasicProject preLoadProject(FileHandle projectFile) {
-		return null;
-	}
+	abstract public BasicProject preLoadProject(FileHandle projectFile);
 	
 	/** Returns ability of solver to create projects and be used in project creation screen **/
 	public boolean isAbleToCreateProject() {

@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.decals.CameraAlphaGroupStrategy;
 import by.fxg.pilesos.decals.DecalDrawer;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.editorPane.EditorPane;
@@ -94,7 +94,7 @@ public class DefaultRenderer implements IViewportRenderer {
 		if (object instanceof ElementLight) {
 			ElementLight element = (ElementLight)object;
 			this.editorDecalDrawer.decalsToProduce.add(element._viewportDecal);
-			element._viewportDecal.setDecal(Game.storage.decals.get(Utils.format("viewport/light.", objectTree.elementSelector.isElementSelected(element))));
+			element._viewportDecal.setDecal(DefaultResources.INSTANCE.decals.get(Utils.format("viewport/light.", objectTree.elementSelector.isElementSelected(element))));
 			element._viewportDecal.getDecal().setScale(0.0015f, 0.0015f);
 			element._viewportDecal.getDecal().setPosition(element.getTransform(GizmoTransformType.TRANSLATE));
 			this.viewportEnvironment.add(element.getLight(BaseLight.class));

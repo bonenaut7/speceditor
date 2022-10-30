@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
@@ -52,8 +52,8 @@ public class GuiError extends BaseScreen implements IFocusable {
 	}
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
-		if (Game.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
-			Game.get.renderer.currentGui = null;
+		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
+			SpecEditor.get.renderer.currentGui = null;
 			this.setFocused(false);
 		}
 	}

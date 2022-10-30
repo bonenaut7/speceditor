@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Interpolation;
 
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -60,33 +60,31 @@ public class UHoldButton extends UIElement {
 		}
 	}
 	
+	public Color getColor() { return this.color; }
 	public UHoldButton setColor(Color color) {
 		this.color = color;
 		return this;
 	}
 	
+	public boolean isEnabled() { return this.enabled; }
 	public UHoldButton setEnabled(boolean enabled) {
 		this.enabled = enabled;
 		return this;
 	}
 	
-	public UHoldButton setTransforms(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public UHoldButton setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x;
+		this.y = (int)y;
+		this.width = (int)width;
+		this.height = (int)height;
 		return this;
 	}
 	
 	public boolean isPressed() {
-		return this.enabled && this.isKeyTouched() && this.ticks >= this.targetTicks;
-	}
-	
-	public boolean isEnabled() {
-		return this.enabled;
+		return this.enabled && this.isKeyTouched() && this.ticks == this.targetTicks;
 	}
 	
 	private boolean isKeyTouched() {
-		return this.enabled && (this.keyCode != NO_KEY && Game.get.getInput().isKeyboardDown(this.keyCode, true) || Game.get.getInput().isMouseDown(0, true) && this.isMouseOver());
+		return this.enabled && (this.keyCode != NO_KEY && SpecEditor.get.getInput().isKeyboardDown(this.keyCode, true) || SpecEditor.get.getInput().isMouseDown(0, true) && this.isMouseOver());
 	}
 }

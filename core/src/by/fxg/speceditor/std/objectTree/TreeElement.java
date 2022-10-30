@@ -6,7 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
@@ -44,7 +45,7 @@ public abstract class TreeElement {
 			case "default.delete": {
 				Array<TreeElement> toDelete = new Array<>();
 				for (int i = 0; i != tree.elementSelector.size(); i++) toDelete.add(tree.elementSelector.get(i));
-				Game.get.renderer.currentGui = new GuiObjectTreeDelete(tree, toDelete);
+				SpecEditor.get.renderer.currentGui = new GuiObjectTreeDelete(tree, toDelete);
 			} break;
 		}
 		return true;
@@ -66,7 +67,7 @@ public abstract class TreeElement {
 		return ITreeElementGizmos.gizmoVector.set(0, 0, 0);
 	}
 	
-	public Sprite getObjectTreeSprite() { return Game.storage.sprites.get("icons/question"); }
+	public Sprite getObjectTreeSprite() { return DefaultResources.INSTANCE.sprites.get("icons/question"); }
 	public TreeElement getParent() { return this.parent; }
 	public String getName() { return this.displayName; }
 	public boolean isVisible() { return this.visible; }

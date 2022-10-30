@@ -15,8 +15,6 @@ public class AddonManager {
 	private Map<String, ISpecAddon> activeAddons = new HashMap<>();
 	
 	public AddonManager() {
-		INSTANCE = this;
-		
 		this.discoverAddons();
 		this.addons.forEach(this::loadAddon);
 	}

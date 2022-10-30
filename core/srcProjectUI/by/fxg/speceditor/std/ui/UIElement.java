@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.GInputProcessor;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 
 public abstract class UIElement {
 	protected int x, y, width, height;
@@ -20,7 +20,7 @@ public abstract class UIElement {
 	}
 	
 	public GInputProcessor getInput() {
-		return Game.get.getInput();
+		return SpecEditor.get.getInput();
 	}
 	
 	public static void _convertColorToText(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA, boolean withPointer) {

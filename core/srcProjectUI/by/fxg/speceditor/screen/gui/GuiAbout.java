@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Align;
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.ui.UButton;
@@ -36,8 +36,8 @@ public class GuiAbout extends BaseScreen implements IFocusable {
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		if (this.buttonGit.isPressed()) try { Desktop.getDesktop().browse(new URI("https://github.com/fxgaming/")); } catch (Exception e) {}
-		if (Game.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
-			Game.get.renderer.currentGui = null;
+		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
+			SpecEditor.get.renderer.currentGui = null;
 			this.setFocused(false);
 		}
 	}
@@ -66,7 +66,7 @@ public class GuiAbout extends BaseScreen implements IFocusable {
 		batch.flush();
 		if (PilesosScissorStack.instance.peekScissors(x + 5, y + 5, (int)foster.getWidth() + 2, 11)) {
 			shape.setColor(0, 0, 0, 0.25F);
-			shape.filledRectangle(MathUtils.map(0, 45, x - 6, x + foster.getWidth() + 7, Game.get.getTick() % 45L), y + 5, 11, 11);
+			shape.filledRectangle(MathUtils.map(0, 45, x - 6, x + foster.getWidth() + 7, SpecEditor.get.getTick() % 45L), y + 5, 11, 11);
 			batch.flush();
 			PilesosScissorStack.instance.popScissors();
 		}

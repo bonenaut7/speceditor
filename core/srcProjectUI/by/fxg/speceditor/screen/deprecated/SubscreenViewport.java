@@ -13,7 +13,7 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.GInputProcessor.IMouseController;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
@@ -49,7 +49,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 	}
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
-		GInputProcessor input = Game.get.getInput();
+		GInputProcessor input = SpecEditor.get.getInput();
 		if (input.isCursorCatched()) {
 			if (input.isKeyboardDown(Keys.ESCAPE, false) || input.isKeyboardDown(Keys.SYM, false)) {
 				input.setCursorCatched(false);
@@ -77,7 +77,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 			this.renderer.updateCamera();
 			
 			this.tmpVector.setZero();
-		} else if (input.isMouseDown(2, false) && GDXUtil.isMouseInArea(x, y, width, height) && !Game.get.getInput().isCursorCatched()) {
+		} else if (input.isMouseDown(2, false) && GDXUtil.isMouseInArea(x, y, width, height) && !SpecEditor.get.getInput().isCursorCatched()) {
 			 input.setCursorCatched(true);
 			 GInputProcessor.mouseController = this;
 		} else this.renderer.updateCamera();
@@ -107,7 +107,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 		
 		shape.filledRectangle(x + 2, y + height - 12, 50, 10);
 		foster.setString("Viewport").draw(x + 4, y + height - 10, Align.left);
-		if (Game.get.getInput().isCursorCatched()) {
+		if (SpecEditor.get.getInput().isCursorCatched()) {
 			shape.filledRectangle(x + 52, y + height - 12, 50, 10);
 			foster.setString("captured").draw(x + 54, y + height - 10, Align.left);
 		}

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 
-import by.fxg.speceditor.ResourceManager;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.project.assets.ProjectAsset;
 
@@ -17,7 +17,7 @@ public class TextureLinkedAttribute extends TextureAttribute implements IProject
 	public boolean flipX, flipY;
 	
 	public TextureLinkedAttribute(long type) {
-		super(type, ResourceManager.standardTexture);
+		super(type, DefaultResources.INSTANCE.standardTexture);
 	}
 	
 	public TextureLinkedAttribute(TextureAttribute attribute) {
@@ -56,7 +56,7 @@ public class TextureLinkedAttribute extends TextureAttribute implements IProject
 	public void onAssetHandlerAdded(ProjectAsset<Texture> asset) {
 		if (this.asset != null) this.asset.removeHandlerWithoutNotify(this);
 		this.asset = asset;
-		this.setTexture(asset.isLoaded() ? asset.getAsset() : ResourceManager.standardTexture);
+		this.setTexture(asset.isLoaded() ? asset.getAsset() : DefaultResources.INSTANCE.standardTexture);
 	}
 	
 	public void onAssetLoad(ProjectAsset<Texture> asset) {
@@ -64,7 +64,7 @@ public class TextureLinkedAttribute extends TextureAttribute implements IProject
 	}
 	
 	public void onAssetUnload(ProjectAsset<Texture> asset) {
-		this.setTexture(ResourceManager.standardTexture);
+		this.setTexture(DefaultResources.INSTANCE.standardTexture);
 	}
 	
 	/** Sets texture with flips **/

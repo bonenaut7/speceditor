@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.editorPane.EditorPane;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -21,9 +21,9 @@ public class SubscreenSceneEditorModuleObjectExplorer extends BaseSubscreen {
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		if (GDXUtil.isMouseInArea(x, y, width, height) && SpecInterface.isFocused(this)) {
-			if (Game.get.getInput().isMouseScrolled(true) && this.scroll.x < this.scroll.y) {
+			if (SpecEditor.get.getInput().isMouseScrolled(true) && this.scroll.x < this.scroll.y) {
 				this.scroll.x = Math.min(this.scroll.x + 50, this.scroll.y);
-			} else if (Game.get.getInput().isMouseScrolled(false) && this.scroll.x > 0) {
+			} else if (SpecEditor.get.getInput().isMouseScrolled(false) && this.scroll.x > 0) {
 				this.scroll.x = Math.max(0, this.scroll.x - 50);
 			}
 		}

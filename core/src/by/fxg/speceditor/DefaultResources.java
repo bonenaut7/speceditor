@@ -14,39 +14,47 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 
 import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 
-public class Storage {
+public class DefaultResources {
+	public static DefaultResources INSTANCE;
 	private final File settingsFile;
-	public static IAccess access;
 	public static Wini settings;
-	public static FileHandle appFolder, addonsFolder, projectsFolder;
+	public static FileHandle appFolder, addonsFolder;
 	
+	public Texture standardTexture = null;
+	public Decal standardDecal = null;
+	public Model standardModel = null;
 	public Map<String, Sprite> sprites = new HashMap<>();
 	public Map<String, Decal> decals = new HashMap<>();
 	private Map<AppCursor, Cursor> cursors = new HashMap<>();
 	private Cursor defaultCursor;
 	
-	public Storage(ResourceManager manager) {
+	public DefaultResources() {
 		appFolder = Gdx.files.local("spec/");
 		addonsFolder = appFolder.child("addons/");
-		projectsFolder = appFolder.child("projects/");
 		appFolder.mkdirs();
 		addonsFolder.mkdirs();
-		projectsFolder.mkdirs();
 		
-		this.sprites.put("icons/question", new Sprite(manager.get("defaults/icons/question.png", Texture.class)));
-		this.sprites.put("icons/folder.false", new Sprite(manager.get("defaults/icons/folder.closed.png", Texture.class)));
-		this.sprites.put("icons/folder.true", new Sprite(manager.get("defaults/icons/folder.opened.png", Texture.class)));
+		this.standardTexture = SpriteStack.getTexture("defaults/defaultdiffuse.png");
+		this.standardDecal = Decal.newDecal(SpriteStack.getTextureRegion("defaults/defaultdecal.png"), true);
+		this.standardModel = ResourceManager.get("defaults/defaultmodel.obj", Model.class);
+		this.standardModel.materials.get(0).set(ColorAttribute.createDiffuse(1, 0, 0, 1));
 		
-		this.sprites.put("icons/package", new Sprite(manager.get("defaults/icons/package.png", Texture.class)));
-		this.sprites.put("icons/model", new Sprite(manager.get("defaults/icons/model.png", Texture.class)));
-		this.sprites.put("icons/light", new Sprite(manager.get("defaults/icons/light.png", Texture.class)));
-		this.sprites.put("icons/hitbox", new Sprite(manager.get("defaults/icons/hitbox.png", Texture.class)));
-		this.sprites.put("icons/decal", new Sprite(manager.get("defaults/icons/decal.png", Texture.class)));
+		this.sprites.put("icons/question", new Sprite(ResourceManager.get("defaults/icons/question.png", Texture.class)));
+		this.sprites.put("icons/folder.false", new Sprite(ResourceManager.get("defaults/icons/folder.closed.png", Texture.class)));
+		this.sprites.put("icons/folder.true", new Sprite(ResourceManager.get("defaults/icons/folder.opened.png", Texture.class)));
+		
+		this.sprites.put("icons/package", new Sprite(ResourceManager.get("defaults/icons/package.png", Texture.class)));
+		this.sprites.put("icons/model", new Sprite(ResourceManager.get("defaults/icons/model.png", Texture.class)));
+		this.sprites.put("icons/light", new Sprite(ResourceManager.get("defaults/icons/light.png", Texture.class)));
+		this.sprites.put("icons/hitbox", new Sprite(ResourceManager.get("defaults/icons/hitbox.png", Texture.class)));
+		this.sprites.put("icons/decal", new Sprite(ResourceManager.get("defaults/icons/decal.png", Texture.class)));
 		
 		SpriteStack.getTextureRegion("defaults/lightdecal_false.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		SpriteStack.getTextureRegion("defaults/lightdecal_true.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -102,12 +110,8 @@ public class Storage {
 			return this.cursors.get(type);
 		} catch (Exception e) {
 			Gdx.app.getApplicationLogger().error("SpecEditor Storage", String.format("Unable to load cursor for type %s.", type.name()));
-			if (Game.DEBUG) e.printStackTrace();
+			if (SpecEditor.DEBUG) e.printStackTrace();
 		}
 		return null;
-	}
-	
-	public static interface IAccess {
-		abstract void open(String str);
 	}
 }

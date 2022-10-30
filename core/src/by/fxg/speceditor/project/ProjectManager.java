@@ -1,10 +1,13 @@
 package by.fxg.speceditor.project;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 
@@ -14,13 +17,20 @@ public class ProjectManager {
 	public static ProjectManager INSTANCE;
 	public static BasicProject currentProject;
 	private Array<ProjectSolver> registeredSolvers = new Array<>();
-	
-	public ProjectManager() {
-		INSTANCE = this;
-	}
+	/** Paths to project folders that specified in Project {@link com.badlogic.gdx.Preferences} List **/
+	private Array<FileHandle> specifiedProjects = new Array<>();
 	
 	public void postInit() {
 		Utils.logDebug("[ProjectManager] Loaded ", this.registeredSolvers.size, " project solvers.");
+	
+		Map<String, ?> projectList = Gdx.app.getPreferences("by.fxg.speceditor.ProjectList").get();
+		for (String key : projectList.keySet()) {
+			if (projectList.get(key) instanceof String) {
+				FileHandle projectFile = Gdx.files.absolute((String)projectList.get(key)).child("project.ini");
+				if (projectFile.exists()) this.specifiedProjects.add(projectFile.parent());
+			}
+		}
+		Utils.logDebug("[ProjectManager] Found ", this.specifiedProjects.size, " existing projects.");
 	}
 	
 	/** Discovers project type, searches and returns available solver **/
@@ -56,7 +66,31 @@ public class ProjectManager {
 		return false;
 	}
 	
+	/** Updates Project {@link com.badlogic.gdx.Preferences} List and adds #projectFolder if not present **/
+	public void setRecentProject(FileHandle projectFolder) {
+		if (projectFolder.child("project.ini").exists()) {
+			Array<FileHandle> newArray = new Array<>();
+			newArray.add(projectFolder);
+			for (FileHandle fileHandle : this.specifiedProjects) {
+				if (!newArray.contains(fileHandle, false)) {
+					newArray.add(fileHandle);
+				}
+			}
+			this.specifiedProjects = newArray;
+			Preferences projectList = Gdx.app.getPreferences("by.fxg.speceditor.ProjectList");
+			projectList.clear();
+			for (int i = 0; i != newArray.size; i++) {
+				projectList.putString(String.valueOf(i), newArray.get(i).path());
+			}
+			projectList.flush();
+		}
+	}
+	
 	public Iterable<ProjectSolver> getSolvers() {
 		return this.registeredSolvers;
+	}
+	
+	public Array<FileHandle> getSpecifiedProjects() {
+		return this.specifiedProjects;
 	}
 }

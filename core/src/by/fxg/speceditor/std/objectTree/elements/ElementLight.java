@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.pilesos.decals.BaseDecal;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.TreeElement;
@@ -46,7 +46,7 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos {
 	}
 	
 	public Sprite getObjectTreeSprite() {
-		return Game.storage.sprites.get("icons/light");
+		return DefaultResources.INSTANCE.sprites.get("icons/light");
 	}
 	
 	public boolean isTransformSupported(GizmoTransformType transformType) {

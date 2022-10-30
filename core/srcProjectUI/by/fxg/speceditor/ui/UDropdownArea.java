@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -35,7 +35,7 @@ public class UDropdownArea implements IFocusable {
 			}
 			y += this.dropHeight;
 			
-			if (this.tickOpen < Game.get.getTick() && Game.get.getInput().isMouseDown(0, false)) this.close();
+			if (this.tickOpen < SpecEditor.get.getTick() && SpecEditor.get.getInput().isMouseDown(0, false)) this.close();
 			
 			shape.setColor(UColor.overlay);
 			shape.rectangle(this.x, y, this.width, h);
@@ -70,7 +70,7 @@ public class UDropdownArea implements IFocusable {
 		this.x = mx;
 		this.y = my - this.height;
 		this.setFocused(true);
-		this.tickOpen = Game.get.getTick();
+		this.tickOpen = SpecEditor.get.getTick();
 		return this;
 	}
 	
@@ -106,7 +106,7 @@ public class UDropdownArea implements IFocusable {
 				if (GDXUtil.isMouseInArea(area.x + xOffset + 1, y + 1, targetWidth - 2, area.dropHeight - 2)) {
 					shape.setColor(UColor.suboverlay);
 					shape.filledRectangle(area.x + xOffset, y, targetWidth, area.dropHeight);
-					if (Game.get.getInput().isMouseDown(0, false)) {
+					if (SpecEditor.get.getInput().isMouseDown(0, false)) {
 						area.listener.onDropdownClick(this.key);
 					}
 				}

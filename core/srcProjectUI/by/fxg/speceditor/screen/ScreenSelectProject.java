@@ -8,10 +8,11 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.project.BasicProject;
 import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.project.ProjectSolver;
+import by.fxg.speceditor.screen.project.ScreenCreateProject;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UHoldButton;
@@ -51,7 +52,7 @@ public class ScreenSelectProject extends BaseScreen {
 		this.buttonDeleteProject.update();
 		
 		if (this.buttonCreateProject.isPressed()) {
-			Game.get.renderer.currentScreen = new ScreenCreateProject();
+			SpecEditor.get.renderer.currentScreen = new ScreenCreateProject(this);
 		}
 		if (this.selectedProject != null && this.buttonOpenProject.isPressed()) {
 			ProjectManager.currentProject = this.selectedProject;
@@ -72,8 +73,8 @@ public class ScreenSelectProject extends BaseScreen {
 			this.buttonDeleteProject.setEnabled(false);
 		}
 		
-		if (Game.get.getInput().isMouseScrolled(true) && this.scroll + 16 < this.projects.size) this.scroll++;
-		else if (Game.get.getInput().isMouseScrolled(false) && this.scroll > 0) this.scroll--;
+		if (SpecEditor.get.getInput().isMouseScrolled(true) && this.scroll + 16 < this.projects.size) this.scroll++;
+		else if (SpecEditor.get.getInput().isMouseScrolled(false) && this.scroll > 0) this.scroll--;
 		if (this.projects.size <= this.scroll + 15) this.scroll = Math.max(0, this.projects.size - 16);
 	}
 
@@ -113,7 +114,7 @@ public class ScreenSelectProject extends BaseScreen {
 					}
 					foster.setString("[" + project.getProjectType() + "] " + project.getProjectName()).draw(px + 5, sy - psy * i + 5, Align.left);
 					
-					if (Game.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(px, sy - psy * i, psx, psy)) {
+					if (SpecEditor.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(px, sy - psy * i, psx, psy)) {
 						this.selectedProject = project;
 						this.buttonOpenProject.setEnabled(true);
 						this.buttonDeleteProject.setEnabled(true);

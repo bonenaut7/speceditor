@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
@@ -73,7 +73,7 @@ public class ElementHitboxStack extends TreeElement implements ITreeElementFolde
 	}
 	
 	public Sprite getObjectTreeSprite() {
-		return Game.storage.sprites.get(Utils.format("icons/question"));
+		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/question"));
 	}
 	
 	public boolean isFolderAccepting(TreeElement element) {

@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.GInputProcessor;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.objectTree.impl.DefaultTreeElementSelector;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
@@ -48,7 +48,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 	
 	public SpecObjectTree(int x, int y, int width, int height) { this(); this.setTransforms(x, y, width, height); }
 	public SpecObjectTree() {
-		this.input = Game.get.getInput();
+		this.input = SpecEditor.get.getInput();
 		this.dropdownArea = new UDropdownArea(this, 15);
 	}
 	
@@ -57,7 +57,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 		float outboundY = Math.max(0, this.y - this.renderPosition.y + this.scroll.y - 23 + 5);
 		if (GDXUtil.isMouseInArea(this.x, this.y, this.width, this.height) && SpecInterface.isFocused(this)) {
 			if (this.input.isMouseScrolled(true)) {
-				if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
+				if (SpecEditor.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
 					if (this.scroll.x < outboundX) {
 						this.scroll.x = Math.min(this.scroll.x + 25, outboundX);
 					}
@@ -66,8 +66,8 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 						this.scroll.y = Math.min(this.scroll.y + 23, outboundY);
 					}
 				}
-			} else if (Game.get.getInput().isMouseScrolled(false)) {
-				if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
+			} else if (SpecEditor.get.getInput().isMouseScrolled(false)) {
+				if (SpecEditor.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
 					if (this.scroll.x > 0) {
 						this.scroll.x = Math.max(0, this.scroll.x - 25);
 					}
@@ -131,7 +131,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 			if (GDXUtil.isMouseInArea(this.x, this.y, this.width, this.height) && SpecInterface.isFocused(null)) {
 				if (this.isClicked(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20)) this.setClick(element);
 				if (GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20)) { // isMouseOver
-					if (Game.get.getInput().isMouseDown(1, false)) {
+					if (SpecEditor.get.getInput().isMouseDown(1, false)) {
 						if (!this.elementSelector.isElementSelected(element)) {
 							this.elementSelector.clearSelection();
 							this.elementSelector.selectElement(element);
@@ -154,9 +154,9 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 					shape.filledRectangle(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20);
 				} else if (isFolder && this.input.isMouseDown(0, false) && GDXUtil.isMouseInArea(vector.x - 15, vector.y + 2, 14, 14) && SpecInterface.isFocused(null)) {
 					//Small arrow click, Visibility of folders
-					if (Game.get.getTick() - this._folderInteractTime > 20L) {
+					if (SpecEditor.get.getTick() - this._folderInteractTime > 20L) {
 						((ITreeElementFolder)element).setFolderOpened(!((ITreeElementFolder)element).isFolderOpened());
-						this._folderInteractTime = Game.get.getTick();
+						this._folderInteractTime = SpecEditor.get.getTick();
 					}
 					this.setClick(null, true);
 				}

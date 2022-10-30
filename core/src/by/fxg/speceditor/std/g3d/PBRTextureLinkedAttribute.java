@@ -3,7 +3,7 @@ package by.fxg.speceditor.std.g3d;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import by.fxg.speceditor.ResourceManager;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.project.assets.ProjectAsset;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -17,7 +17,7 @@ public class PBRTextureLinkedAttribute extends PBRTextureAttribute implements IP
 	
 	//TODO: Constructor from TextureAttribute & self(for #copy() method)
 	public PBRTextureLinkedAttribute(long type) {
-		super(type, ResourceManager.standardTexture);
+		super(type, DefaultResources.INSTANCE.standardTexture);
 	}
 	
 	/** Sets flip values **/
@@ -43,7 +43,7 @@ public class PBRTextureLinkedAttribute extends PBRTextureAttribute implements IP
 	public void onAssetHandlerAdded(ProjectAsset<Texture> asset) {
 		if (this.asset != null) this.asset.removeHandlerWithoutNotify(this);
 		this.asset = asset;
-		this.setTexture(asset.isLoaded() ? asset.getAsset() : ResourceManager.standardTexture);
+		this.setTexture(asset.isLoaded() ? asset.getAsset() : DefaultResources.INSTANCE.standardTexture);
 	}
 	
 	public void onAssetLoad(ProjectAsset<Texture> asset) {
@@ -51,7 +51,7 @@ public class PBRTextureLinkedAttribute extends PBRTextureAttribute implements IP
 	}
 	
 	public void onAssetUnload(ProjectAsset<Texture> asset) {
-		this.setTexture(ResourceManager.standardTexture);
+		this.setTexture(DefaultResources.INSTANCE.standardTexture);
 	}
 	
 	/** Sets texture with flips **/

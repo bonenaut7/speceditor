@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -71,7 +71,7 @@ public class GizmosModule implements IFocusable {
 		gizmoDiffuse.flip(false, true);
 		String[] modelName = {"translate", "rotate", "scale"};
 		for (int i = 0; i != this.gizmoModel.length; i++) {
-			this.gizmoModel[i] = new ModelInstance(Game.get.resourceManager.get(Utils.format("defaults/gizmo.", modelName[i], ".obj"), Model.class));
+			this.gizmoModel[i] = new ModelInstance(SpecEditor.get.resourceManager.get(Utils.format("defaults/gizmo.", modelName[i], ".obj"), Model.class));
 			this.gizmoModel[i].materials.get(0).set(TextureAttribute.createDiffuse(gizmoDiffuse));
 		}
 	}
@@ -94,7 +94,7 @@ public class GizmosModule implements IFocusable {
 				GizmoInteractType hitType = this.isRayCastedGizmo(ray);
 				if (hitType != GizmoInteractType.NONE) {
 					SpecInterface.setCursor(AppCursor.GRAB);
-					if (Game.get.getInput().isMouseDown(0, false)) {
+					if (SpecEditor.get.getInput().isMouseDown(0, false)) {
 						callback.getHitPointWorld(this.tmpVector);
 						this.gizmoStart.set(this.gizmoRenderPosition);
 						ray.getEndPoint(this.gizmoClickOffset, this.camera.position.dst(this.gizmoRenderPosition));
@@ -129,11 +129,11 @@ public class GizmosModule implements IFocusable {
 			camera.getPickRay(mx, my).getEndPoint(this.tmpVector, camera.position.dst(this.gizmoRenderPosition));
 			this.tmpVector.sub(this.gizmoClickOffset).sub(this.gizmoRenderPosition);
 			
-			if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true) && Game.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
+			if (SpecEditor.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true) && SpecEditor.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
 				this.roundVector(this.tmpVector, 10f);
-			} else if (Game.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
+			} else if (SpecEditor.get.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
 				this.roundVector(this.tmpVector, 1f);
-			} else if (Game.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
+			} else if (SpecEditor.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
 				this.roundVector(this.tmpVector, 0.1f);
 			}
 			
@@ -153,7 +153,7 @@ public class GizmosModule implements IFocusable {
 			this.prevMousePosition.set(mx, my);
 		}
 		//end of interaction
-		if (!Game.get.getInput().isMouseDown(0, true)) {
+		if (!SpecEditor.get.getInput().isMouseDown(0, true)) {
 			this.setFocused(false);
 		}
 	}
@@ -162,7 +162,7 @@ public class GizmosModule implements IFocusable {
 	private void processRotation(Camera camera, int x, int y, int width, int height) {
 		//this must be done with screen-space maybe
 		
-		if (!Game.get.getInput().isMouseDown(0, true)) {
+		if (!SpecEditor.get.getInput().isMouseDown(0, true)) {
 			this.setFocused(false);
 		}
 	}
@@ -170,7 +170,7 @@ public class GizmosModule implements IFocusable {
 	/** Processing of gizmo with scaling mode **/
 	private void processScaling(Camera camera, int x, int y, int width, int height) {
 		
-		if (!Game.get.getInput().isMouseDown(0, true)) {
+		if (!SpecEditor.get.getInput().isMouseDown(0, true)) {
 			this.setFocused(false);
 		}
 	}

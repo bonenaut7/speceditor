@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -24,7 +24,7 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 	private STDInputField[] color = new STDInputField[4];
 	
 	public EditorPaneMatselModuleColorAttribute() {
-		ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setFoster(Game.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
+		ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setFoster(SpecEditor.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
 		for (int i = 0; i != 4; i++) this.color[i] = builder.setBackgroundColor(this.fieldColors[i]).setListener(this, Utils.format("color", i)).build();
 		builder.addToLink(this.color).linkFields();
 	}

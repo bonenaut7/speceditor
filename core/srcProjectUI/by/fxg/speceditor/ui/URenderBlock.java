@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -24,7 +24,7 @@ public abstract class URenderBlock {
 	}
 
 	public int render(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-		if (SpecInterface.isFocused(this) && Game.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(this.x, yOffset - 13, this.width, 13)) {
+		if (SpecInterface.isFocused(this) && SpecEditor.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(this.x, yOffset - 13, this.width, 13)) {
 			this.isDropped = !this.isDropped;
 		}
 		
@@ -60,9 +60,9 @@ public abstract class URenderBlock {
 		return this;
 	}
 	
-	public URenderBlock setTransforms(int x, int width) { 
-		this.x = x;
-		this.width = width;
+	public URenderBlock setTransforms(float x, float width) { 
+		this.x = (int)x;
+		this.width = (int)width;
 		return this;
 	}
 	

@@ -2,63 +2,50 @@ package by.fxg.speceditor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.physics.bullet.Bullet;
 
 import by.fxg.pilesos.Apparat;
-import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.addon.AddonManager;
 import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.render.RenderManager;
-import by.fxg.speceditor.screen.ScreenSelectProject;
-import by.fxg.speceditor.screen.ScreenTestUI;
-import by.fxg.speceditor.screen.project.ScreenCreateProject;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.ui.SpecInterface;
 
-public class Game extends Apparat<GInputProcessor> {
+public class SpecEditor extends Apparat<GInputProcessor> {
 	public static boolean DEBUG = false;
-	public static Game get;
-	public static Storage storage;
+	public static SpecEditor get;
 	public static Foster fosterNoDraw;
-	public BitmapFont appFont, mid, bigFont;
 	public ResourceManager resourceManager;
 	public RenderManager renderer;
 	
 	public void create() {
 		this.onCreate(get = this);
 		if (this.hasProgramArgument("-debug")) DEBUG = true;
-		
 		Gdx.input.setInputProcessor(super.input = new GInputProcessor());
+		this.resourceManager = new ResourceManager();
+		this.renderer = new RenderManager(this);
+		this.input.setCursorCatched(false);
+	}
+	
+	public void init() {
+		fosterNoDraw = new Foster();
+		//init
 		Bullet.init();
 		SpecInterface.init();
-		SpriteStack.DEFAULT_PATH = Gdx.files.internal("assets/");
-		this.resourceManager = new ResourceManager();
-		Foster.defaultFont = this.appFont = this.resourceManager.generateFont(Gdx.files.internal("assets/font/monogram.ttf"), 16);
-		this.mid = this.resourceManager.generateFont(Gdx.files.internal("assets/font/monogram.ttf"), 24);
-		this.bigFont = this.resourceManager.generateFont(Gdx.files.internal("assets/font/monogram.ttf"), 32);
-		storage = new Storage(this.resourceManager);
-		fosterNoDraw = new Foster();
-		
-		new ProjectManager();
-		new STDManager();
-		new AddonManager();
+		DefaultResources.INSTANCE = new DefaultResources();
+		ProjectManager.INSTANCE = new ProjectManager();
+		STDManager.INSTANCE = new STDManager();
+		AddonManager.INSTANCE = new AddonManager();
+		//post
 		ProjectManager.INSTANCE.postInit();
 		STDManager.INSTANCE.postInit();
 		AddonManager.INSTANCE.postInit();
-		
-		
-		this.renderer = new RenderManager(this);
-		this.input.setCursorCatched(false);
-		
-		if (this.hasProgramArgument("-UITest")) this.renderer.currentScreen = new ScreenTestUI();
-		if (this.hasProgramArgument("-edit")) this.renderer.currentScreen = new ScreenCreateProject(new ScreenSelectProject());
 	}
 	
 	public void update(int width, int height) {
 		this.renderer.update(this, width, height);
-		SpecInterface.get.onUpdate();
+		if (SpecInterface.INSTANCE != null) SpecInterface.INSTANCE.onUpdate();
 	}
 	
 	public void render(int width, int height) {

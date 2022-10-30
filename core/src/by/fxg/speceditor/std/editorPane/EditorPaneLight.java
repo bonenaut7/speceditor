@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -72,7 +72,7 @@ public class EditorPaneLight extends EditorPane implements ISTDInputFieldListene
 			super("Transforms");
 			this.parent = parent;
 			
-			ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setFoster(Game.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
+			ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setFoster(SpecEditor.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
 			for (int i = 0; i != 3; i++) this.position[i] = builder.setBackgroundColor(UColor.redblack).setListener(this, "position").build();
 			for (int i = 0; i != 3; i++) this.rotation[i] = builder.setBackgroundColor(UColor.greenblack).setListener(this, "rotation").build();
 			for (int i = 0; i != 4; i++) this.color[i] = builder.setBackgroundColor(this.fieldColors[i]).setListener(this, "color").build();
@@ -83,7 +83,7 @@ public class EditorPaneLight extends EditorPane implements ISTDInputFieldListene
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-			if (SpecInterface.get.currentFocus instanceof GizmosModule) this.updateGizmoValues();
+			if (SpecInterface.INSTANCE.currentFocus instanceof GizmosModule) this.updateGizmoValues();
 			int sizePerPart = (this.width - 30 - (int)foster.setString(this.coords[0]).getWidth() * 3) / 3;
 			
 			foster.setString("Position:").draw(this.x, yOffset -= foster.getHeight(), Align.left);

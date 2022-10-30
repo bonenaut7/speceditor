@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.project.assets.ProjectAsset;
 import by.fxg.speceditor.std.g3d.EditDecal;
@@ -31,7 +31,7 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 	}
 	
 	public Sprite getObjectTreeSprite() {
-		return Game.storage.sprites.get("icons/decal");
+		return DefaultResources.INSTANCE.sprites.get("icons/decal");
 	}
 	
 	public boolean isTransformSupported(GizmoTransformType transformType) { return transformType != GizmoTransformType.SCALE; }

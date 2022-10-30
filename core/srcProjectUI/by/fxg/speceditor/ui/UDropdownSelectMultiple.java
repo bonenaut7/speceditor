@@ -95,29 +95,23 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 		}
 		this.displayString = sb.toString();
 	}
-	
+
+	public boolean[] getVariantsSelected() { return this.variantValues; }
+	public String[] getVariants() { return this.variants; }
 	public UDropdownSelectMultiple setVariants(String... variants) {
 		this.variants = variants;
 		return this;
 	}
-	
-	public UDropdownSelectMultiple setTransforms(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+
+	public UDropdownSelectMultiple setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x;
+		this.y = (int)y;
+		this.width = (int)width;
+		this.height = (int)height;
 		return this;
 	}
 	
 	public boolean isDropped() {
 		return this.isFocused();
-	}
-	
-	public boolean[] getVariantsSelected() {
-		return this.variantValues;
-	}
-	
-	public String[] getVariants() {
-		return this.variants;
 	}
 }

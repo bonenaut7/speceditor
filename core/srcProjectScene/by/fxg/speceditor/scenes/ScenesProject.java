@@ -2,7 +2,7 @@ package by.fxg.speceditor.scenes;
 
 import com.badlogic.gdx.files.FileHandle;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.project.BasicProject;
 import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.scenes.screen.ScreenSceneProject;
@@ -33,12 +33,12 @@ public class ScenesProject extends BasicProject {
 		this.renderer = new DefaultRenderer(this.objectTree);
 		
 		if (this.projectFolder.child("data.prj").exists() && !this.io.loadProjectData(this.renderer, this.objectTree.getStack())) {
-			Game.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
+			SpecEditor.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
 		}
 		return true;
 	}	
 	
 	public void onProjectOpened() {
-		Game.get.renderer.currentScreen = this.projectScreen = new ScreenSceneProject(this);
+		SpecEditor.get.renderer.currentScreen = this.projectScreen = new ScreenSceneProject(this);
 	}
 }

@@ -4,15 +4,12 @@ import com.badlogic.gdx.files.FileHandle;
 
 import by.fxg.speceditor.project.BasicProject;
 import by.fxg.speceditor.project.ProjectSolver;
+import by.fxg.speceditor.scenes.screen.ScenesSubscreenCreateProject;
 import by.fxg.speceditor.utils.BaseSubscreen;
 
 public class ScenesProjectSolver extends ProjectSolver {
 	public ScenesProjectSolver() {
 		super("Standard scene", "STD-PREFAB");
-	}
-	
-	public boolean canLoadProject(FileHandle projectFile) {
-		return false;
 	}
 
 	public BasicProject preLoadProject(FileHandle projectFile) {
@@ -26,6 +23,6 @@ public class ScenesProjectSolver extends ProjectSolver {
 	}
 	
 	public BaseSubscreen getProjectCreationSubscreen() {
-		return null;
+		return new ScenesSubscreenCreateProject();
 	}
 }

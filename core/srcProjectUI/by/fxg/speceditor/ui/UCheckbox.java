@@ -1,6 +1,6 @@
 package by.fxg.speceditor.ui;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
@@ -18,14 +18,14 @@ public class UCheckbox extends UIElement {
 	}
 
 	public void update() {
-		if (this.enabled && Game.get.getInput().isMouseDown(0, false) && this.isMouseOver()) this.value = !this.value;
+		if (this.enabled && SpecEditor.get.getInput().isMouseDown(0, false) && this.isMouseOver()) this.value = !this.value;
 	}
 	
 	public void render(ShapeDrawer shape) {
 		if (this.enabled) {
 			shape.setColor(UColor.gray);
 			if (this.isMouseOver()) {
-				SpecInterface.setCursor(Game.get.getInput().isMouseDown(0, true) ? AppCursor.POINTING : AppCursor.POINT);
+				SpecInterface.setCursor(SpecEditor.get.getInput().isMouseDown(0, true) ? AppCursor.POINTING : AppCursor.POINT);
 				shape.filledRectangle(this.x, this.y, this.width, this.height);
 			} else shape.rectangle(this.x + 1, this.y + 1, this.width - 2, this.height - 2, 2);
 		} else {
@@ -40,29 +40,23 @@ public class UCheckbox extends UIElement {
 		}
 	}
 	
+	public boolean isEnabled() { return this.enabled; }
 	public UCheckbox setEnabled(boolean enabled) {
 		this.enabled = enabled;
 		return this;
 	}
 	
+	public boolean getValue() { return this.value; }
 	public UCheckbox setValue(boolean value) {
 		this.value = value;
 		return this;
 	}
 	
-	public UCheckbox setTransforms(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public UCheckbox setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x;
+		this.y = (int)y;
+		this.width = (int)width;
+		this.height = (int)height;
 		return this;
-	}
-	
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-	
-	public boolean getValue() {
-		return this.value;
 	}
 }

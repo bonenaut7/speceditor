@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.editorPane.EditorPane;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselEnvironment;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -33,7 +33,7 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 	public EditorPaneDefaultViewportRenderer(DefaultRenderer renderer) {
 		this.renderer = renderer;
 		
-		ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setFoster(Game.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
+		ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setFoster(SpecEditor.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
 		for (int i = 0; i != 3; i++) this.cameraSettings[i] = builder.setBackgroundColor(UColor.yellowblack).setListener(this, "camera").build();
 		for (int i = 0; i != 4; i++) this.bufferColor[i] = builder.setBackgroundColor(this.fieldColors[i]).setListener(this, "bufferColor").build();
 		builder.addToLink(this.cameraSettings).addToLink(this.bufferColor).linkFields();
@@ -98,7 +98,7 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 			this.featureHitboxDepth = new UCheckbox(this.parent.renderer.featureHitboxDepth);
 			this.featureRenderGrid = new UCheckbox(this.parent.renderer.featureRenderGrid);
 			this.featureHitboxWidth = new ColoredInputField().setBackgroundColor(UColor.greengray).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12).setListener(this, "hitboxWidth");
-			this.featureHitboxWidth.setFoster(Game.fosterNoDraw).setTextWithPointer(String.valueOf(this.parent.renderer.featureHitboxWidth)).dropOffset();
+			this.featureHitboxWidth.setFoster(SpecEditor.fosterNoDraw).setTextWithPointer(String.valueOf(this.parent.renderer.featureHitboxWidth)).dropOffset();
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {

@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.ResourceManager;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
 import by.fxg.speceditor.ui.UButton;
@@ -59,13 +59,13 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 
 	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
 		switch (id) {
-			case "default.texture.diffuse": matsel.addAttribute(TextureLinkedAttribute.createDiffuse(ResourceManager.standardTexture)); break;
-			case "default.texture.specular": matsel.addAttribute(TextureLinkedAttribute.createSpecular(ResourceManager.standardTexture)); break;
-			case "default.texture.bump": matsel.addAttribute(TextureLinkedAttribute.createBump(ResourceManager.standardTexture)); break;
-			case "default.texture.normal": matsel.addAttribute(TextureLinkedAttribute.createNormal(ResourceManager.standardTexture)); break;
-			case "default.texture.ambient": matsel.addAttribute(TextureLinkedAttribute.createAmbient(ResourceManager.standardTexture)); break;
-			case "default.texture.emissive": matsel.addAttribute(TextureLinkedAttribute.createEmissive(ResourceManager.standardTexture)); break;
-			case "default.texture.reflection": matsel.addAttribute(TextureLinkedAttribute.createReflection(ResourceManager.standardTexture)); break;
+			case "default.texture.diffuse": matsel.addAttribute(TextureLinkedAttribute.createDiffuse(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.specular": matsel.addAttribute(TextureLinkedAttribute.createSpecular(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.bump": matsel.addAttribute(TextureLinkedAttribute.createBump(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.normal": matsel.addAttribute(TextureLinkedAttribute.createNormal(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.ambient": matsel.addAttribute(TextureLinkedAttribute.createAmbient(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.emissive": matsel.addAttribute(TextureLinkedAttribute.createEmissive(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.reflection": matsel.addAttribute(TextureLinkedAttribute.createReflection(DefaultResources.INSTANCE.standardTexture)); break;
 		}
 	}
 

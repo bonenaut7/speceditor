@@ -4,31 +4,31 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.DefaultResources;
 
 public class SpecInterface {
-	public static SpecInterface get;
+	public static SpecInterface INSTANCE;
 	public IFocusable currentFocus = null;
 	private AppCursor _prevCursor = AppCursor.UNAVAILABLE, _cursor = AppCursor.ARROW; 
 	
 	public void onUpdate() {
 		if (this._cursor != this._prevCursor) {
-			Gdx.graphics.setCursor(Game.storage.getCursor(this._cursor));
+			Gdx.graphics.setCursor(DefaultResources.INSTANCE.getCursor(this._cursor));
 			this._prevCursor = this._cursor;
 		}
 		this._cursor = AppCursor.ARROW;
 	}
 	
 	public static void init() {
-		get = new SpecInterface();
+		INSTANCE = new SpecInterface();
 	}
 	
 	public static boolean isFocused(Object focusable) {
-		return get.currentFocus == null || get.currentFocus == focusable;
+		return INSTANCE.currentFocus == null || INSTANCE.currentFocus == focusable;
 	}
 	
 	public static void setCursor(AppCursor cursor) {
-		get._cursor = cursor;
+		INSTANCE._cursor = cursor;
 	}
 	
 	//=[Inner classes area]=//
@@ -38,12 +38,12 @@ public class SpecInterface {
 		/** Sets focus for current object and resets for old **/
 		default void setFocused(boolean value) {
 			if (value) {
-				if (SpecInterface.get.currentFocus != null && SpecInterface.get.currentFocus != this) SpecInterface.get.currentFocus.onFocusRemoved();
-				SpecInterface.get.currentFocus = this;
+				if (SpecInterface.INSTANCE.currentFocus != null && SpecInterface.INSTANCE.currentFocus != this) SpecInterface.INSTANCE.currentFocus.onFocusRemoved();
+				SpecInterface.INSTANCE.currentFocus = this;
 				this.onFocusAdded();
-			} else if (SpecInterface.get.currentFocus == this) { //thinking about everlasting setFocusing(false) from everywhere, so it won't break logic of other objects
-				SpecInterface.get.currentFocus.onFocusRemoved();
-				SpecInterface.get.currentFocus = null;
+			} else if (SpecInterface.INSTANCE.currentFocus == this) { //thinking about everlasting setFocusing(false) from everywhere, so it won't break logic of other objects
+				SpecInterface.INSTANCE.currentFocus.onFocusRemoved();
+				SpecInterface.INSTANCE.currentFocus = null;
 			}
 		}
 		
@@ -51,7 +51,7 @@ public class SpecInterface {
 		/** Called when object loses focus **/ default void onFocusRemoved() {}
 		
 		default boolean isFocused() {
-			return SpecInterface.get.currentFocus == this;
+			return SpecInterface.INSTANCE.currentFocus == this;
 		}
 	}
 	

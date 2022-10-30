@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -26,7 +26,7 @@ public class UButton extends UIElement {
 		if (this.enabled) {
 			shape.setColor(this.color);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
-			if (Game.get.getInput().isMouseDown(0, true) && this.isMouseOver()) {
+			if (SpecEditor.get.getInput().isMouseDown(0, true) && this.isMouseOver()) {
 				SpecInterface.setCursor(AppCursor.POINTING);
 				shape.setColor(UColor.select);
 				shape.rectangle(this.x, this.y, this.width, this.height, 2);
@@ -48,34 +48,33 @@ public class UButton extends UIElement {
 		}
 	}
 	
+	public String getName() { return this.name; }
 	public UButton setName(String name) {
 		this.name = name;
 		return this;
 	}
 	
+	public Color getColor() { return this.color; }
 	public UButton setColor(Color color) {
 		this.color = color;
 		return this;
 	}
 	
+	public boolean isEnabled() { return this.enabled; }
 	public UButton setEnabled(boolean enabled) {
 		this.enabled = enabled;
 		return this;
 	}
 	
-	public UButton setTransforms(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public UButton setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x;
+		this.y = (int)y;
+		this.width = (int)width;
+		this.height = (int)height;
 		return this;
 	}
 	
 	public boolean isPressed() {
-		return this.enabled && Game.get.getInput().isMouseDown(0, false) && this.isMouseOver();
-	}
-	
-	public boolean isEnabled() {
-		return this.enabled;
+		return this.enabled && SpecEditor.get.getInput().isMouseDown(0, false) && this.isMouseOver();
 	}
 }

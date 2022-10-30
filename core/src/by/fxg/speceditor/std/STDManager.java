@@ -26,11 +26,11 @@ public class STDManager {
 	private Array<EditorPaneMatselModule> editorPaneMatselModules = new Array<>();
 	//editor panes sorted by class types
 	
-	public STDManager() { 
-		INSTANCE = this;
+	public STDManager() {
 		this.initEditorPanes();
 		this.initMatselModules();
 	}
+	
 	public STDManager postInit() {
 		//Reversing arrays to order it backwards, so default implementations will be in the end of array.
 		this.editorPanes.reverse();

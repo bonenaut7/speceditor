@@ -6,7 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.scenes.ScenesProject;
 import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.screen.deprecated.SubscreenExplorer;
@@ -70,7 +70,7 @@ public class ScreenSceneProject extends BaseScreen {
 		if (this.dropdownButtonApp.isPressed()) {
 			switch (this.dropdownButtonApp.getVariant()) {
 				case 0: break;
-				case 1: Game.get.renderer.currentGui = new GuiAbout(); break;
+				case 1: SpecEditor.get.renderer.currentGui = new GuiAbout(); break;
 			}
 		}
 		if (this.dropdownButtonProject.isPressed()) {

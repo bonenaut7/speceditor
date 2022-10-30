@@ -9,8 +9,7 @@ import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.Game;
-import by.fxg.speceditor.ResourceManager;
+import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.project.assets.ProjectAsset;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
@@ -36,7 +35,7 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	public ElementModel() { this("New model"); }
 	public ElementModel(String name) {
 		this.displayName = name;
-		this.modelInstance = new ModelInstance(ResourceManager.standardModel);
+		this.modelInstance = new ModelInstance(DefaultResources.INSTANCE.standardModel);
 	}
 	
 	public void setModelAsset(FileHandle handle) {
@@ -70,7 +69,7 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	}
 	
 	public Sprite getObjectTreeSprite() {
-		return Game.storage.sprites.get("icons/model");
+		return DefaultResources.INSTANCE.sprites.get("icons/model");
 	}
 	
 	public void onDelete() {
@@ -104,12 +103,12 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 				this._modelInstanceMaterialsCache.add(material.copy());
 			}
 		}
-		this.setModel(ResourceManager.standardModel);
+		this.setModel(DefaultResources.INSTANCE.standardModel);
 	}
 	
 	public void onAssetHandlerRemoved(ProjectAsset asset) {
 		this.modelAsset = null;
-		this.setModel(ResourceManager.standardModel);
+		this.setModel(DefaultResources.INSTANCE.standardModel);
 	}
 
 	private void setModel(Model model) {

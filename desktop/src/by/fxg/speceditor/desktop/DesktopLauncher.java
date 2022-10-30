@@ -5,7 +5,7 @@ import javax.swing.UIManager;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import by.fxg.speceditor.Game;
+import by.fxg.speceditor.SpecEditor;
 
 public class DesktopLauncher {
 	public static void main (String[] args) {
@@ -16,6 +16,6 @@ public class DesktopLauncher {
 		config.height = 768;
 		//config.resizable = false; //POHUI
 		config.title = "SpecEditor";
-		new LwjglApplication(new Game().setProgramArgs(args), config);
+		new LwjglApplication(new SpecEditor().setProgramArgs(args), config);
 	}
 }

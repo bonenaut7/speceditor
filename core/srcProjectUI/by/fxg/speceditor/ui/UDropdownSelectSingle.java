@@ -84,33 +84,27 @@ public class UDropdownSelectSingle extends UIElement implements IFocusable {
 		}
 	}
 	
+	public String[] getVariants() { return this.variants; }
 	public UDropdownSelectSingle setVariants(String... variants) {
 		this.variants = variants;
 		return this;
 	}
 	
+	public int getVariant() { return this.selectedVariant; }
 	public UDropdownSelectSingle setSelectedVariant(int variant) {
 		this.selectedVariant = variant;
 		return this;
 	}
 	
-	public UDropdownSelectSingle setTransforms(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public UDropdownSelectSingle setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x;
+		this.y = (int)y;
+		this.width = (int)width;
+		this.height = (int)height;
 		return this;
 	}
 	
 	public boolean isDropped() {
 		return this.isFocused();
-	}
-	
-	public String[] getVariants() {
-		return this.variants;
-	}
-	
-	public int getVariant() {
-		return this.selectedVariant;
 	}
 }

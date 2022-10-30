@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.pilesos.decals.BaseDecal;
-import by.fxg.speceditor.ResourceManager;
+import by.fxg.speceditor.DefaultResources;
 
 public class EditDecal extends BaseDecal {
 	public Vector3 position;
@@ -33,7 +33,7 @@ public class EditDecal extends BaseDecal {
 	}
 	
 	public EditDecal setDefaultDecal() {
-		this.decal = ResourceManager.standardDecal;
+		this.decal = DefaultResources.INSTANCE.standardDecal;
 		this.xScaleModifier = 8.0F / this.decal.getWidth();
 		this.yScaleModifier = 8.0F / this.decal.getHeight();
 		return this;
