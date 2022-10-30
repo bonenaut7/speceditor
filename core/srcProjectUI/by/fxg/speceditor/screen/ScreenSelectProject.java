@@ -34,9 +34,7 @@ public class ScreenSelectProject extends BaseScreen {
 			FileHandle projectConfig = candidate.child("project.ini");
 			if (candidate.isDirectory() && projectConfig.exists() && !projectConfig.isDirectory()) {
 				ProjectSolver solver = ProjectManager.INSTANCE.discoverProject(projectConfig);
-				if (solver != null) {
-					this.projects.add(solver.preLoadProject(projectConfig));
-				}
+				if (solver != null) this.projects.add(solver.preLoadProject(candidate));
 			}
 		}
 		Utils.logDebug("[ScreenSelectProject] Projects discovered to loading: ", this.projects.size, "; candidates: ", candidates.length);

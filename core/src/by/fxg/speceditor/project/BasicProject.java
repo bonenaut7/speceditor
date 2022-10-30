@@ -1,6 +1,7 @@
 package by.fxg.speceditor.project;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
@@ -25,8 +26,9 @@ public abstract class BasicProject {
 	protected long backupInterval; //in seconds
 	
 	/** Constructor for project load **/
-	public BasicProject(ProjectSolver solver) {
+	public BasicProject(ProjectSolver solver, FileHandle folder) {
 		this.solver = solver;
+		this.projectFolder = folder;
 	}
 	
 	/** Constructor for project creation process **/
@@ -42,31 +44,52 @@ public abstract class BasicProject {
 	}
 	
 	/** Loads project-header info, needed before project load **/
-	public void loadConfiguration(FileHandle fileHandle) {
+	public void loadConfiguration() {
 		try {
-			this.config = new Ini(fileHandle.file());
-			this.projectFolder = fileHandle.parent();
-			if (this.config.containsKey("PROJECT-HEADER")) {
-				Section headerInfo = this.config.get("PROJECT-HEADER");
-				this.type = headerInfo.containsKey("project-type") ? headerInfo.get("project-type") : "UNDEFINED";
-				this.name = headerInfo.containsKey("project-name") ? headerInfo.get("project-name") : "Undefined";
-				this.lastSaveDate = headerInfo.containsKey("last-save-date") ? headerInfo.get("last-save-date") : "Undefined";
-				this.backupSaving = headerInfo.containsKey("backup-saving") ? headerInfo.get("backup-saving", boolean.class) : true;
-				this.backupInterval = 300L;//headerInfo.containsKey("backup-interval") ? : 300L; //300 seconds by default
-			} else Utils.logDebug("Project", String.format("Unable to load project with %s solver. There is no header in project file at: %s", this.solver.getDisplayName(), fileHandle.path()));
+			FileHandle projectFile = this.projectFolder == null ? null : this.projectFolder.child("project.ini");
+			if (projectFile != null && projectFile.exists()) {
+				this.config = new Ini(this.projectFolder.child("project.ini").file());
+				if (this.config.containsKey("PROJECT-HEADER")) {
+					Section headerInfo = this.config.get("PROJECT-HEADER");
+					this.type = headerInfo.containsKey("project-type") ? headerInfo.get("project-type") : "UNDEFINED";
+					this.name = headerInfo.containsKey("project-name") ? headerInfo.get("project-name") : "Undefined";
+					this.lastSaveDate = headerInfo.containsKey("last-save-date") ? headerInfo.get("last-save-date") : "Undefined";
+					this.backupSaving = headerInfo.containsKey("backup-saving") ? headerInfo.get("backup-saving", boolean.class) : true;
+					this.backupInterval = headerInfo.containsKey("backup-interval") ? headerInfo.get("backup-interval", long.class) : 600L;
+				} else Utils.logDebug("Project", String.format("Unable to load project with %s solver. There is no header in project file at: %s", this.solver.getDisplayName(), this.projectFolder.path()));
+			} else Utils.logDebug("Project", String.format("Unable to load project with %s solver. There is no project at: %s", this.solver.getDisplayName(), this.projectFolder.path()));
 		} catch (InvalidFileFormatException e) {
 			Utils.logError(e, "BasicProject#loadHeader", "IFFE unhandled exception");
 		} catch (IOException e) {
 			Utils.logError(e, "BasicProject#loadHeader", "IO unhandled exception");
+		} catch (Exception e) {
+			Utils.logError(e, "BasicProject#loadHeader", "Unknown unhandled exception");
 		}
 	}
 	
 	public void saveConfiguration() {
-		
+		try {
+			if (this.config == null) this.config = new Ini();
+			this.config.remove("PROJECT-HEADER");
+			Section header = this.config.add("PROJECT-HEADER");
+			header.add("project-type", this.solver.solverType);
+			header.add("project-name", this.name);
+			header.add("last-save-date", Instant.now().toString()); 
+			header.add("backup-saving", this.backupSaving);
+			header.add("backup-interval", this.backupInterval);
+			FileHandle projectFile = this.projectFolder.child("project.ini");
+			if (!projectFile.exists()) projectFile.file().createNewFile();
+			this.config.store(projectFile.file());
+		} catch (IOException ioexception) {
+			Utils.logError(ioexception, "BasicProject", "Unable to save project: ", this.name);
+			ioexception.printStackTrace();
+		}
 	}
 	
 	/** Called when project needed to be loaded. Return false to cancel loading. **/
 	abstract public boolean loadProject();
+	/** Called when project needed to be saved. Return false to fail saving. **/
+	abstract public boolean saveProject();
 	/** Called in project selection screen. Used to open project screen. **/
 	abstract public void onProjectOpened();
 	

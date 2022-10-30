@@ -18,12 +18,13 @@ public class ScenesProject extends BasicProject {
 	public SpecObjectTree objectTree;
 	public IViewportRenderer renderer;
 	
-	public ScenesProject(ProjectSolver solver) {
-		super(solver);
+	public ScenesProject(ProjectSolver solver, FileHandle folder) {
+		super(solver, folder);
+		this.io = new ScenesProjectIO(this);
 	}
 	
-	public void loadConfiguration(FileHandle fileHandle) {
-		super.loadConfiguration(fileHandle);
+	public ScenesProject(ProjectSolver solver, FileHandle folder, String name, boolean backupSaving, long backupInterval) {
+		super(solver, folder, name, backupSaving, backupInterval);
 		this.io = new ScenesProjectIO(this);
 	}
 
@@ -32,11 +33,15 @@ public class ScenesProject extends BasicProject {
 		this.objectTree.getStack().add(new ElementFolder("Root folder"));
 		this.renderer = new DefaultRenderer(this.objectTree);
 		
-		if (this.projectFolder.child("data.prj").exists() && !this.io.loadProjectData(this.renderer, this.objectTree.getStack())) {
+		if (this.projectFolder.child("scenes.data").exists() && !this.io.loadProjectData(this.renderer, this.objectTree.getStack())) {
 			SpecEditor.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
 		}
 		return true;
 	}	
+	
+	public boolean saveProject() {
+		return false;
+	}
 	
 	public void onProjectOpened() {
 		SpecEditor.get.renderer.currentScreen = this.projectScreen = new ScreenSceneProject(this);

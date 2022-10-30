@@ -1,48 +1,26 @@
 package by.fxg.speceditor.utils;
 
 import java.text.DecimalFormat;
-import java.time.Instant;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
+import by.fxg.pilesos.i18n.I18n;
 import by.fxg.speceditor.SpecEditor;
-import by.fxg.speceditor.project.ProjectManager;
 
 public class Utils {
 	private static final Pattern timePattern = Pattern.compile("([0-9]+)([wdhms])");
-	public static final String[] 
-		MODELS_EXTENSIONS = {"obj", "g3db", "g3dj", "gltf", "glb"},
-		IMAGES_EXTENSIONS = {"png", "jpg", "jpeg", "etc1"};
-	public static final String
-		MODELS_DESCRIPTION = "Supported models (*.obj; *.g3db; *.g3dj; *.gltf; *.glb)",
-		IMAGES_DESCRIPTION = "Supported images (*.png; *.jpg; *.jpeg; *.etc1)";
-	//Opens dialog to open some file
+	private static final String[] PREDEFINED_DF_FORMATS = {"#", "#.#", "#.##", "#.###", "#.####", "#.#####", "#.######"};
+	private static final DecimalFormat PREDEFINED_DF = new DecimalFormat("#");
+	public static FileNameExtensionFilter FILENAMEFILTER_MODELS, FILENAMEFILTER_IMAGES;
 	
-	public static FileHandle openFileSelectionDialog(String desc, String... extensions) { return openFileSelectionDialog(ProjectManager.currentProject.getProjectFolder(), desc, extensions); }
-	public static FileHandle openFileSelectionDialog(FileHandle directory, String desc, String... extensions) {
-		JFrame frame = new JFrame();
-		frame.setAlwaysOnTop(true);
-		JFileChooser fileChooser = new JFileChooser();
-		if (directory != null && directory.exists()) fileChooser.setCurrentDirectory(directory.file());
-		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.setFileFilter(new FileNameExtensionFilter(desc, extensions));
-		fileChooser.setDialogTitle("Open file");
-		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
-			FileHandle absolute = Gdx.files.absolute(fileChooser.getSelectedFile().getAbsolutePath());
-			FileHandle projectFolder = ProjectManager.currentProject.getProjectFolder();
-			if (absolute != null && absolute.path().contains(projectFolder.path())) {
-				String[] splitted = absolute.path().split(projectFolder.path());
-				return projectFolder.child(splitted[splitted.length - 1]);
-			}
-		}
-		return null;
+	public static void init() {
+		FILENAMEFILTER_MODELS = new FileNameExtensionFilter(format(I18n.get("speceditor.utils.fileNameFilter.models"), " (*.obj; *.g3db; *.g3dj; *.gltf; *.glb)"), "obj", "g3db", "g3dj", "gltf", "glb");
+		FILENAMEFILTER_IMAGES = new FileNameExtensionFilter(format(I18n.get("speceditor.utils.fileNameFilter.images"), " (*.png; *.jpg; *.jpeg; *.etc1)"), "png", "jpg", "jpeg", "etc1");
+		
 	}
 	
 	/** example: <br>
@@ -92,11 +70,11 @@ public class Utils {
 		return -1L;
 	}
 	
+	/** SpecEditor window width **/
 	public static int getWidth() { return SpecEditor.get.width; }
+	/** SpecEditor window height **/
 	public static int getHeight() { return SpecEditor.get.height; }
 	
-	private static final String[] PREDEFINED_DF_FORMATS = {"#", "#.#", "#.##", "#.###", "#.####", "#.#####", "#.######"};
-	private static final DecimalFormat PREDEFINED_DF = new DecimalFormat("#");
 	public static String dFormat(double value, int symbolsAfterDot) {
 		PREDEFINED_DF.applyPattern(PREDEFINED_DF_FORMATS[symbolsAfterDot]);
 		return PREDEFINED_DF.format(value);

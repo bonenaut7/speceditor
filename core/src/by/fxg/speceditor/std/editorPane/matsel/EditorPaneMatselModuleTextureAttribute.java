@@ -14,6 +14,7 @@ import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
+import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -32,7 +33,7 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 10, 12);
 		this.buttonSelectTexture.render(shape, foster);
 		if (this.buttonSelectTexture.isPressed()) {
-			FileHandle handle = Utils.openFileSelectionDialog(Utils.IMAGES_DESCRIPTION, Utils.IMAGES_EXTENSIONS);
+			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).file();
 			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(attribute);
 		}
 		

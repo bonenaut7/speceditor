@@ -12,9 +12,9 @@ public class ScenesProjectSolver extends ProjectSolver {
 		super("Standard scene", "STD-PREFAB");
 	}
 
-	public BasicProject preLoadProject(FileHandle projectFile) {
-		ScenesProject project = new ScenesProject(this);
-		project.loadConfiguration(projectFile);
+	public BasicProject preLoadProject(FileHandle projectFolder) {
+		ScenesProject project = new ScenesProject(this, projectFolder);
+		project.loadConfiguration();
 		return project;
 	}
 	
@@ -23,6 +23,6 @@ public class ScenesProjectSolver extends ProjectSolver {
 	}
 	
 	public BaseSubscreen getProjectCreationSubscreen() {
-		return new ScenesSubscreenCreateProject();
+		return new ScenesSubscreenCreateProject(this);
 	}
 }

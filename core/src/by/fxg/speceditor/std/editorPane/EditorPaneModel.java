@@ -17,6 +17,7 @@ import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.URenderBlock;
 import by.fxg.speceditor.ui.ColoredInputField.Builder;
+import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -51,7 +52,7 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Select model:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectModel.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
-			this.element.setModelAsset(Utils.openFileSelectionDialog(Utils.MODELS_DESCRIPTION, Utils.MODELS_EXTENSIONS));
+			this.element.setModelAsset(SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).file());
 			this.matsel.update(this.element.modelInstance.materials);
 		}
 		

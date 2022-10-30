@@ -16,10 +16,11 @@ import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.ColoredInputField;
+import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.URenderBlock;
-import by.fxg.speceditor.ui.ColoredInputField.Builder;
+import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -54,7 +55,7 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Select decal:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectDecal.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
 		if (this.buttonSelectDecal.isPressed()) {
-			FileHandle handle = Utils.openFileSelectionDialog(Utils.IMAGES_DESCRIPTION, Utils.IMAGES_EXTENSIONS);
+			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).file();
 			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(this.element);
 		}
 		

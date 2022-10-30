@@ -29,12 +29,12 @@ public abstract class ProjectSolver {
 	}
 
 	/** Flag for project discoverer, enables 'load project' button **/
-	public boolean canLoadProject(FileHandle projectFile) {
-		return true;
+	public boolean canLoadProject(FileHandle projectFolder) {
+		return projectFolder != null && projectFolder.exists() && projectFolder.child("project.ini").exists() && !projectFolder.child("project.ini").isDirectory();
 	}
 
 	/** Returns project blank with loaded header. **/
-	abstract public BasicProject preLoadProject(FileHandle projectFile);
+	abstract public BasicProject preLoadProject(FileHandle projectFolder);
 	
 	/** Returns ability of solver to create projects and be used in project creation screen **/
 	public boolean isAbleToCreateProject() {

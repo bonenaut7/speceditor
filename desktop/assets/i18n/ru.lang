@@ -1,0 +1,4 @@
+speceditor.utils.SpecFileChooser.file:=Открыть файл(ы)
+speceditor.utils.SpecFileChooser.folder:=Открыть папку(и)
+speceditor.utils.fileNameFilter.models:=Файлы моделей
+speceditor.utils.fileNameFilter.images:=Файлы изображений

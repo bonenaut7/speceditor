@@ -6,11 +6,13 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 
 import by.fxg.pilesos.Apparat;
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.pilesos.i18n.I18n;
 import by.fxg.speceditor.addon.AddonManager;
 import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.utils.Utils;
 
 public class SpecEditor extends Apparat<GInputProcessor> {
 	public static boolean DEBUG = false;
@@ -32,7 +34,9 @@ public class SpecEditor extends Apparat<GInputProcessor> {
 		fosterNoDraw = new Foster();
 		//init
 		Bullet.init();
+		I18n.init();
 		SpecInterface.init();
+		Utils.init();
 		DefaultResources.INSTANCE = new DefaultResources();
 		ProjectManager.INSTANCE = new ProjectManager();
 		STDManager.INSTANCE = new STDManager();

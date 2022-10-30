@@ -6,6 +6,9 @@ import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.project.ProjectManager;
+import by.fxg.speceditor.project.ProjectSolver;
+import by.fxg.speceditor.scenes.ScenesProject;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -13,10 +16,12 @@ import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.utils.BaseSubscreen;
+import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDInputFieldListener {
+	private final ProjectSolver projectSolver;
 	private ColoredInputField projectName, backupInterval;
 	private UCheckbox enableBackups;
 	private UButton buttonSelectFolder, buttonCreateProject;
@@ -24,7 +29,8 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 	private boolean isProjectFolderValid, isProjectNameValid, isBackupIntervalValid;
 	private FileHandle projectFolder;
 	
-	public ScenesSubscreenCreateProject() {
+	public ScenesSubscreenCreateProject(ProjectSolver projectSolver) {
+		this.projectSolver = projectSolver;
 		this.projectName = (ColoredInputField)new ColoredInputField().setBackgroundColor(UColor.redgray).setMaxLength(128).setListener(this, "projectName");
 		this.backupInterval = (ColoredInputField)new ColoredInputField().setBackgroundColor(UColor.redgray).setMaxLength(8).setListener(this, "backupInterval");
 		this.projectName.setNextField(this.backupInterval).setPreviousField(this.backupInterval);
@@ -40,14 +46,20 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 		if (this.enableBackups.getValue()) this.backupInterval.update();
 		
 		if (this.buttonSelectFolder.isPressed()) {
-			//select folder for project
-			
-			this.isProjectFolderValid = this.projectFolder.exists() && !this.projectFolder.child("project.ini").exists();
+			this.projectFolder = SpecFileChooser.get().folder();
+			this.isProjectFolderValid = this.projectFolder != null && this.projectFolder.exists() && !this.projectFolder.child("project.ini").exists();
 		}
 		
 		this.buttonCreateProject.setEnabled(this.isProjectFolderValid && this.isProjectNameValid && (this.enableBackups.getValue() ? this.isBackupIntervalValid : true));
 		if (this.buttonCreateProject.isPressed()) {
-			//create epta
+			long backupInterval = this.enableBackups.getValue() && this.isBackupIntervalValid ? Utils.parseTime(this.backupInterval.getText()) : 600L; 
+			ScenesProject project = new ScenesProject(this.projectSolver, this.projectFolder, this.projectName.getText(), this.enableBackups.getValue(), backupInterval);
+			project.saveConfiguration();
+			ProjectManager.INSTANCE.setRecentProject(this.projectFolder);
+			if (project.loadProject()) {
+				ProjectManager.currentProject = project;
+				project.onProjectOpened();
+			}
 		}
 	}
 

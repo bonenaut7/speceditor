@@ -21,7 +21,7 @@ public class ScenesProjectIO {
 	
 	public ScenesProjectIO(ScenesProject project) {
 		this.project = project;
-		this.projectFile = project.getProjectFolder().child("data.prj");
+		this.projectFile = project.getProjectFolder().child("scenes.data");
 	}
 	
 	/** Returns true if loading was successful **/

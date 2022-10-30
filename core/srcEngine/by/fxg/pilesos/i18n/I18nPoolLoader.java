@@ -25,13 +25,13 @@ public class I18nPoolLoader extends AsynchronousAssetLoader<I18nPool, I18nPoolLo
 	
 	public void loadAsync(AssetManager manager, String fileName, FileHandle file, MapConfigParameters parameter) {}
 	public I18nPool loadSync(AssetManager manager, String fileName, FileHandle file, MapConfigParameters parameter) {
-		I18nPool pool = new I18nPool(file.name().split(Pattern.quote("."))[0]);
+		I18nPool pool = new I18nPool(file.nameWithoutExtension());
 		String[] lines = file.readString("UTF-8").split(System.lineSeparator());
 		for (String line : lines) {
 			if (line == null || line.length() == 0 || line.startsWith("#")) continue;
 			
 			String[] items = line.split(Pattern.quote(":="));
-			pool.add(items[0], items[1]);
+			pool.map.put(items[0], items[1]);
 		}
 		I18n.addPool(pool);
 		return pool;

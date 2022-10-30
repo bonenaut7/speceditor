@@ -34,19 +34,22 @@ public class ProjectManager {
 	}
 	
 	/** Discovers project type, searches and returns available solver **/
-	public ProjectSolver discoverProject(FileHandle projectConfigHandle) {
+	public ProjectSolver discoverProject(FileHandle projectFolder) {
 		try {
-			Ini projectConfig = new Ini(projectConfigHandle.file());
-			if (projectConfig.containsKey("PROJECT-HEADER") && projectConfig.get("PROJECT-HEADER").containsKey("project-type")) {
-				String projectType = projectConfig.get("PROJECT-HEADER").get("project-type");
-				for (ProjectSolver solver : this.registeredSolvers) {
-					if (solver.acceptProject(projectConfig, projectType)) return solver;
-				}
-			} else Utils.logDebug("Project Manager", String.format("Unable to discover project config, incorrect header at: %s", projectConfigHandle.path()));
+			FileHandle projectFile = projectFolder == null ? null : projectFolder.child("project.ini");
+			if (projectFile != null && projectFile.exists()) {
+				Ini projectConfig = new Ini(projectFile.file());
+				if (projectConfig.containsKey("PROJECT-HEADER") && projectConfig.get("PROJECT-HEADER").containsKey("project-type")) {
+					String projectType = projectConfig.get("PROJECT-HEADER").get("project-type");
+					for (ProjectSolver solver : this.registeredSolvers) {
+						if (solver.acceptProject(projectConfig, projectType)) return solver;
+					}
+				} else Utils.logDebug("Project Manager", String.format("Unable to discover project config, incorrect header at: %s", projectFolder.path()));
+			} else Utils.logDebug("Project", String.format("Unable to discover project config. There is no project at: %s", projectFolder.path()));
 		} catch (InvalidFileFormatException exception) {
-			Utils.logError(exception, "Project Manager", String.format("Unable to discovery project config at: %s", projectConfigHandle.path()));
+			Utils.logError(exception, "Project Manager", String.format("Unable to discovery project at: %s", projectFolder.path()));
 		} catch (IOException exception) {
-			Utils.logError(exception, "Project Manager", String.format("IO Exception(%s) while discovering project config at: %s", exception.getMessage(), projectConfigHandle.path()));
+			Utils.logError(exception, "Project Manager", String.format("IO Exception(%s) while discovering project at: %s", exception.getMessage(), projectFolder.path()));
 		}
 		return null;
 	}

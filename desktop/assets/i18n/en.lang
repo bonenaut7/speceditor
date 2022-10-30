@@ -1,0 +1,4 @@
+speceditor.utils.SpecFileChooser.file:=Open file(s)
+speceditor.utils.SpecFileChooser.folder:=Open folder(s)
+speceditor.utils.fileNameFilter.models:=Model files
+speceditor.utils.fileNameFilter.images:=Image files

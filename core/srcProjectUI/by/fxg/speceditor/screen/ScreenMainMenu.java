@@ -41,9 +41,8 @@ public class ScreenMainMenu extends BaseScreen {
 		
 		//init recent projects
 		for (FileHandle folder : ProjectManager.INSTANCE.getSpecifiedProjects()) {
-			FileHandle projectFile = folder.child("project.ini");
-			ProjectSolver solver = ProjectManager.INSTANCE.discoverProject(projectFile);
-			BasicProject project = solver != null && solver.canLoadProject(projectFile) ? solver.preLoadProject(projectFile) : null;
+			ProjectSolver solver = ProjectManager.INSTANCE.discoverProject(folder);
+			BasicProject project = solver != null && solver.canLoadProject(folder) ? solver.preLoadProject(folder) : null;
 			if (project != null) this.recentProjects.add(project);
 		}
 	}
