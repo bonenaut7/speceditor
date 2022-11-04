@@ -1,20 +1,31 @@
 package by.fxg.speceditor.scenes;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g3d.Attribute;
+import com.badlogic.gdx.graphics.g3d.Attributes;
+import com.badlogic.gdx.utils.Array;
 
+import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.objectTree.ElementStack;
+import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 import by.fxg.speceditor.utils.IOUtils;
+import by.fxg.speceditor.utils.Utils;
 
 public class ScenesProjectIO {
+	/** Feature that replaces incorrect types of serializable folder classes with default folders. <br> Takes more time to save/load and space on disk **/
+	public static boolean SERIALIZER_FEATURE_REPLACE_INCORRECT_TYPES_WITH_FOLDERS = true;
+	
 	private ScenesProject project;
 	private FileHandle projectFile;
 	private Throwable lastException = null;
@@ -25,22 +36,60 @@ public class ScenesProjectIO {
 	}
 	
 	/** Returns true if loading was successful **/
-	public boolean loadProjectData(IViewportRenderer viewportRenderer, ElementStack inputStack) {
+	public boolean loadProjectData(ProjectAssetManager projectAssetManager, IViewportRenderer viewportRenderer, ElementStack inputStack) {
 		try {
 			ByteArrayInputStream bais = new ByteArrayInputStream(this.projectFile.readBytes());
 			DataInputStream dis = new DataInputStream(bais);
-			IOUtils util = new IOUtils(this.project.getProjectFolder(), dis);
+			IOUtils util = new IOUtils(dis);
 			
 			dis.skip(8); //skip magic and version
-			util.readCheckID();
-			String viewportClass = dis.readUTF();
-			long viewportData = dis.readLong();
-			if (viewportRenderer.getClass().getName().equals(viewportClass)) {
-				viewportRenderer.readData(util, dis);
-			} else dis.skip(viewportData);
 			
-			util.readCheckID();
-			this.readStack(dis, util, null, inputStack);
+			
+			/** ProjectAssetManager section **/ {
+				util.readCheckID();
+				projectAssetManager.loadIndexes(dis);
+			}
+			
+			/** Viewport section **/ {
+				util.readCheckID();
+				String viewportClassName = dis.readUTF();
+				long viewportData = dis.readLong();
+				if (viewportRenderer.getClass().getName().equals(viewportClassName)) {
+					viewportRenderer.readData(util, dis);
+				} else {
+					try {
+						Class<?> viewportClass = Class.forName(viewportClassName);
+						if (viewportClass != null && viewportClass.getClass().isAssignableFrom(viewportClass)) {
+							viewportRenderer.readData(util, dis);
+						} else {
+							Utils.logWarn("[ScenesProjectIO] Unable to load Viewport data because of incorrect present viewport!");
+							Utils.logDebug("[ScenesProjectIO] Viewport present: ", viewportRenderer.getClass().getTypeName());
+							Utils.logDebug("[ScenesProjectIO] Viewport needed: ", viewportClassName);
+							dis.skip(viewportData);
+						}
+					} catch (ClassNotFoundException classNotFoundException) {
+						Utils.logWarn("[ScenesProjectIO] Unable to load Viewport data because of incorrect present viewport!");
+						Utils.logDebug("[ScenesProjectIO] Viewport present: ", viewportRenderer.getClass().getTypeName());
+						Utils.logDebug("[ScenesProjectIO] Viewport needed: ", viewportClassName);
+						Utils.logError(classNotFoundException, "ScenesProjectIO", "Unable to load viewport data. Viewport class not found. Skipping...");
+						dis.skip(viewportData);
+					}
+				}	
+			}
+			
+			/** ObjectTree section **/ {
+				util.readCheckID();
+				Array<Class<?>> types = new Array<>();
+				int typesSize = dis.readInt();
+				for (int i = 0; i != typesSize; i++) {
+					try {
+						types.add(Class.forName(dis.readUTF()));
+					} catch (ClassNotFoundException e) {
+						types.add(null);
+					}
+				}
+				this.readStack(types, util, dis, inputStack);
+			}
 			
 			dis.close();
 			bais.close();
@@ -53,24 +102,41 @@ public class ScenesProjectIO {
 	}
 	
 	/** Returns true if loading was successful **/
-	public boolean writeProjectData(IViewportRenderer viewportRenderer, ElementStack outStack) {
+	public boolean writeProjectData(ProjectAssetManager projectAssetManager, IViewportRenderer viewportRenderer, ElementStack outputStack) {
 		try {
 			this.project.getProjectFolder().file().mkdirs();
 			this.projectFile.file().createNewFile();
 			FileOutputStream fos = new FileOutputStream(this.projectFile.file());
 			DataOutputStream dos = new DataOutputStream(fos);
-			IOUtils util = new IOUtils(this.project.getProjectFolder(), dos);
+			IOUtils util = new IOUtils(dos);
 			
-			dos.write(0xBADF0002);
-			dos.writeInt(0);
+			dos.writeInt(0xBADF05CE); //SCE - scenes format magic
+			dos.writeInt(0x00000001); //version
 			
-			util.writeCheckID(); //viewport data
-			dos.writeUTF(viewportRenderer.getClass().getName());
-			dos.writeLong(viewportRenderer.dataSizeBytes(util));
-			viewportRenderer.writeData(util, dos);
-
-			util.writeCheckID();
-			this.writeStack(dos, util, outStack);
+			/** ProjectAssetManager section **/ {
+				util.writeCheckID();
+				projectAssetManager.saveIndexes(dos);
+			}
+			
+			/** Viewport section **/ {
+				util.writeCheckID();
+				ByteArrayOutputStream viewportByteArrayOutputStream = new ByteArrayOutputStream();
+				DataOutputStream viewportDataOutputStream = new DataOutputStream(viewportByteArrayOutputStream);
+				viewportRenderer.writeData(util, viewportDataOutputStream);
+				dos.writeUTF(viewportRenderer.getClass().getName());
+				dos.writeLong(viewportByteArrayOutputStream.size());
+				dos.write(viewportByteArrayOutputStream.toByteArray());
+			}
+			
+			/** ObjectTree section **/ {
+				util.writeCheckID();
+				Array<Class<?>> types = new Array<>();
+				this.scanTypesForSerialization(types, outputStack);
+				
+				dos.writeInt(types.size);
+				for (int i = 0; i != types.size; i++) dos.writeUTF(types.get(i).getTypeName());
+				this.writeStack(types, util, dos, outputStack);
+			}
 			
 			dos.close();
 			fos.close();
@@ -82,257 +148,76 @@ public class ScenesProjectIO {
 		return false;
 	}
 	
-	private void readStack(DataInputStream dis, IOUtils util, TreeElement parent, ElementStack stack) throws IOException {
-		try {
-			int size = dis.readInt();
-			for (int i = 0; i != size; i++) {
-				int type = dis.readShort();
-				switch (type) {
-					case -1: break; //unknown
-					case 0: { //Folder
-						ElementFolder folder = new ElementFolder(dis.readUTF());
-						folder.setVisible(dis.readBoolean());
-						folder.setFolderOpened(dis.readBoolean());
-						this.readStack(dis, util, folder, folder.getFolderStack());
-						stack.add(folder);
-					} break;
-//					case 1: { //Model
-//						ElementModel model = new ElementModel(dis.readUTF());
-//						model.setVisible(dis.readBoolean());
-//						model.localModelHandle = dis.readUTF();
-//						try {
-//							model.modelHandle = this.project.getProjectFolder().child(dis.readUTF());
-//							AssetDescriptor<Model> assetDescriptor = new AssetDescriptor<Model>(model.modelHandle, Model.class);
-//							if (!Game.get.resourceManager.assetManager.isLoaded(assetDescriptor)) {
-//								Game.get.resourceManager.assetManager.load(assetDescriptor);
-//								Game.get.resourceManager.assetManager.finishLoading();
-//							}
-//							model.modelInstance = new ModelInstance(Game.get.resourceManager.assetManager.get(model.modelHandle.path(), Model.class));
-//						} catch (Exception e) {
-//							model.modelHandle = null;
-//							model.modelInstance = new ModelInstance(ResourceManager.standartModel);
-//						}
-//						int materialsSize = dis.readInt();
-//						String[] materialID = new String[materialsSize];
-//						for (int j = 0; j != materialsSize; j++) {
-//							dis.readUTF();
-//							model.modelInstance.materials.get(j).clear();
-//							int materialAttributesSize = dis.readInt();
-//							for (int k = 0; k != materialAttributesSize; k++) {
-//								model.modelInstance.materials.get(j).set(util.readAttribute());
-//							}
-//							materialID[j] = model.modelInstance.materials.get(j).id;
-//						}
-//						((TERModel_Default)model.getRenderable()).setMaterials(materialID);
-//						
-//						model.getTransform(EnumGizmoTransformType.TRANSLATE).set(util.readVector3());
-//						model.getTransform(EnumGizmoTransformType.ROTATE).set(util.readVector3());
-//						model.getTransform(EnumGizmoTransformType.SCALE).set(util.readVector3());
-//						stack.add(model);
-//					} break;
-//					case 2: { //Light
-//						ElementLight light = new ElementLight(dis.readUTF());
-//						light.setVisible(dis.readBoolean());
-//						light.light.color.set(util.readColor());
-//						light.light.position.set(util.readVector3());
-//						light.light.intensity = dis.readFloat();
-//						stack.add(light);
-//					} break;
-//					case 3: { //Hitbox
-//						ElementHitbox hitbox = new ElementHitbox(dis.readUTF());
-//						hitbox.setVisible(dis.readBoolean());
-//						hitbox.type = dis.readInt();
-//						hitbox.flags = dis.readLong();
-//						hitbox.getTransform(EnumGizmoTransformType.TRANSLATE).set(util.readVector3());
-//						hitbox.getTransform(EnumGizmoTransformType.ROTATE).set(util.readVector3());
-//						hitbox.getTransform(EnumGizmoTransformType.SCALE).set(util.readVector3());
-//						if (parent instanceof ElementMultiHitbox) hitbox.parent = (ElementMultiHitbox)parent;
-//						stack.add(hitbox);
-//					} break;
-//					case 4: {
-//						ElementMeshHitbox meshHitbox = new ElementMeshHitbox(dis.readUTF());
-//						meshHitbox.setVisible(dis.readBoolean());
-//						meshHitbox.flags = dis.readLong();
-//						meshHitbox.localModelHandle = dis.readUTF();
-//						try {
-//							FileHandle handle = this.project.getProjectFolder().child(dis.readUTF());
-//							AssetDescriptor<Model> assetDescriptor = new AssetDescriptor<Model>(handle, Model.class);
-//							if (!Game.get.resourceManager.assetManager.isLoaded(assetDescriptor)) {
-//								Game.get.resourceManager.assetManager.load(assetDescriptor);
-//								Game.get.resourceManager.assetManager.finishLoading();
-//							}
-//							meshHitbox.setModel(handle, Game.get.resourceManager.assetManager.get(handle.path(), Model.class));
-//						} catch (Exception e) {
-//							meshHitbox.setModel(null, ResourceManager.standartModel);
-//						}
-//						meshHitbox.nodeUsed = dis.readInt();
-//						meshHitbox.changeShape(meshHitbox.nodeUsed + 1);
-//						meshHitbox.getTransform(EnumGizmoTransformType.TRANSLATE).set(util.readVector3());
-//						meshHitbox.getTransform(EnumGizmoTransformType.ROTATE).set(util.readVector3());
-//						meshHitbox.getTransform(EnumGizmoTransformType.SCALE).set(util.readVector3());
-//						if (parent instanceof ElementMultiHitbox) meshHitbox.parent = (ElementMultiHitbox)parent;
-//						stack.add(meshHitbox);
-//					} break;
-//					case 5: { //MultiHitbox
-//						ElementMultiHitbox multiHitbox = new ElementMultiHitbox(dis.readUTF());
-//						multiHitbox.setVisible(dis.readBoolean());
-//						multiHitbox.setOpened(dis.readBoolean());
-//						multiHitbox.flags = dis.readLong();
-//						multiHitbox.getTransform(EnumGizmoTransformType.TRANSLATE).set(util.readVector3());
-//						multiHitbox.getTransform(EnumGizmoTransformType.ROTATE).set(util.readVector3());
-//						multiHitbox.getTransform(EnumGizmoTransformType.SCALE).set(util.readVector3());
-//						this.readStack(dis, util, multiHitbox, multiHitbox.getStack());
-//						stack.add(multiHitbox);
-//					} break;
-//					case 6: { //Decal
-//						ElementDecal decal = new ElementDecal(dis.readUTF());
-//						decal.setVisible(dis.readBoolean());
-//						decal.decal.localDecalHandle = dis.readUTF();
-//						try {
-//							FileHandle handle = this.project.getProjectFolder().child(dis.readUTF());
-//							SpriteStack.remove(handle);
-//							decal.decal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(handle), true), handle);
-//						} catch (Exception e) {
-//							decal.decal.setDecal(Decal.newDecal(new TextureRegion(ResourceManager.standartDecal), true), null);
-//						}
-//						decal.decal.setBillboard(dis.readBoolean());
-//						decal.decal.position.set(util.readVector3());
-//						decal.decal.rotation.set(util.readVector3());
-//						decal.decal.scale.set(util.readVector2());
-//						stack.add(decal);
-//					} break;
-//					case 7: { //PointArray
-//						ElementPointArray pointArray = new ElementPointArray(dis.readUTF());
-//						pointArray.setVisible(dis.readBoolean());
-//						pointArray.flags = dis.readLong();
-//						pointArray.getTransform(EnumGizmoTransformType.TRANSLATE).set(util.readVector3());
-//						this.readStack(dis, util, pointArray, pointArray.getStack());
-//						stack.add(pointArray);
-//					} break;
-//					case 8: { //Point
-//						ElementPoint point = new ElementPoint(dis.readUTF());
-//						point.setVisible(dis.readBoolean());
-//						point.getTransform(EnumGizmoTransformType.TRANSLATE).set(util.readVector3());
-//						stack.add(point);
-//					}
+	private void readStack(Array<Class<?>> types, IOUtils util, DataInputStream dis, ElementStack stack) throws IOException {
+		byte bitmask;
+		int index;
+		
+		int size = dis.readInt();
+		for (int i = 0; i != size; i++) {
+			bitmask = dis.readByte();
+			if ((bitmask & 2) == 2) { //checking for 1st flag (Serialization)
+				if ((index = dis.readInt()) > -1) {
+					try {
+						TreeElement element = (TreeElement)types.get(index).newInstance();
+						element.deserialize(util, dis);
+						if ((bitmask & 4) == 4) { //checking for 2nd flag (ElementStack)
+							this.readStack(types, util, dis, ((ITreeElementFolder)element).getFolderStack());
+						}
+						stack.add(element);
+						continue; //skipping other part of cycle
+					} catch (InstantiationException | IllegalAccessException exception) {
+						//halt whole program... (in case if try-catch block in the update loop won't be able to handle this)
+						Utils.logError(exception, "ScenesProjectsIO", "Unable to instantiate new TreeElement object. Index: ", index, ", Type: ", types.get(index).getTypeName());
+					}
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 			
+			if (SERIALIZER_FEATURE_REPLACE_INCORRECT_TYPES_WITH_FOLDERS && (bitmask & 4) == 4) { //checking for 2nd flag (ElementStack)
+				ElementFolder folder = new ElementFolder("[Incorrect folder-type element]");
+				this.readStack(types, util, dis, folder.getFolderStack());
+				stack.add(folder);
+			}
 		}
 	}
 	
-	private void writeStack(DataOutputStream dos, IOUtils util, ElementStack stack) throws IOException {
+	// Bitmask flags: 2^1: serialization, 2^2: contains ElementStack
+	private void writeStack(Array<Class<?>> types, IOUtils util, DataOutputStream dos, ElementStack stack) throws IOException {
+		byte bitmask;
+		int index;
+		
 		dos.writeInt(stack.getElements().size);
-		for (TreeElement element : stack.getElements()) {
-			if (element instanceof ElementFolder) {
-				ElementFolder folder = (ElementFolder)element;
-				dos.writeShort(0); //Folder
-				dos.writeUTF(folder.getName());
-				dos.writeBoolean(folder.isVisible());
-				dos.writeBoolean(folder.isFolderOpened());
-				this.writeStack(dos, util, folder.getFolderStack());
+		for (int i = 0; i != stack.getElements().size; i++) {
+			bitmask = 0x00;
+			TreeElement element = stack.getElements().get(i);
+			
+			if (element instanceof ITreeElementFolder) bitmask |= 4; //adding 2nd flag if object have ElementStack
+			try {
+				if (element.getClass().getDeclaredConstructor() != null) {
+					bitmask |= 2; //adding 1st flag if we can serialize object
+					dos.writeByte(bitmask);
+					dos.writeInt(index = types.indexOf(element.getClass(), true));
+					if (index > -1) element.serialize(util, dos);
+				} else dos.writeByte(bitmask);
+			} catch (NoSuchMethodException | SecurityException e) {
+				//if constructor is not present or not accessable.
+				dos.writeByte(bitmask);
 			}
-//			else if (element instanceof ElementModel) {
-//				ElementModel model = (ElementModel)element;
-//				dos.writeShort(1); //Model
-//				dos.writeUTF(model.getName());
-//				dos.writeBoolean(model.isVisible());
-//				dos.writeUTF(model.localModelHandle);
-//				dos.writeUTF(this.stripProjectPath(model.modelHandle));
-//				dos.writeInt(model.modelInstance.materials.size);
-//				for (Material material : model.modelInstance.materials) {
-//					dos.writeUTF(material.id);
-//					dos.writeInt(material.size());
-//					Iterator<Attribute> iterator = material.iterator(); //poor attributes...
-//					while (iterator.hasNext()) {
-//						util.writeAttribute(iterator.next());
-//					}
-//				}
-//				util.writeVector3(model.getTransform(EnumGizmoTransformType.TRANSLATE));
-//				util.writeVector3(model.getTransform(EnumGizmoTransformType.ROTATE));
-//				util.writeVector3(model.getTransform(EnumGizmoTransformType.SCALE));
-//			} else if (element instanceof ElementLight) {
-//				ElementLight light = (ElementLight)element;
-//				dos.writeShort(2); //Light
-//				dos.writeUTF(light.getName());
-//				dos.writeBoolean(light.isVisible());
-//				util.writeColor(light.light.color);
-//				util.writeVector3(light.light.position);
-//				dos.writeFloat(light.light.intensity);
-//			} else if (element instanceof ElementHitbox) {
-//				ElementHitbox hitbox = (ElementHitbox)element;
-//				dos.writeShort(3); //Hitbox
-//				dos.writeUTF(hitbox.getName());
-//				dos.writeBoolean(hitbox.isVisible());
-//				dos.writeInt(hitbox.type);
-//				dos.writeLong(hitbox.flags);
-//				util.writeVector3(hitbox.getTransform(EnumGizmoTransformType.TRANSLATE));
-//				util.writeVector3(hitbox.getTransform(EnumGizmoTransformType.ROTATE));
-//				util.writeVector3(hitbox.getTransform(EnumGizmoTransformType.SCALE));
-//			} else if (element instanceof ElementMeshHitbox) {
-//				ElementMeshHitbox meshHitbox = (ElementMeshHitbox)element;
-//				dos.writeShort(4); //MeshHitbox
-//				dos.writeUTF(meshHitbox.getName());
-//				dos.writeBoolean(meshHitbox.isVisible());
-//				dos.writeLong(meshHitbox.flags);
-//				dos.writeUTF(meshHitbox.localModelHandle);
-//				dos.writeUTF(this.stripProjectPath(meshHitbox.modelHandle));
-//				dos.writeInt(meshHitbox.nodeUsed);
-//				util.writeVector3(meshHitbox.getTransform(EnumGizmoTransformType.TRANSLATE));
-//				util.writeVector3(meshHitbox.getTransform(EnumGizmoTransformType.ROTATE));
-//				util.writeVector3(meshHitbox.getTransform(EnumGizmoTransformType.SCALE));
-//			} else if (element instanceof ElementMultiHitbox) {
-//				ElementMultiHitbox multiHitbox = (ElementMultiHitbox)element;
-//				dos.writeShort(5); //MultiHitbox
-//				dos.writeUTF(multiHitbox.getName());
-//				dos.writeBoolean(multiHitbox.isVisible());
-//				dos.writeBoolean(multiHitbox.isStackOpened());
-//				dos.writeLong(multiHitbox.flags);
-//				util.writeVector3(multiHitbox.getTransform(EnumGizmoTransformType.TRANSLATE));
-//				util.writeVector3(multiHitbox.getTransform(EnumGizmoTransformType.ROTATE));
-//				util.writeVector3(multiHitbox.getTransform(EnumGizmoTransformType.SCALE));
-//				this.writeStack(dos, util, multiHitbox.getStack());
-//			} else if (element instanceof ElementDecal) {
-//				ElementDecal decal = (ElementDecal)element;
-//				dos.writeShort(6); //Decal
-//				dos.writeUTF(decal.getName());
-//				dos.writeBoolean(decal.isVisible());
-//				dos.writeUTF(decal.decal.localDecalHandle);
-//				dos.writeUTF(this.stripProjectPath(decal.decal.decalHandle));
-//				dos.writeBoolean(decal.decal.isBillboard());
-//				util.writeVector3(decal.getTransform(EnumGizmoTransformType.TRANSLATE));
-//				util.writeVector3(decal.getTransform(EnumGizmoTransformType.ROTATE));
-//				util.writeVector2(decal.decal.scale);
-//			} else if (element instanceof ElementPointArray) {
-//				ElementPointArray pointArray = (ElementPointArray)element;
-//				dos.writeShort(7); //PointArray
-//				dos.writeUTF(pointArray.getName());
-//				dos.writeBoolean(pointArray.isVisible());
-//				dos.writeLong(pointArray.flags);
-//				util.writeVector3(pointArray.getTransform(EnumGizmoTransformType.TRANSLATE));
-//				this.writeStack(dos, util, pointArray.getStack());
-//			} else if (element instanceof ElementPoint) {
-//				ElementPoint point = (ElementPoint)element;
-//				dos.writeShort(8); //Point
-//				dos.writeUTF(point.getName());
-//				dos.writeBoolean(point.isVisible());
-//				util.writeVector3(point.getTransform(EnumGizmoTransformType.TRANSLATE));
-//			}
-			else {
-				dos.writeShort(-1);
+			
+			if (SERIALIZER_FEATURE_REPLACE_INCORRECT_TYPES_WITH_FOLDERS && element instanceof ITreeElementFolder) {
+				this.writeStack(types, util, dos, ((ITreeElementFolder)element).getFolderStack());
 			}
+		}
+	}
+	
+	private void scanTypesForSerialization(Array<Class<?>> typesArray, ElementStack stack) throws IOException {
+		for (int i = 0; i != stack.getElements().size; i++) {
+			Object object = stack.getElements().get(i);
+			if (object instanceof TreeElement && !typesArray.contains(object.getClass(), true)) typesArray.add(object.getClass());
+			if (object instanceof ITreeElementFolder) this.scanTypesForSerialization(typesArray, ((ITreeElementFolder)object).getFolderStack());	
 		}
 	}
 	
 	public Throwable getLastException() {
 		return this.lastException;
-	}
-	
-	private String stripProjectPath(FileHandle handle) {
-		if (handle == null) return "-";
-		FileHandle projectHandle = this.project.getProjectFolder();
-		return handle.path().contains(projectHandle.path()) ? handle.path().substring(projectHandle.path().length() + 1) : handle.path();
 	}
 }

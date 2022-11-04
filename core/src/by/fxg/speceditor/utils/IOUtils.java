@@ -4,11 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UTFDataFormatException;
+import java.util.Iterator;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -22,24 +20,20 @@ import com.badlogic.gdx.graphics.g3d.attributes.SpotLightsAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-
-import by.fxg.speceditor.ResourceManager;
-import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
+import com.badlogic.gdx.utils.Array;
 
 public class IOUtils {
-	private FileHandle projectFolder;
 	private DataOutputStream dataOutputStream;
 	private DataInputStream dataInputStream;
+	private Array<Class<?>> attributesTypes = new Array<>();
 	private int writeCheckID = 0x12BADF00;
 	private int readCheckID = 0x12BADF00;
 	
-	public IOUtils(FileHandle projectFolder, DataOutputStream dataOutputStream) {
-		this.projectFolder = projectFolder;
+	public IOUtils(DataOutputStream dataOutputStream) {
 		this.dataOutputStream = dataOutputStream;
 	}
 	
-	public IOUtils(FileHandle projectFolder, DataInputStream dataInputStream) {
-		this.projectFolder = projectFolder;
+	public IOUtils(DataInputStream dataInputStream) {
 		this.dataInputStream = dataInputStream;
 	}
 	
@@ -170,6 +164,20 @@ public class IOUtils {
 			case "spotLights": break; //SpotLightsAttribute. Not supported due to lights saving from ObjectTree
 		}
 		return null;
+	}
+	
+	/* save in mass-arrays(Array with AttributeS) or in single AttributeS
+	Iterator<Attribute> iterator = attributes.iterator();
+	while (iterator.hasNext()) {
+		Attribute attribute = iterator.next();
+		if (!types.contains(attribute.getClass(), true)) {
+			types.add(attribute.getClass());
+		}
+	}
+	*/
+	
+	public Array<Class<?>> getAttributesTypes() {
+		return this.attributesTypes;
 	}
 	
 	public void writeCheckID() throws IOException {

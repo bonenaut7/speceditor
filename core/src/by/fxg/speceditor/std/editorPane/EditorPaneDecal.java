@@ -26,7 +26,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListener {
 	private ElementDecal element = null;
-	private STDInputField elementName, decalPath;
+	private STDInputField elementName;
 	private UButton buttonSelectDecal;
 	protected UCheckbox billboardDecal;
 	
@@ -34,9 +34,6 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 	
 	public EditorPaneDecal() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
-		this.decalPath = new ColoredInputField().setAllowFullfocus(false).setListener(this, "path").setMaxLength(128).setPreviousField(this.elementName);
-		this.elementName.setNextField(this.decalPath);
-		
 		this.buttonSelectDecal = new UButton("Open file");
 		this.billboardDecal = new UCheckbox(false);
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
@@ -47,10 +44,6 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Name:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
 		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
-		
-		foster.setString("EXT Path:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
-		this.decalPath.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
-		this.decalPath.render(batch, shape);
 		
 		foster.setString("Select decal:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectDecal.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
@@ -71,14 +64,12 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 	public void whileInputFieldFocused(STDInputField inputField, String id) {
 		switch (id) {
 			case "name": this.element.setName(this.elementName.getText()); break;
-			case "path": this.element.localDecalHandle = this.decalPath.getText(); break;
 		}
 	}
 	
 	public void updatePane(ITreeElementSelector<?> selector) {
 		this.element = (ElementDecal)selector.get(0);
 		this.elementName.setText(this.element.getName());
-		this.decalPath.setText(this.element.localDecalHandle);
 		this.billboardDecal.setValue(this.element.decal.isBillboard());
 		
 		this.transform.updateBlock(this.element);

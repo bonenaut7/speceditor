@@ -1,5 +1,10 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.UUID;
+
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -17,6 +22,8 @@ import by.fxg.speceditor.std.g3d.ITreeElementModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.utils.IOUtils;
+import by.fxg.speceditor.utils.Utils;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -109,6 +116,26 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	public void onAssetHandlerRemoved(ProjectAsset asset) {
 		this.modelAsset = null;
 		this.setModel(DefaultResources.INSTANCE.standardModel);
+	}
+	
+	public void serialize(IOUtils utils, DataOutputStream dos) throws IOException {
+		super.serialize(utils, dos);
+		if (this.modelAsset != null) {
+			 dos.writeBoolean(true);
+			 dos.writeUTF(this.modelAsset.getUUID().toString());
+		} else dos.writeBoolean(false);
+		//TODO: materials
+	}
+	
+	public void deserialize(IOUtils utils, DataInputStream dis) throws IOException {
+		super.deserialize(utils, dis);
+		if (dis.readBoolean()) {
+			UUID uuid = UUID.fromString(dis.readUTF());
+			ProjectAsset<?> projectAsset = ProjectAssetManager.INSTANCE.getAsset(uuid);
+			if (projectAsset != null) projectAsset.addHandler(this);
+			else Utils.logDebug("[ElementModel][Deserialization] Can't find asset `", uuid.toString(), "` with Unknown type loaded.");
+		}
+		//TODO: materials
 	}
 
 	private void setModel(Model model) {

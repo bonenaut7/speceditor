@@ -1,18 +1,32 @@
 package by.fxg.speceditor.std.objectTree;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.DefaultResources;
+import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
+import by.fxg.speceditor.utils.IOUtils;
 
+/** Basic element of {@link by.fxg.speceditor.std.objectTree.SpecObjectTree}. <br>
+ *  Contains: <br>
+ *  	{@link #uuid} - unique identifier of element <br>
+ *  	{@link #parent} - parent element link <br>
+ *  	{@link #displayName} - name <br>
+ *  	{@link #visible} - visiblity parameter <br>
+ *  <br>
+ *  Serialization: elements must have implementation of 
+ * 	{@link #serialize(IOUtils, DataOutputStream)} & {@link #deserialize(IOUtils, DataInputStream)}
+ * 	methods, and empty constructor for creating empty object for deserialization process. **/
 public abstract class TreeElement {
 	public final UUID uuid = UUID.randomUUID();
 	protected TreeElement parent = null;
@@ -54,7 +68,7 @@ public abstract class TreeElement {
 	/** Called before object deletion from ObjectTree **/
 	public void onDelete() {}
 	
-	/**  **/
+	/** Element cloning default implementation. In case of returning null object won't clone **/
 	public TreeElement cloneElement() {
 		return null;
 	}
@@ -84,4 +98,55 @@ public abstract class TreeElement {
 	}
 	public void setName(String displayName) { this.displayName = displayName; }
 	public void setVisible(boolean visible) { this.visible = visible; }
+	
+	/** Serializing object into bytes to the DataOutputStream **/
+	public void serialize(IOUtils utils, DataOutputStream dos) throws IOException {
+		dos.writeUTF(this.displayName);
+		dos.writeBoolean(this.visible);
+		
+		if (this instanceof ITreeElementGizmos) {
+			if (((ITreeElementGizmos)this).isTransformSupported(GizmoTransformType.TRANSLATE)) {
+				dos.writeBoolean(true);
+				utils.writeVector3(((ITreeElementGizmos)this).getTransform(GizmoTransformType.TRANSLATE));
+			} else dos.writeBoolean(false);
+			
+			if (((ITreeElementGizmos)this).isTransformSupported(GizmoTransformType.ROTATE)) {
+				dos.writeBoolean(true);
+				utils.writeVector3(((ITreeElementGizmos)this).getTransform(GizmoTransformType.ROTATE));
+			} else dos.writeBoolean(false);
+			
+			if (((ITreeElementGizmos)this).isTransformSupported(GizmoTransformType.SCALE)) {
+				dos.writeBoolean(true);
+				utils.writeVector3(((ITreeElementGizmos)this).getTransform(GizmoTransformType.SCALE));
+			} else dos.writeBoolean(false);
+		}
+		
+		//basic ITreeElementFolder serialization
+		if (this instanceof ITreeElementFolder) {
+			dos.writeBoolean(((ITreeElementFolder)this).isFolderOpened());
+		}
+	}
+	
+	/** Deserializing object into bytes to the DataOutputStream **/
+	public void deserialize(IOUtils utils, DataInputStream dis) throws IOException {
+		this.displayName = dis.readUTF();
+		this.visible = dis.readBoolean();
+		
+		if (this instanceof ITreeElementGizmos) {
+			if (dis.readBoolean()) {
+				((ITreeElementGizmos)this).getTransform(GizmoTransformType.TRANSLATE).set(utils.readVector3());
+			}
+			if (dis.readBoolean()) {
+				((ITreeElementGizmos)this).getTransform(GizmoTransformType.ROTATE).set(utils.readVector3());
+			}
+			if (dis.readBoolean()) {
+				((ITreeElementGizmos)this).getTransform(GizmoTransformType.SCALE).set(utils.readVector3());
+			}
+		}
+		
+		//basic ITreeElementFolder deserialization
+		if (this instanceof ITreeElementFolder) {
+			((ITreeElementFolder)this).setFolderOpened(dis.readBoolean());
+		}
+	}
 }

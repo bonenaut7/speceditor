@@ -118,7 +118,7 @@ public class STDManager {
 		return null;
 	}
 	
-	public Iterable<EditorPaneMatselModule> getEditorPaneMatselModules() {
+	public Array<EditorPaneMatselModule> getEditorPaneMatselModules() {
 		return this.editorPaneMatselModules;
 	}
 }

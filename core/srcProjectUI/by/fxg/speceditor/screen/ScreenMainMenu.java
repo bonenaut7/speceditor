@@ -68,8 +68,8 @@ public class ScreenMainMenu extends BaseScreen {
 		if (this.buttonImportProject.isPressed()); //todo
 		if (this.buttonOpenRecentProject.isPressed() && this.selectedRecentProject > -1 && this.selectedRecentProject < this.recentProjects.size) {
 			BasicProject project = this.recentProjects.get(this.selectedRecentProject);
+			ProjectManager.currentProject = project;
 			if (project.loadProject()) {
-				ProjectManager.currentProject = project;
 				project.onProjectOpened();
 				if (this.selectedRecentProject > 0) ProjectManager.INSTANCE.setRecentProject(project.getProjectFolder());
 			}

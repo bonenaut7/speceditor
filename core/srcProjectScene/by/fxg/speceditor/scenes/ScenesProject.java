@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.project.BasicProject;
 import by.fxg.speceditor.project.ProjectSolver;
+import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.scenes.screen.ScreenSceneProject;
 import by.fxg.speceditor.screen.gui.GuiError;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
@@ -29,18 +30,20 @@ public class ScenesProject extends BasicProject {
 	}
 
 	public boolean loadProject() {
+		this.assetManager = new ProjectAssetManager();
 		this.objectTree = new SpecObjectTree().setHandler(new ScenesObjectTreeHandler(this));
-		this.objectTree.getStack().add(new ElementFolder("Root folder"));
 		this.renderer = new DefaultRenderer(this.objectTree);
 		
-		if (this.projectFolder.child("scenes.data").exists() && !this.io.loadProjectData(this.renderer, this.objectTree.getStack())) {
-			SpecEditor.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
-		}
+		if (this.projectFolder.child("scenes.data").exists()) {
+			if (!this.io.loadProjectData(this.assetManager, this.renderer, this.objectTree.getStack())) {
+				SpecEditor.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
+			}
+		} else this.objectTree.getStack().add(new ElementFolder("PROJECT ROOT"));
 		return true;
 	}	
 	
 	public boolean saveProject() {
-		return false;
+		return this.io.writeProjectData(ProjectAssetManager.INSTANCE, this.renderer, this.objectTree.getStack());
 	}
 	
 	public void onProjectOpened() {

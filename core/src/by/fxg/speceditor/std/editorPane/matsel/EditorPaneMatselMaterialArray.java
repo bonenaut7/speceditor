@@ -110,7 +110,8 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 	}
 
 	public void onDropdownClick(String id) {
-		STDManager.INSTANCE.getEditorPaneMatselModules().forEach(editorPaneMatselModule -> editorPaneMatselModule.onDropdownClick(this, id));
+		Array<EditorPaneMatselModule> array = STDManager.INSTANCE.getEditorPaneMatselModules();
+		for (int i = 0; i != array.size; i++) array.get(i).onDropdownClick(this, id);
 		this.refreshAttributes();
 	}
 	

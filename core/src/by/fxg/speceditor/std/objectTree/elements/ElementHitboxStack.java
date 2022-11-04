@@ -21,6 +21,7 @@ public class ElementHitboxStack extends TreeElement implements ITreeElementFolde
 	protected ElementStack folderStack;
 	
 	public long flags;
+	public boolean isArrayStack = false; //means will be objects split after export or be combined, false = combine, true = keep as split objects
 	private Vector3 position = new Vector3();
 	private Vector3 rotation = new Vector3();
 	private Vector3 scale = new Vector3(1, 1, 1);

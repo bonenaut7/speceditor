@@ -16,7 +16,7 @@ public abstract class BasicProject {
 	/** Project-solver of this project **/
 	protected ProjectSolver solver;
 	/** Manager of project's assets **/
-	protected ProjectAssetManager assetManager = new ProjectAssetManager();
+	protected ProjectAssetManager assetManager;
 	/** Loaded project-header of this project. Contains project settings and info. **/
 	protected Ini config;
 	protected FileHandle projectFolder;
@@ -104,6 +104,8 @@ public abstract class BasicProject {
 		if (!this.config.containsKey("PREFERENCES")) this.config.add("PREFERENCES");
 		this.config.get("PREFERENCES").put(name, object);
 	}
+	
+	public ProjectAssetManager getProjectAssetManager() { return this.assetManager; }
 	
 	public FileHandle getProjectFolder() { return this.projectFolder; }
 	public String getProjectName() { return this.name; }

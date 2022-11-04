@@ -13,7 +13,9 @@ import by.fxg.speceditor.screen.deprecated.SubscreenExplorer;
 import by.fxg.speceditor.screen.deprecated.SubscreenProjectManager;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.screen.gui.GuiAbout;
+import by.fxg.speceditor.screen.gui.GuiError;
 import by.fxg.speceditor.ui.UDropdownClick;
+import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class ScreenSceneProject extends BaseScreen {
@@ -76,10 +78,11 @@ public class ScreenSceneProject extends BaseScreen {
 		if (this.dropdownButtonProject.isPressed()) {
 			switch (this.dropdownButtonProject.getVariant()) {
 				case 0: {
-					//this.project.saveHeader();
-					//this.project.saveProject(this.subObjectExplorer.objectExplorer);
-					//SAVE PROJECT
-					this.project.io.writeProjectData(this.project.renderer, this.project.objectTree.getStack());
+					this.project.saveConfiguration();
+					if (!this.project.saveProject()) {
+						SpecEditor.get.renderer.currentGui = new GuiError("Error on saving project", this.project.io.getLastException());
+						Utils.logError(this.project.io.getLastException(), "ScreenSceneProject", "Error happened in saving project process");
+					}
 				} break;
 				case 1: {
 	//				FileHandle inputFolder = null;

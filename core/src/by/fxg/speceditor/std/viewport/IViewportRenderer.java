@@ -27,8 +27,6 @@ public interface IViewportRenderer {
 	/** Editor pane of the renderer **/
 	EditorPane getEditorPane();
 	
-	/** Size of serializable data in bytes, needed to skip reading operation if another renderer present **/
-	default long dataSizeBytes(IOUtils ioUtils) { return 0L; }
 	/** Method needed to write settings of ViewportRenderer to the project data **/
 	default void writeData(IOUtils ioUtils, DataOutputStream dataOutputStream) throws IOException {}
 	/** Method needed to read settings of ViewportRenderer from the project data **/
