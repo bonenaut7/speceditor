@@ -56,19 +56,9 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/folder.", this.isFolderOpened));
 	}
 	
-	public boolean isFolderAccepting(TreeElement element) {
-		return true;
-	}
-
-	public boolean isFolderOpened() {
-		return this.isFolderOpened;
-	}
-
-	public void setFolderOpened(boolean isFolderOpened) {
-		this.isFolderOpened = isFolderOpened;
-	}
-
-	public ElementStack getFolderStack() {
-		return this.folderStack;
-	}
+	public boolean isFolderAccepting(TreeElement element) { return true; }
+	public boolean isFolderOpened() { return this.isFolderOpened; }
+	public void setFolderOpened(boolean isFolderOpened) { this.isFolderOpened = isFolderOpened; }
+	public ElementStack getFolderStack() { return this.folderStack; }
+	public void setFolderStack(ElementStack stack) { this.folderStack = stack; }
 }

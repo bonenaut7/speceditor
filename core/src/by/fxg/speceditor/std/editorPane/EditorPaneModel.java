@@ -23,7 +23,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneModel extends EditorPane implements ISTDInputFieldListener {
 	private ElementModel element = null;
-	private STDInputField elementName, modelPath;
+	private STDInputField elementName;
 	private UButton buttonSelectModel;
 	
 	private TransformBlock transform;
@@ -31,8 +31,6 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 	
 	public EditorPaneModel() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
-		this.modelPath = new ColoredInputField().setAllowFullfocus(false).setListener(this, "path").setMaxLength(128).setPreviousField(this.elementName);
-		this.elementName.setNextField(this.modelPath);
 		
 		this.buttonSelectModel = new UButton("Open file");
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
@@ -44,10 +42,6 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Name:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
 		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
-		
-		foster.setString("EXT Path:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
-		this.modelPath.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
-		this.modelPath.render(batch, shape);
 		
 		foster.setString("Select model:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectModel.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
@@ -65,14 +59,12 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 	public void whileInputFieldFocused(STDInputField inputField, String id) {
 		switch (id) {
 			case "name": this.element.setName(this.elementName.getText()); break;
-			case "path": this.element.localModelHandle = this.modelPath.getText(); break;
 		}
 	}
 	
 	public void updatePane(ITreeElementSelector<?> selector) {
 		this.element = (ElementModel)selector.get(0);
 		this.elementName.setText(this.element.getName());
-		this.modelPath.setText(this.element.localModelHandle);
 		
 		this.transform.updateBlock(this.element);
 		this.matsel.update(this.element != null && this.element.modelInstance != null ? this.element.modelInstance.materials : null);

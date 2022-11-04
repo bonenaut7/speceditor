@@ -1,30 +1,31 @@
-package by.fxg.speceditor.std.g3d;
+package by.fxg.speceditor.std.g3d.attributes;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.project.assets.ProjectAsset;
+import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 
 /** Tips: <br>
  * 	 - To connect ProjectAsset, use {@link ProjectAsset#addHandler(IProjectAssetHandler)} with object of this class.
  * **/
-public class TextureLinkedAttribute extends TextureAttribute implements IProjectAssetHandler<Texture> {
+public class SpecPBRTextureAttribute extends PBRTextureAttribute implements IProjectAssetHandler<Texture> {
 	public ProjectAsset<Texture> asset;
 	public boolean flipX, flipY;
 	
-	public TextureLinkedAttribute(long type) {
+	//TODO: Constructor from TextureAttribute & self(for #copy() method)
+	public SpecPBRTextureAttribute(long type) {
 		super(type, DefaultResources.INSTANCE.standardTexture);
 	}
 	
-	public TextureLinkedAttribute(TextureAttribute attribute) {
+	public SpecPBRTextureAttribute(TextureAttribute attribute) {
 		super(attribute.type, attribute.textureDescription);
 	}
 	
-	public TextureLinkedAttribute(TextureLinkedAttribute attribute) {
+	public SpecPBRTextureAttribute(SpecTextureAttribute attribute) {
 		super(attribute.type, attribute.textureDescription);
 		this.flipX = attribute.flipX;
 		this.flipY = attribute.flipY;
@@ -34,12 +35,12 @@ public class TextureLinkedAttribute extends TextureAttribute implements IProject
 	}
 	
 	/** Sets flip values **/
-	public TextureLinkedAttribute setFlip(Boolean flipX, Boolean flipY) {
+	public SpecPBRTextureAttribute setFlip(Boolean flipX, Boolean flipY) {
 		return this.flip(!flipX.equals(this.flipX), !flipY.equals(this.flipY));
 	}
 	
 	/** Flips texture **/
-	public TextureLinkedAttribute flip(boolean flipX, boolean flipY) {
+	public SpecPBRTextureAttribute flip(boolean flipX, boolean flipY) {
 		if (flipX) this.flipX = !this.flipX;
 		if (flipY) this.flipY = !this.flipY;
 		if (this.textureDescription != null && this.textureDescription.texture != null) {
@@ -76,9 +77,5 @@ public class TextureLinkedAttribute extends TextureAttribute implements IProject
 		this.offsetV = region.getV();
 		this.scaleU = region.getU2() - this.offsetU;
 		this.scaleV = region.getV2() - this.offsetV;
-	}
-	
-	public Attribute copy() {
-		return new TextureLinkedAttribute(this);
 	}
 }

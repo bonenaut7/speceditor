@@ -1,9 +1,5 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
@@ -15,7 +11,6 @@ import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.TreeElement;
-import by.fxg.speceditor.utils.IOUtils;
 
 public class ElementLight extends TreeElement implements ITreeElementGizmos {
 	public ElementLightType type;
@@ -50,6 +45,10 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos {
 		return (T)this.light;
 	}
 	
+	public void setLight(BaseLight<?> light) {
+		this.light = light;
+	}
+	
 	public Sprite getObjectTreeSprite() {
 		return DefaultResources.INSTANCE.sprites.get("icons/light");
 	}
@@ -57,35 +56,6 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos {
 	public boolean isTransformSupported(GizmoTransformType transformType) {
 		if (transformType == GizmoTransformType.ROTATE) return this.type == ElementLightType.SPOT;
 		return transformType == GizmoTransformType.TRANSLATE;
-	}
-	
-	public void serialize(IOUtils utils, DataOutputStream dos) throws IOException {
-		super.serialize(utils, dos);
-		dos.writeUTF(this.type.name());
-		utils.writeColor(this.getLight(PointLight.class).color);
-		switch (this.type) {
-			case POINT: {
-				utils.writeVector3(this.getLight(PointLight.class).position);
-				dos.writeFloat(this.getLight(PointLight.class).intensity);
-			} break;
-			case SPOT: {
-				utils.writeVector3(this.getLight(SpotLight.class).position);
-				utils.writeVector3(this.getLight(SpotLight.class).direction);
-				dos.writeFloat(this.getLight(SpotLight.class).intensity);
-				dos.writeFloat(this.getLight(SpotLight.class).cutoffAngle);
-				dos.writeFloat(this.getLight(SpotLight.class).exponent);
-			} break;
-		}
-	}
-	
-	public void deserialize(IOUtils utils, DataInputStream dis) throws IOException {
-		super.deserialize(utils, dis);
-		this.type = ElementLightType.valueOf(dis.readUTF());
-		this.light = this.type == ElementLightType.POINT ? new PointLight() : new SpotLight();
-		switch (this.type) {
-			case POINT: this.getLight(PointLight.class).set(utils.readColor(), utils.readVector3(), dis.readFloat()); break;
-			case SPOT: this.getLight(SpotLight.class).set(utils.readColor(), utils.readVector3(), utils.readVector3(), dis.readFloat(), dis.readFloat(), dis.readFloat()); break;
-		}
 	}
 	
 	public static enum ElementLightType {

@@ -76,24 +76,14 @@ public class ElementHitboxStack extends TreeElement implements ITreeElementFolde
 	public Sprite getObjectTreeSprite() {
 		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/question"));
 	}
-	
-	public boolean isFolderAccepting(TreeElement element) {
-		return element instanceof ElementHitbox || element instanceof ElementHitboxStack || element instanceof ElementHitboxMesh;
-	}
 
-	public boolean isFolderOpened() {
-		return this.isFolderOpened;
-	}
-
-	public void setFolderOpened(boolean isFolderOpened) {
-		this.isFolderOpened = isFolderOpened;
-	}
-
-	public ElementStack getFolderStack() {
-		return this.folderStack;
-	}
-	
 	public boolean isTransformSupported(GizmoTransformType transformType) {
 		return true;
 	}
+	
+	public boolean isFolderAccepting(TreeElement element) { return element instanceof ElementHitbox || element instanceof ElementHitboxStack || element instanceof ElementHitboxMesh; }
+	public boolean isFolderOpened() { return this.isFolderOpened; }
+	public void setFolderOpened(boolean isFolderOpened) { this.isFolderOpened = isFolderOpened; }
+	public ElementStack getFolderStack() { return this.folderStack; }
+	public void setFolderStack(ElementStack stack) { this.folderStack = stack; }
 }

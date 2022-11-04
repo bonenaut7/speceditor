@@ -25,13 +25,12 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.project.assets.ProjectAsset;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
-import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
+import by.fxg.speceditor.std.g3d.attributes.SpecTextureAttribute;
 
 public class IOUtils {
 	private DataOutputStream dataOutputStream;
 	private DataInputStream dataInputStream;
-	private int writeCheckID = 0x12BADF00;
-	private int readCheckID = 0x12BADF00;
+	
 	
 	/** Очень хитровыебанная система индексирования аттрибутов.
 	 * 
@@ -75,16 +74,7 @@ public class IOUtils {
 		return sum;
 	}
 	
-	public void writeCheckID() throws IOException {
-		this.dataOutputStream.writeInt(this.writeCheckID);
-		this.writeCheckID += 1;
-	}
 	
-	public void readCheckID() throws IOException {
-		int id = this.dataInputStream.readInt();
-		if (id != this.readCheckID) throw new UnsupportedOperationException("Format error on id: " + id + "/" + this.readCheckID);
-		this.readCheckID++;
-	}
 	
 	public void writeVector2(Vector2 vector) throws IOException {
 		this.dataOutputStream.writeFloat(vector.x);
@@ -297,8 +287,8 @@ public class IOUtils {
 		} else if (attribute instanceof IntAttribute) {
 			this.dataOutputStream.writeInt(((IntAttribute)attribute).value);
 		} else if (attribute instanceof TextureAttribute) {
-			if (attribute instanceof TextureLinkedAttribute) {
-				TextureLinkedAttribute textureLinkedAttribute = ((TextureLinkedAttribute)attribute);
+			if (attribute instanceof SpecTextureAttribute) {
+				SpecTextureAttribute textureLinkedAttribute = ((SpecTextureAttribute)attribute);
 				if (textureLinkedAttribute.asset != null) {
 					this.dataOutputStream.writeBoolean(true);
 					this.dataOutputStream.writeUTF(textureLinkedAttribute.asset.getUUID().toString());
@@ -328,9 +318,9 @@ public class IOUtils {
 			((FloatAttribute)attribute).value = this.dataInputStream.readFloat();
 		} else if (attribute instanceof IntAttribute) {
 			((IntAttribute)attribute).value = this.dataInputStream.readInt();
-		} else if (attribute instanceof TextureLinkedAttribute) {
-			if (attribute instanceof TextureLinkedAttribute) {
-				TextureLinkedAttribute textureLinkedAttribute = ((TextureLinkedAttribute)attribute);
+		} else if (attribute instanceof SpecTextureAttribute) {
+			if (attribute instanceof SpecTextureAttribute) {
+				SpecTextureAttribute textureLinkedAttribute = ((SpecTextureAttribute)attribute);
 				if (this.dataInputStream.readBoolean()) {
 					UUID uuid = UUID.fromString(this.dataInputStream.readUTF());
 					ProjectAsset<?> projectAsset = ProjectAssetManager.INSTANCE.getAsset(uuid);

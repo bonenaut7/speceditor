@@ -35,7 +35,7 @@ public class ScenesProject extends BasicProject {
 		this.renderer = new DefaultRenderer(this.objectTree);
 		
 		if (this.projectFolder.child("scenes.data").exists()) {
-			if (!this.io.loadProjectData(this.assetManager, this.renderer, this.objectTree.getStack())) {
+			if (!this.io.loadProjectData(this.assetManager, this.renderer, this.objectTree)) {
 				SpecEditor.get.renderer.currentGui = new GuiError("PrefabProject#loadProject", this.io.getLastException());
 			}
 		} else this.objectTree.getStack().add(new ElementFolder("PROJECT ROOT"));
@@ -43,7 +43,7 @@ public class ScenesProject extends BasicProject {
 	}	
 	
 	public boolean saveProject() {
-		return this.io.writeProjectData(ProjectAssetManager.INSTANCE, this.renderer, this.objectTree.getStack());
+		return this.io.writeProjectData(ProjectAssetManager.INSTANCE, this.renderer, this.objectTree);
 	}
 	
 	public void onProjectOpened() {

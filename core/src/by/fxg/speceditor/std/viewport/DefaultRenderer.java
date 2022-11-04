@@ -1,9 +1,5 @@
 package by.fxg.speceditor.std.viewport;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +22,9 @@ import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 import by.fxg.pilesos.decals.CameraAlphaGroupStrategy;
 import by.fxg.pilesos.decals.DecalDrawer;
@@ -34,12 +33,11 @@ import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.editorPane.EditorPane;
-import by.fxg.speceditor.std.g3d.ITreeElementModelProvider;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
+import by.fxg.speceditor.std.objectTree.ITreeElementModelProvider;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.elements.ElementDecal;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight;
-import by.fxg.speceditor.utils.IOUtils;
 import by.fxg.speceditor.utils.Utils;
 
 public class DefaultRenderer implements IViewportRenderer {
@@ -168,28 +166,28 @@ public class DefaultRenderer implements IViewportRenderer {
 		return this.camera;
 	}
 	
-	public void writeData(IOUtils utils, DataOutputStream dos) throws IOException {
-		utils.writeVector3(this.cameraSettings);
-		utils.writeColor(this.bufferColor);
-		utils.writeAttributes(this.viewportEnvironment);
-		
-		dos.writeBoolean(this.featureHitboxDepth);
-		dos.writeFloat(this.featureHitboxWidth);
-		dos.writeBoolean(this.featureRenderGrid);
+	public void writeData(Kryo kryo, Output output) {
+		kryo.writeObject(output, this.cameraSettings);
+		kryo.writeObject(output, this.bufferColor);
+		kryo.writeObjectOrNull(output, this.viewportEnvironment, Environment.class);
+
+		output.writeBoolean(this.featureHitboxDepth);
+		output.writeFloat(this.featureHitboxWidth);
+		output.writeBoolean(this.featureRenderGrid);
 	}
 	
-	public void readData(IOUtils utils, DataInputStream dis) throws IOException {
-		this.cameraSettings.set(utils.readVector3());
+	public void readData(Kryo kryo, Input input) {
+		this.cameraSettings = kryo.readObject(input, Vector3.class);
 		this.camera.fieldOfView = this.cameraSettings.x;
 		this.camera.far = this.cameraSettings.y;
 		this.camera.near = this.cameraSettings.z;
 		this.camera.update();
 		
-		this.bufferColor.set(utils.readColor());
-		utils.readAttributes(this.viewportEnvironment);
+		this.bufferColor = kryo.readObject(input, Color.class);
+		this.viewportEnvironment = kryo.readObject(input, Environment.class);
 		
-		this.featureHitboxDepth = dis.readBoolean();
-		this.featureHitboxWidth = dis.readFloat();
-		this.featureRenderGrid = dis.readBoolean();
+		this.featureHitboxDepth = input.readBoolean();
+		this.featureHitboxWidth = input.readFloat();
+		this.featureRenderGrid = input.readBoolean();
 	}
 }

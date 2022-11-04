@@ -10,6 +10,7 @@ import by.fxg.pilesos.i18n.I18n;
 import by.fxg.speceditor.addon.AddonManager;
 import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.render.RenderManager;
+import by.fxg.speceditor.serialization.SpecEditorSerialization;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.utils.Utils;
@@ -37,10 +38,12 @@ public class SpecEditor extends Apparat<GInputProcessor> {
 		I18n.init();
 		SpecInterface.init();
 		Utils.init();
+		SpecEditorSerialization.INSTANCE = new SpecEditorSerialization();
 		DefaultResources.INSTANCE = new DefaultResources();
 		ProjectManager.INSTANCE = new ProjectManager();
 		STDManager.INSTANCE = new STDManager();
 		AddonManager.INSTANCE = new AddonManager();
+		SpecEditorSerialization.INSTANCE.init();
 		//post
 		ProjectManager.INSTANCE.postInit();
 		STDManager.INSTANCE.postInit();

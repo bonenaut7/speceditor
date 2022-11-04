@@ -5,4 +5,5 @@ public interface ITreeElementFolder {
 	boolean isFolderOpened();
 	void setFolderOpened(boolean isFolderOpened);
 	ElementStack getFolderStack();
+	void setFolderStack(ElementStack stack);
 }

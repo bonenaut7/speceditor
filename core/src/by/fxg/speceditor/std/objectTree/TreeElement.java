@@ -2,7 +2,6 @@ package by.fxg.speceditor.std.objectTree;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.UUID;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -98,55 +97,4 @@ public abstract class TreeElement {
 	}
 	public void setName(String displayName) { this.displayName = displayName; }
 	public void setVisible(boolean visible) { this.visible = visible; }
-	
-	/** Serializing object into bytes to the DataOutputStream **/
-	public void serialize(IOUtils utils, DataOutputStream dos) throws IOException {
-		dos.writeUTF(this.displayName);
-		dos.writeBoolean(this.visible);
-		
-		if (this instanceof ITreeElementGizmos) {
-			if (((ITreeElementGizmos)this).isTransformSupported(GizmoTransformType.TRANSLATE)) {
-				dos.writeBoolean(true);
-				utils.writeVector3(((ITreeElementGizmos)this).getTransform(GizmoTransformType.TRANSLATE));
-			} else dos.writeBoolean(false);
-			
-			if (((ITreeElementGizmos)this).isTransformSupported(GizmoTransformType.ROTATE)) {
-				dos.writeBoolean(true);
-				utils.writeVector3(((ITreeElementGizmos)this).getTransform(GizmoTransformType.ROTATE));
-			} else dos.writeBoolean(false);
-			
-			if (((ITreeElementGizmos)this).isTransformSupported(GizmoTransformType.SCALE)) {
-				dos.writeBoolean(true);
-				utils.writeVector3(((ITreeElementGizmos)this).getTransform(GizmoTransformType.SCALE));
-			} else dos.writeBoolean(false);
-		}
-		
-		//basic ITreeElementFolder serialization
-		if (this instanceof ITreeElementFolder) {
-			dos.writeBoolean(((ITreeElementFolder)this).isFolderOpened());
-		}
-	}
-	
-	/** Deserializing object into bytes to the DataOutputStream **/
-	public void deserialize(IOUtils utils, DataInputStream dis) throws IOException {
-		this.displayName = dis.readUTF();
-		this.visible = dis.readBoolean();
-		
-		if (this instanceof ITreeElementGizmos) {
-			if (dis.readBoolean()) {
-				((ITreeElementGizmos)this).getTransform(GizmoTransformType.TRANSLATE).set(utils.readVector3());
-			}
-			if (dis.readBoolean()) {
-				((ITreeElementGizmos)this).getTransform(GizmoTransformType.ROTATE).set(utils.readVector3());
-			}
-			if (dis.readBoolean()) {
-				((ITreeElementGizmos)this).getTransform(GizmoTransformType.SCALE).set(utils.readVector3());
-			}
-		}
-		
-		//basic ITreeElementFolder deserialization
-		if (this instanceof ITreeElementFolder) {
-			((ITreeElementFolder)this).setFolderOpened(dis.readBoolean());
-		}
-	}
 }

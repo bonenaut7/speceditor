@@ -1,12 +1,18 @@
 package by.fxg.speceditor.utils;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.i18n.I18n;
 import by.fxg.speceditor.SpecEditor;
@@ -68,6 +74,36 @@ public class Utils {
 			return time;
 		}
 		return -1L;
+	}
+	
+	/** Replaces materials in specified ModelInstance with new ones specified in newMaterials array **/
+	public static void replaceMaterialsInModelInstance(ModelInstance modelInstance, Array<Material> newMaterials) {
+		Map<Material, Material> replacementMap = new HashMap<>();
+		if (modelInstance != null && newMaterials != null && newMaterials.size > 0) {
+			for (int i = 0; i != modelInstance.materials.size; i++) {
+				for (int j = 0; j != newMaterials.size; j++) {
+					if (modelInstance.materials.get(i).id.equals(newMaterials.get(j).id)) {
+						replacementMap.put(modelInstance.materials.get(i), newMaterials.get(j));
+						modelInstance.materials.set(i, newMaterials.get(j));
+					}
+				}
+			}
+			for (int i = 0; i != modelInstance.nodes.size; i++) {
+				replaceMaterialsInModelInstanceNodes(modelInstance.nodes.get(i), replacementMap);
+			}
+		}
+	}
+	
+	private static void replaceMaterialsInModelInstanceNodes(Node node, Map<Material, Material> replacementMap) {
+		Material tmp = null;
+		for (int i = 0; i != node.parts.size; i++) {
+			if ((tmp = replacementMap.get(node.parts.get(i).material)) != null) {
+				node.parts.get(i).material = tmp;
+			}
+		}
+		for (int i = 0; i != node.getChildCount(); i++) {
+			replaceMaterialsInModelInstanceNodes(node.getChild(i), replacementMap);
+		}
 	}
 	
 	/** SpecEditor window width **/

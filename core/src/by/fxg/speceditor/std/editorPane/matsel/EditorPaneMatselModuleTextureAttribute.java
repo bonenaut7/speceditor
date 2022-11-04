@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
-import by.fxg.speceditor.std.g3d.TextureLinkedAttribute;
+import by.fxg.speceditor.std.g3d.attributes.SpecTextureAttribute;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.SpecFileChooser;
@@ -28,7 +28,7 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 	}
 	
 	public int renderModule(Batch batch, ShapeDrawer shape, Foster foster, int yOffset, int x, int width) {
-		TextureLinkedAttribute attribute = (TextureLinkedAttribute)this.matsel.getSelectedAttribute();
+		SpecTextureAttribute attribute = (SpecTextureAttribute)this.matsel.getSelectedAttribute();
 		foster.setString("Texture:").draw(x, yOffset -= foster.getHeight() + 1, Align.left);
 		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 10, 12);
 		this.buttonSelectTexture.render(shape, foster);
@@ -60,20 +60,20 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 
 	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
 		switch (id) {
-			case "default.texture.diffuse": matsel.addAttribute(TextureLinkedAttribute.createDiffuse(DefaultResources.INSTANCE.standardTexture)); break;
-			case "default.texture.specular": matsel.addAttribute(TextureLinkedAttribute.createSpecular(DefaultResources.INSTANCE.standardTexture)); break;
-			case "default.texture.bump": matsel.addAttribute(TextureLinkedAttribute.createBump(DefaultResources.INSTANCE.standardTexture)); break;
-			case "default.texture.normal": matsel.addAttribute(TextureLinkedAttribute.createNormal(DefaultResources.INSTANCE.standardTexture)); break;
-			case "default.texture.ambient": matsel.addAttribute(TextureLinkedAttribute.createAmbient(DefaultResources.INSTANCE.standardTexture)); break;
-			case "default.texture.emissive": matsel.addAttribute(TextureLinkedAttribute.createEmissive(DefaultResources.INSTANCE.standardTexture)); break;
-			case "default.texture.reflection": matsel.addAttribute(TextureLinkedAttribute.createReflection(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.diffuse": matsel.addAttribute(SpecTextureAttribute.createDiffuse(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.specular": matsel.addAttribute(SpecTextureAttribute.createSpecular(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.bump": matsel.addAttribute(SpecTextureAttribute.createBump(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.normal": matsel.addAttribute(SpecTextureAttribute.createNormal(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.ambient": matsel.addAttribute(SpecTextureAttribute.createAmbient(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.emissive": matsel.addAttribute(SpecTextureAttribute.createEmissive(DefaultResources.INSTANCE.standardTexture)); break;
+			case "default.texture.reflection": matsel.addAttribute(SpecTextureAttribute.createReflection(DefaultResources.INSTANCE.standardTexture)); break;
 		}
 	}
 
 	public void onSelect(EditorPaneMatsel matsel, Attribute attribute) {
 		super.onSelect(matsel, attribute);
-		if (attribute instanceof TextureAttribute && !(attribute instanceof TextureLinkedAttribute)) {
-			this.matsel.getSelectedAttributes().set(new TextureLinkedAttribute((TextureAttribute)attribute));
+		if (attribute instanceof TextureAttribute && !(attribute instanceof SpecTextureAttribute)) {
+			this.matsel.getSelectedAttributes().set(new SpecTextureAttribute((TextureAttribute)attribute));
 		}
 	}
 	

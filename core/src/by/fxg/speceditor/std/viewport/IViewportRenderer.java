@@ -1,15 +1,13 @@
 package by.fxg.speceditor.std.viewport;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 import by.fxg.speceditor.std.editorPane.EditorPane;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
-import by.fxg.speceditor.utils.IOUtils;
 
 public interface IViewportRenderer {
 	/** Adds object to renderer **/
@@ -28,7 +26,7 @@ public interface IViewportRenderer {
 	EditorPane getEditorPane();
 	
 	/** Method needed to write settings of ViewportRenderer to the project data **/
-	default void writeData(IOUtils ioUtils, DataOutputStream dataOutputStream) throws IOException {}
+	default void writeData(Kryo kryo, Output output) {}
 	/** Method needed to read settings of ViewportRenderer from the project data **/
-	default void readData(IOUtils ioUtils, DataInputStream dataInputStream) throws IOException {}
+	default void readData(Kryo kryo, Input input) {}
 }

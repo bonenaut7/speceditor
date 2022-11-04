@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.g3d;
+package by.fxg.speceditor.std.objectTree;
 
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 
