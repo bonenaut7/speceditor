@@ -124,7 +124,10 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 			 dos.writeBoolean(true);
 			 dos.writeUTF(this.modelAsset.getUUID().toString());
 		} else dos.writeBoolean(false);
-		//TODO: materials
+		if (this.modelInstance != null) {
+			dos.writeBoolean(true);
+			utils.writeAttributesArray(this.modelInstance.materials);
+		} else dos.writeBoolean(false);
 	}
 	
 	public void deserialize(IOUtils utils, DataInputStream dis) throws IOException {
@@ -135,7 +138,9 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 			if (projectAsset != null) projectAsset.addHandler(this);
 			else Utils.logDebug("[ElementModel][Deserialization] Can't find asset `", uuid.toString(), "` with Unknown type loaded.");
 		}
-		//TODO: materials
+		if (dis.readBoolean()) {
+			utils.readAttributesArray(this.modelInstance.materials);
+		}
 	}
 
 	private void setModel(Model model) {

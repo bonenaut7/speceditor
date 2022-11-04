@@ -1,5 +1,9 @@
 package by.fxg.speceditor.std.viewport;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -35,6 +39,7 @@ import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.elements.ElementDecal;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight;
+import by.fxg.speceditor.utils.IOUtils;
 import by.fxg.speceditor.utils.Utils;
 
 public class DefaultRenderer implements IViewportRenderer {
@@ -106,8 +111,8 @@ public class DefaultRenderer implements IViewportRenderer {
 	public void setCameraValues(float fieldOfView, float far, float near) {
 		this.cameraSettings.set(fieldOfView, far, near);
 		this.camera.fieldOfView = fieldOfView;
-		this.camera.far = this.cameraSettings.y;
-		this.camera.near = this.cameraSettings.z;
+		this.camera.far = far;
+		this.camera.near = near;
 		this.camera.update();
 	}
 
@@ -161,5 +166,30 @@ public class DefaultRenderer implements IViewportRenderer {
 	
 	public PerspectiveCamera getCamera() {
 		return this.camera;
+	}
+	
+	public void writeData(IOUtils utils, DataOutputStream dos) throws IOException {
+		utils.writeVector3(this.cameraSettings);
+		utils.writeColor(this.bufferColor);
+		utils.writeAttributes(this.viewportEnvironment);
+		
+		dos.writeBoolean(this.featureHitboxDepth);
+		dos.writeFloat(this.featureHitboxWidth);
+		dos.writeBoolean(this.featureRenderGrid);
+	}
+	
+	public void readData(IOUtils utils, DataInputStream dis) throws IOException {
+		this.cameraSettings.set(utils.readVector3());
+		this.camera.fieldOfView = this.cameraSettings.x;
+		this.camera.far = this.cameraSettings.y;
+		this.camera.near = this.cameraSettings.z;
+		this.camera.update();
+		
+		this.bufferColor.set(utils.readColor());
+		utils.readAttributes(this.viewportEnvironment);
+		
+		this.featureHitboxDepth = dis.readBoolean();
+		this.featureHitboxWidth = dis.readFloat();
+		this.featureRenderGrid = dis.readBoolean();
 	}
 }

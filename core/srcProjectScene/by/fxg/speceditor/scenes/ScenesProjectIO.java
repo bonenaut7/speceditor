@@ -52,29 +52,30 @@ public class ScenesProjectIO {
 			
 			/** Viewport section **/ {
 				util.readCheckID();
-				String viewportClassName = dis.readUTF();
-				long viewportData = dis.readLong();
-				if (viewportRenderer.getClass().getName().equals(viewportClassName)) {
-					viewportRenderer.readData(util, dis);
-				} else {
-					try {
-						Class<?> viewportClass = Class.forName(viewportClassName);
-						if (viewportClass != null && viewportClass.getClass().isAssignableFrom(viewportClass)) {
-							viewportRenderer.readData(util, dis);
-						} else {
-							Utils.logWarn("[ScenesProjectIO] Unable to load Viewport data because of incorrect present viewport!");
-							Utils.logDebug("[ScenesProjectIO] Viewport present: ", viewportRenderer.getClass().getTypeName());
-							Utils.logDebug("[ScenesProjectIO] Viewport needed: ", viewportClassName);
-							dis.skip(viewportData);
-						}
-					} catch (ClassNotFoundException classNotFoundException) {
-						Utils.logWarn("[ScenesProjectIO] Unable to load Viewport data because of incorrect present viewport!");
-						Utils.logDebug("[ScenesProjectIO] Viewport present: ", viewportRenderer.getClass().getTypeName());
-						Utils.logDebug("[ScenesProjectIO] Viewport needed: ", viewportClassName);
-						Utils.logError(classNotFoundException, "ScenesProjectIO", "Unable to load viewport data. Viewport class not found. Skipping...");
-						dis.skip(viewportData);
-					}
-				}	
+				viewportRenderer.readData(util, dis);
+//				String viewportClassName = dis.readUTF();
+//				long viewportData = dis.readLong();
+//				if (viewportRenderer.getClass().getName().equals(viewportClassName)) {
+//					viewportRenderer.readData(util, dis);
+//				} else {
+//					try {
+//						Class<?> viewportClass = Class.forName(viewportClassName);
+//						if (viewportClass != null && viewportClass.getClass().isAssignableFrom(viewportClass)) {
+//							viewportRenderer.readData(util, dis);
+//						} else {
+//							Utils.logWarn("[ScenesProjectIO] Unable to load Viewport data because of incorrect present viewport!");
+//							Utils.logDebug("[ScenesProjectIO] Viewport present: ", viewportRenderer.getClass().getTypeName());
+//							Utils.logDebug("[ScenesProjectIO] Viewport needed: ", viewportClassName);
+//							dis.skip(viewportData);
+//						}
+//					} catch (ClassNotFoundException classNotFoundException) {
+//						Utils.logWarn("[ScenesProjectIO] Unable to load Viewport data because of incorrect present viewport!");
+//						Utils.logDebug("[ScenesProjectIO] Viewport present: ", viewportRenderer.getClass().getTypeName());
+//						Utils.logDebug("[ScenesProjectIO] Viewport needed: ", viewportClassName);
+//						Utils.logError(classNotFoundException, "ScenesProjectIO", "Unable to load viewport data. Viewport class not found. Skipping...");
+//						dis.skip(viewportData);
+//					}
+//				}	
 			}
 			
 			/** ObjectTree section **/ {
@@ -120,12 +121,14 @@ public class ScenesProjectIO {
 			
 			/** Viewport section **/ {
 				util.writeCheckID();
-				ByteArrayOutputStream viewportByteArrayOutputStream = new ByteArrayOutputStream();
-				DataOutputStream viewportDataOutputStream = new DataOutputStream(viewportByteArrayOutputStream);
-				viewportRenderer.writeData(util, viewportDataOutputStream);
-				dos.writeUTF(viewportRenderer.getClass().getName());
-				dos.writeLong(viewportByteArrayOutputStream.size());
-				dos.write(viewportByteArrayOutputStream.toByteArray());
+				viewportRenderer.writeData(util, dos);
+//				dos.writeUTF(viewportRenderer.getClass().getTypeName());
+//				
+//				ByteArrayOutputStream viewportByteArrayOutputStream = new ByteArrayOutputStream();
+//				DataOutputStream viewportDataOutputStream = new DataOutputStream(viewportByteArrayOutputStream);
+//				viewportRenderer.writeData(util, viewportDataOutputStream);
+//				dos.writeLong(viewportByteArrayOutputStream.size());
+//				dos.write(viewportByteArrayOutputStream.toByteArray());
 			}
 			
 			/** ObjectTree section **/ {
