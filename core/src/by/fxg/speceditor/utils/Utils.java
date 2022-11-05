@@ -112,7 +112,7 @@ public class Utils {
 	public static int getHeight() { return SpecEditor.get.height; }
 	
 	public static String dFormat(double value, int symbolsAfterDot) {
-		PREDEFINED_DF.applyPattern(PREDEFINED_DF_FORMATS[symbolsAfterDot]);
+		PREDEFINED_DF.applyPattern(PREDEFINED_DF_FORMATS[symbolsAfterDot + 1]);
 		return PREDEFINED_DF.format(value);
 	}
 	

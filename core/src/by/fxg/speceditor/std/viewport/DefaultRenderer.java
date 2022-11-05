@@ -185,6 +185,7 @@ public class DefaultRenderer implements IViewportRenderer {
 		
 		this.bufferColor = kryo.readObject(input, Color.class);
 		this.viewportEnvironment = kryo.readObject(input, Environment.class);
+		this.editorPaneDefaultViewportRenderer.setEnvironment(this.viewportEnvironment);
 		
 		this.featureHitboxDepth = input.readBoolean();
 		this.featureHitboxWidth = input.readFloat();

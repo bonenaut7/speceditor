@@ -8,11 +8,15 @@ import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.pilesos.decals.BaseDecal;
 import by.fxg.speceditor.DefaultResources;
+import by.fxg.speceditor.render.DebugDraw3D;
+import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
+import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 
-public class ElementLight extends TreeElement implements ITreeElementGizmos {
+public class ElementLight extends TreeElement implements ITreeElementGizmos, IDebugDraw {
 	public ElementLightType type;
 	private BaseLight<?> light;
 	public BaseDecal _viewportDecal;
@@ -24,6 +28,21 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos {
 		this.type = ElementLightType.POINT;
 		
 		this._viewportDecal = new BaseDecal().setBillboard(true).setDecal(DefaultResources.INSTANCE.standardDecal);
+	}
+	
+	public void draw(SpecObjectTree objectTree, DebugDraw3D draw) {
+		if (objectTree.elementSelector.isElementSelected(this)) {
+			switch (this.type) {
+				case POINT: {
+					PointLight pointLight = this.getLight(PointLight.class);
+					draw.drawer.drawSphere(pointLight.position, pointLight.intensity / 3.75F, UColor.hitboxSelected);
+				} break;
+				case SPOT: {
+					SpotLight spotLight = this.getLight(SpotLight.class);
+					draw.drawer.drawSphere(spotLight.position, spotLight.intensity, UColor.hitboxSelected);
+				} break;
+			}
+		}
 	}
 	
 	public Vector3 getTransform(GizmoTransformType transformType) {

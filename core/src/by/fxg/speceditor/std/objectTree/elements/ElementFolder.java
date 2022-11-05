@@ -40,13 +40,13 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 	/** Used after using one of dropdown items, return true to close dropdown **/
 	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
 		switch (itemID) {
-			case "folder.add.folder": this.folderStack.add(new ElementFolder()); return true;
-			case "folder.add.hitboxstack": this.folderStack.add(new ElementHitboxStack()); return true;
+			case "folder.add.folder": this.folderStack.add(new ElementFolder()); return this.isFolderOpened = true;
+			case "folder.add.hitboxstack": this.folderStack.add(new ElementHitboxStack()); return this.isFolderOpened = true;
 			
-			case "folder.add.model": this.folderStack.add(new ElementModel()); return true;
-			case "folder.add.light": this.folderStack.add(new ElementLight()); return true;
-			case "folder.add.decal": this.folderStack.add(new ElementDecal()); return true;
-			case "folder.add.hitbox": this.folderStack.add(new ElementHitbox()); return true;
+			case "folder.add.model": this.folderStack.add(new ElementModel()); return this.isFolderOpened = true;
+			case "folder.add.light": this.folderStack.add(new ElementLight()); return this.isFolderOpened = true;
+			case "folder.add.decal": this.folderStack.add(new ElementDecal()); return this.isFolderOpened = true;
+			case "folder.add.hitbox": this.folderStack.add(new ElementHitbox()); return this.isFolderOpened = true;
 			
 			default: return super.processDropdownAction(tree, itemID);
 		}

@@ -14,9 +14,9 @@ import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.ColoredInputField;
+import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.URenderBlock;
-import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -83,7 +83,7 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 			super("Transforms");
 			this.parent = parent;
 
-			ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
+			NumberCursorInputField.Builder builder = (NumberCursorInputField.Builder)new NumberCursorInputField.Builder().setAllowFullfocus(false).setMaxLength(12);
 			for (int i = 0; i != 3; i++) this.position[i] = builder.setBackgroundColor(UColor.redblack).setListener(this, "position").build();
 			for (int i = 0; i != 3; i++) this.rotation[i] = builder.setBackgroundColor(UColor.greenblack).setListener(this, "rotation").build();
 			for (int i = 0; i != 3; i++) this.scale[i] = builder.setBackgroundColor(UColor.blueblack).setListener(this, "scale").build();

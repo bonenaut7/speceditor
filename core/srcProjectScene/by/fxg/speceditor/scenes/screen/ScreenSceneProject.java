@@ -27,6 +27,9 @@ public class ScreenSceneProject extends BaseScreen {
 	public SubscreenSceneEditor subEditorPane;
 	public SubscreenViewport subViewport;
 	
+	private int timer;
+	private long nextBackupTime;
+	
 	public ScreenSceneProject(ScenesProject project) {
 		this.project = project;
 		int width = Gdx.graphics.getWidth(), height = Gdx.graphics.getHeight();
@@ -38,6 +41,8 @@ public class ScreenSceneProject extends BaseScreen {
 		this.unnamedUselessModule = new SubscreenExplorer(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
 		this.subEditorPane = new SubscreenSceneEditor(this, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
 		this.subViewport = new SubscreenViewport(project.renderer, project.objectTree, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
+		
+		this.nextBackupTime = System.currentTimeMillis() + project.getBackupInterval() * 1000L;
 	}
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
@@ -46,6 +51,14 @@ public class ScreenSceneProject extends BaseScreen {
 			this.subObjectTree.update(batch, shape, foster, this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
 			this.unnamedUselessModule.update(batch, shape, foster, this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
 			this.subViewport.update(batch, shape, foster, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
+		}
+		
+		if (++this.timer > 59) {
+			this.timer = 0;
+			if (this.project.isBackupsEnabled() && this.nextBackupTime < System.currentTimeMillis()) {
+				this.nextBackupTime = System.currentTimeMillis() + this.project.getBackupInterval() * 1000L;
+				this.project.makeBackup();
+			}
 		}
 	}
 	

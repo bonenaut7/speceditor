@@ -16,11 +16,6 @@ public class ColoredInputField extends STDInputField {
 	public ColoredInputField() {}
 	public ColoredInputField(Batch batch, BitmapFont font) { super(batch, font); }
 	public ColoredInputField(Parameters parameters) { super(parameters); }
-
-	public ColoredInputField setBackgroundColor(Color color) {
-		this.backgroundColor = color;
-		return this;
-	}
 	
 	public void render(Batch batch, ShapeDrawer shape) {
 		float prevColor = shape.getPackedColor();
@@ -48,6 +43,12 @@ public class ColoredInputField extends STDInputField {
 			PilesosScissorStack.instance.popScissors();
 		}
 		shape.setColor(prevColor);
+	}
+	
+	/** Sets background **/
+	public ColoredInputField setBackgroundColor(Color color) {
+		this.backgroundColor = color;
+		return this;
 	}
 	
 	public STDInputField setTransforms(int x, int y, int width, int height) {

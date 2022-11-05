@@ -112,4 +112,5 @@ public abstract class BasicProject {
 	public String getProjectType() { return this.solver.getDisplayName(); }
 	public String getSaveDate() { return this.lastSaveDate; }
 	public boolean isBackupsEnabled() { return this.backupSaving; }
+	public long getBackupInterval() { return this.backupInterval; }
 }

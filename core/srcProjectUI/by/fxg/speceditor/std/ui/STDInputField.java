@@ -26,11 +26,11 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
  *   <li>Allowed Characters</li>
  *   <li>`Fullfocus`, when disabled not focusing through SpecInterface focus, but ignores this value when selecting text by dragging mouse</li>
  *   
- *   <strong>TODO: Add {@link #allowedCharacters} checking for Ctrl+V action in {@link #handleKeys(PilesosInputImpl)}.</strong>
+ *   <strong>TODO: Add {@link #allowedCharacters} checking for Ctrl+V action in {@link #handleInput(PilesosInputImpl)}.</strong>
  **/
 public class STDInputField extends UIElement implements IFocusable {
 	protected static long LAST_TAB_CLICK_TIME = 0L;
-	protected static final StringBuilder builder = new StringBuilder();
+	protected static final StringBuilder builder = new StringBuilder(4096);
 	protected Foster foster = null;
 	protected int maxTextLength = 256;
 	protected String allowedCharacters = null; //null to allow everything
@@ -77,7 +77,7 @@ public class STDInputField extends UIElement implements IFocusable {
 			if (this.isMouseOver()) SpecInterface.setCursor(AppCursor.IBEAM);
 			if (this.getInput().isMouseDown(0, false) && this.isMouseOver() && !this.isFocused()) this.setFocused(true);
 			if (this.isFocused()) {
-				this.handleKeys(this.getInput());
+				this.handleInput(this.getInput());
 				if (this.listener != null) {
 					this.listener.whileInputFieldFocused(this, this.listenerID);
 				}
@@ -254,8 +254,7 @@ public class STDInputField extends UIElement implements IFocusable {
 	}
 	
 	/** Handles input **/
-	@SuppressWarnings("static-access") //Supresses warnings because #builder is in stage of preformance testing
-	protected void handleKeys(PilesosInputImpl input) {
+	protected void handleInput(PilesosInputImpl input) {
 		//exit
 		if (input.isKeyboardDown(Keys.ESCAPE, false) || input.isKeyboardDown(Keys.ENTER, false) || input.isMouseDown(0, false) && !this.isMouseOver()) {
 			this.selectPointerFrom = this.selectPointerTo = -1;
@@ -321,15 +320,15 @@ public class STDInputField extends UIElement implements IFocusable {
 		//remove character
 		if (input.isKeyboardDown(Keys.BACKSPACE, false) || input.isKeyboardDown(Keys.BACKSPACE, true) && input.getClickedKeyTime(Keys.BACKSPACE) > 30 && SpecEditor.get.getTick() % 2 == 0) {
 			if (this.havePointerSelection()) {
-				this.builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
-				this.currentString = this.builder.toString();
-				this.builder.setLength(0);
+				builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
+				this.currentString = builder.toString();
+				builder.setLength(0);
 				this.moveTextPointer(this.selectPointerFrom);
 				this.selectPointerFrom = this.selectPointerTo = -1;
 			} else if (this.pointer > 0) {
-				this.builder.append(this.currentString.substring(0, this.pointer - 1)).append(this.currentString.substring(this.pointer, this.currentString.length()));
-				this.currentString = this.builder.toString();
-				this.builder.setLength(0);
+				builder.append(this.currentString.substring(0, this.pointer - 1)).append(this.currentString.substring(this.pointer, this.currentString.length()));
+				this.currentString = builder.toString();
+				builder.setLength(0);
 				this.moveTextPointer(this.pointer - 1);
 			}
 			if (this.listener != null) {
@@ -364,9 +363,9 @@ public class STDInputField extends UIElement implements IFocusable {
 				StringSelection selection = new StringSelection(this.currentString.substring(this.selectPointerFrom, this.selectPointerTo));
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
 				if (input.isKeyboardDown(Keys.X, false)) {
-					this.builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
-					this.currentString = this.builder.toString();
-					this.builder.setLength(0);
+					builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
+					this.currentString = builder.toString();
+					builder.setLength(0);
 					this.moveTextPointer(this.selectPointerFrom);
 					this.selectPointerFrom = this.selectPointerTo = -1;
 					if (this.listener != null) {
@@ -381,9 +380,9 @@ public class STDInputField extends UIElement implements IFocusable {
 					Object obj = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor);
 					if (obj instanceof String) {
 						if (this.havePointerSelection()) {
-							this.builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
-							this.currentString = this.builder.toString();
-							this.builder.setLength(0);
+							builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
+							this.currentString = builder.toString();
+							builder.setLength(0);
 							this.pointer = this.selectPointerFrom;
 							this.selectPointerFrom = this.selectPointerTo = -1;
 						}
@@ -391,12 +390,12 @@ public class STDInputField extends UIElement implements IFocusable {
 						if (this.currentString.length() + objString.length() > this.maxTextLength) {
 							objString = ((String)obj).substring(0, this.maxTextLength - this.currentString.length());
 						}
-						this.builder.append(this.currentString.substring(0, this.pointer));
-						this.builder.append(objString);
-						this.builder.append(this.currentString.substring(this.pointer, this.currentString.length()));
-						this.currentString = this.builder.toString();
+						builder.append(this.currentString.substring(0, this.pointer));
+						builder.append(objString);
+						builder.append(this.currentString.substring(this.pointer, this.currentString.length()));
+						this.currentString = builder.toString();
 						this.moveTextPointer(this.pointer + objString.length());
-						this.builder.setLength(0);
+						builder.setLength(0);
 						if (this.listener != null) {
 							this.listener.onInputFieldTextChanged(this, this.listenerID, objString);
 						}
@@ -412,17 +411,17 @@ public class STDInputField extends UIElement implements IFocusable {
 			if (this.currentString.length() < this.maxTextLength || this.havePointerSelection()) {
 				if (this.allowedCharacters == null || this.allowedCharacters.contains(input.getCharTypedLast())) {
 					if (this.havePointerSelection()) {
-						this.builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
-						this.currentString = this.builder.toString();
-						this.builder.setLength(0);
+						builder.append(this.currentString.substring(0, this.selectPointerFrom)).append(this.currentString.substring(this.selectPointerTo, this.currentString.length()));
+						this.currentString = builder.toString();
+						builder.setLength(0);
 						this.pointer = this.selectPointerFrom;
 						this.selectPointerFrom = this.selectPointerTo = -1;	
 					}
-					this.builder.append(this.currentString.substring(0, this.pointer));
-					this.builder.append(input.getCharTypedLast());
-					this.builder.append(this.currentString.substring(this.pointer, this.currentString.length()));
-					this.currentString = this.builder.toString();
-					this.builder.setLength(0);
+					builder.append(this.currentString.substring(0, this.pointer));
+					builder.append(input.getCharTypedLast());
+					builder.append(this.currentString.substring(this.pointer, this.currentString.length()));
+					this.currentString = builder.toString();
+					builder.setLength(0);
 					this.moveTextPointer(this.pointer + 1);
 					if (this.listener != null) {
 						this.listener.onInputFieldTextChanged(this, this.listenerID, input.getCharTypedLast());
@@ -469,7 +468,7 @@ public class STDInputField extends UIElement implements IFocusable {
 	}
 	
 	public static class Parameters {
-		public Foster foster = null;
+		public Foster foster = SpecEditor.fosterNoDraw;
 		public ISTDInputFieldListener listener = null;
 		public String allowedCharacters = null, listenerID = null, currentString = "";
 		public boolean allowToFullfocus = true;

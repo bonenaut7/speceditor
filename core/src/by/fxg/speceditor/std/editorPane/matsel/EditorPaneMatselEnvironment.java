@@ -46,6 +46,11 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 		this.dropdownArea = new UDropdownArea(this, 15);
 		this.refreshAttributes();
 	}
+	
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+		this.refreshAttributes();
+	}
 
 	//FIXME requires UI reworking and nice offsets
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {

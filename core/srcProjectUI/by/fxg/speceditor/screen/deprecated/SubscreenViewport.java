@@ -50,7 +50,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		GInputProcessor input = SpecEditor.get.getInput();
-		if (input.isCursorCatched()) {
+		if (input.isCursorCatched() && GInputProcessor.mouseController == this) {
 			if (input.isKeyboardDown(Keys.ESCAPE, false) || input.isKeyboardDown(Keys.SYM, false)) {
 				input.setCursorCatched(false);
 				Gdx.input.setCursorPosition(x + width / 2, Gdx.graphics.getHeight() - (y + height / 2));

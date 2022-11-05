@@ -8,12 +8,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
-import by.fxg.speceditor.ui.ColoredInputField;
-import by.fxg.speceditor.ui.ColoredInputField.Builder;
+import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -24,7 +22,7 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 	private STDInputField[] color = new STDInputField[4];
 	
 	public EditorPaneMatselModuleColorAttribute() {
-		ColoredInputField.Builder builder = (Builder)new ColoredInputField.Builder().setFoster(SpecEditor.fosterNoDraw).setAllowFullfocus(false).setNumeralInput(true).setMaxLength(12);
+		NumberCursorInputField.Builder builder = (NumberCursorInputField.Builder)new NumberCursorInputField.Builder().setAllowFullfocus(false).setMaxLength(12);
 		for (int i = 0; i != 4; i++) this.color[i] = builder.setBackgroundColor(this.fieldColors[i]).setListener(this, Utils.format("color", i)).build();
 		builder.addToLink(this.color).linkFields();
 	}

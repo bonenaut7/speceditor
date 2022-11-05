@@ -2,6 +2,7 @@ package by.fxg.speceditor.std.viewport;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
@@ -84,6 +85,10 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 	
 	public void onInputFieldFocusRemoved(STDInputField inputField, String id) {
 		try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
+	}
+	
+	public void setEnvironment(Environment environment) {
+		this.environmentMatsel.setEnvironment(environment);
 	}
 
 	private class ViewportFeaturesBlock extends URenderBlock implements ISTDInputFieldListener {

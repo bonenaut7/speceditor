@@ -47,9 +47,9 @@ public class ElementHitboxStack extends TreeElement implements ITreeElementFolde
 	/** Used after using one of dropdown items, return true to close dropdown **/
 	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
 		switch (itemID) {
-			case "hitboxstack.add.hitboxstack": this.folderStack.add(new ElementHitboxStack()); return true;
-			case "hitboxstack.add.hitbox": this.folderStack.add(new ElementHitbox()); return true;
-			case "hitboxstack.add.hitboxmesh": this.folderStack.add(new ElementHitboxMesh()); return true;
+			case "hitboxstack.add.hitboxstack": this.folderStack.add(new ElementHitboxStack()); return this.isFolderOpened = true;
+			case "hitboxstack.add.hitbox": this.folderStack.add(new ElementHitbox()); return this.isFolderOpened = true;
+			case "hitboxstack.add.hitboxmesh": this.folderStack.add(new ElementHitboxMesh()); return this.isFolderOpened = true;
 			
 			default: return super.processDropdownAction(tree, itemID);
 		}

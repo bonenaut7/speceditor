@@ -20,22 +20,26 @@ import by.fxg.speceditor.std.viewport.IViewportRenderer;
 
 public class ScenesProjectIO {
 	private ScenesProject project;
-	private FileHandle projectFile;
 	private Throwable lastException = null;
 	
 	public ScenesProjectIO(ScenesProject project) {
 		this.project = project;
-		this.projectFile = project.getProjectFolder().child("scenes.data");
 	}
 	
 	/** Returns true if loading was successful **/
-	public boolean loadProjectData(ProjectAssetManager projectAssetManager, IViewportRenderer viewportRenderer, SpecObjectTree objectTree) {
+	public boolean loadProjectData(FileHandle file, ProjectAssetManager projectAssetManager, IViewportRenderer viewportRenderer, SpecObjectTree objectTree) {
+		if (file == null || !file.exists() || file.isDirectory()) return false;
 		try {
-			ByteArrayInputStream bais = new ByteArrayInputStream(this.projectFile.readBytes());
+			ByteArrayInputStream bais = new ByteArrayInputStream(file.readBytes());
 			DataInputStream dis = new DataInputStream(bais);
 			Kryo kryo = SpecEditorSerialization.INSTANCE.kryo;
 			
-			dis.skip(8); //skip magic and version
+			if (dis.readInt() != 0xBADF05CE) { //incorrect file tryin to be loaded ;(
+				dis.close();
+				bais.close();
+				return false;
+			}
+			int version = dis.readInt();
 			
 			/** ProjectAssetManager section **/ {
 				projectAssetManager.loadIndexes(dis);
@@ -63,11 +67,12 @@ public class ScenesProjectIO {
 	}
 	
 	/** Returns true if loading was successful **/
-	public boolean writeProjectData(ProjectAssetManager projectAssetManager, IViewportRenderer viewportRenderer, SpecObjectTree objectTree) {
+	public boolean writeProjectData(FileHandle destFile, ProjectAssetManager projectAssetManager, IViewportRenderer viewportRenderer, SpecObjectTree objectTree) {
+		if (destFile == null || destFile.exists() && destFile.isDirectory()) return false;
 		try {
-			this.project.getProjectFolder().file().mkdirs();
-			this.projectFile.file().createNewFile();
-			FileOutputStream fos = new FileOutputStream(this.projectFile.file());
+			destFile.parent().mkdirs();
+			destFile.file().createNewFile();
+			FileOutputStream fos = new FileOutputStream(destFile.file());
 			DataOutputStream dos = new DataOutputStream(fos);
 			
 			Kryo kryo = SpecEditorSerialization.INSTANCE.kryo;

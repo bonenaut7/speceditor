@@ -41,8 +41,8 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 		int totalWidth = (width - (int)foster.getWidth() - 15) / 2;
 		this.buttonFlipTextureX.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), totalWidth, 12).render(shape, foster);
 		this.buttonFlipTextureY.setTransforms(x + (int)foster.getWidth() + totalWidth - 5, yOffset, totalWidth, 12).render(shape, foster);
-		if (this.buttonFlipTextureX.isPressed()) attribute.setFlip(true, false);
-		if (this.buttonFlipTextureY.isPressed()) attribute.setFlip(false, true);
+		if (this.buttonFlipTextureX.isPressed()) attribute.flip(true, false);
+		if (this.buttonFlipTextureY.isPressed()) attribute.flip(false, true);
 		return yOffset;
 	}
 
