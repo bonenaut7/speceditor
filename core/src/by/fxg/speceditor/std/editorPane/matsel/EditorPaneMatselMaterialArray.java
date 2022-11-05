@@ -53,7 +53,7 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 		this.dropdownArea = new UDropdownArea(this, 15);
 	}
 
-	//FIXME requires UI reworking and nice offsets
+	//FIXME [UI] re-markup required for elements
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
 		foster.setString("Material:").draw(this.x, yOffset -= foster.getHeight() + 4, Align.left);
 		this.selectedMaterial.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - (int)foster.getHalfHeight(), this.width - (int)foster.getWidth() - 5, 14);

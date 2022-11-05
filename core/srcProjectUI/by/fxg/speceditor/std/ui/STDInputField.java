@@ -431,7 +431,7 @@ public class STDInputField extends UIElement implements IFocusable {
 		}
 	}
 
-	/** Be careful using this method, TODO needs optimizations **/
+	//Be careful using this method, looks dangerous to me
 	protected int getPointerPosition(Foster foster, int fieldX) {
 		int prevWidth = 0, width = (int)foster.setString(this.currentString).getWidth() - this.xTextOffset, halfPart;
 		//if (fieldX < 1) return 0; else //checking for 0 position || removed because can cause errors if xTextOffset is not zero

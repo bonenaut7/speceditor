@@ -61,7 +61,7 @@ public class PhysContactListener extends ContactListener {
 	
 	//calls per single shape face contact creation (maybe)
 	public boolean onContactAdded(btManifoldPoint manifoldPoint, btCollisionObject object0, int partID0, int index0, btCollisionObject object1, int partID1, int index1) {
-		// TODO FIXME
+		// TODO [Physics] add methods with indexes args
 		// Indexes are not used in sublisteners. Main point of this decision is that i don't know what are they do
 		//  and where they're can be used. If indexes are uservalues, its right decision that they're not used because
 		//  user values are usually using as parent objects instead of indexes.

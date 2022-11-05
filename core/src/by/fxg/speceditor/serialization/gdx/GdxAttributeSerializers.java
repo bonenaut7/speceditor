@@ -45,7 +45,7 @@ public class GdxAttributeSerializers {
 		}
 	}
 	
-	/** Shadow maps not supported :( FIXME **/
+	/** Shadow maps not supported :( FIXME Add shadowmap support for EnvironmentSerializer **/
 	public static class EnvironmentSerializer extends Serializer<Environment> {
 		public void write(Kryo kryo, Output output, Environment object) {
 			Iterator<Attribute> iterator = object.iterator();
@@ -172,7 +172,7 @@ public class GdxAttributeSerializers {
 	
 	// NOT IMPLEMENTED | Textures are not intended to be serialized *skull_emoji*
 	
-	@Deprecated //TODO
+	@Deprecated //TODO search convenient way to serialize textures for cubemaps, implement Cubemaps serialization
 	public static class CubemapAttributeSerializer extends Serializer<CubemapAttribute> {
 		public void write(Kryo kryo, Output output, CubemapAttribute object) {}
 		public CubemapAttribute read(Kryo kryo, Input input, Class<CubemapAttribute> type) { return null; }

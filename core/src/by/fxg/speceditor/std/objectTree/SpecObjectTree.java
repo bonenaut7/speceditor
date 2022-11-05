@@ -29,7 +29,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 	private GInputProcessor input;
 	public UDropdownArea dropdownArea;
 	public ITreeElementHandler elementHandler;
-	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector(); //FIXME replace to abstract one
+	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector();
 	
 	private ElementStack elementStack = new ElementStack();
 	/** [scroll]Scrolls, [canvas]Size of rendered elements in list for scrolls, [renderPosition]Position buffer for elements to render **/

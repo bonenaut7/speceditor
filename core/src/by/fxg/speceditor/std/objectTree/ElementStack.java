@@ -26,9 +26,8 @@ public class ElementStack {
 	
 	public boolean remove(TreeElement element) {
 		if (element != null) {
-			this.elements.removeValue(element, true);
 			element.setParent(null);
-			return true;
+			return this.elements.removeValue(element, true);
 		}
 		return false;
 	}
@@ -47,9 +46,33 @@ public class ElementStack {
 		return -1;
 	}
 	
-	public void insertAt(int index, TreeElement element) { this.insertAt(index, element, null, true); }
-	public void insertAt(int index, TreeElement element, boolean removeFromOld) { this.insertAt(index, element, null, removeFromOld); }
-	public void insertAt(int index, TreeElement element, ElementStack nullStack, boolean removeFromOld) {
+	public boolean removeElementFromHierarchy(TreeElement element) {
+		if (element == null) return false;
+		if (element.parent != null && element.parent instanceof ITreeElementFolder) {
+			if (((ITreeElementFolder)element.parent).getFolderStack().elements.removeValue(element, true)) {
+				element.parent = null;
+				return true;
+			}
+		}
+		return this.removeElementFromHierarchy(this, element.uuid);
+	}
+	
+	public boolean removeElementFromHierarchy(UUID uuid) { return this.removeElementFromHierarchy(this, uuid); }
+	private boolean removeElementFromHierarchy(ElementStack stack, UUID uuid) {
+		for (int i = 0; i != stack.elements.size; i++) {
+			if (stack.elements.get(i).uuid.equals(uuid)) {
+				stack.elements.removeIndex(i);
+				return true;
+			}
+			if (stack.elements.get(i) instanceof ITreeElementFolder && this.removeElementFromHierarchy(((ITreeElementFolder)stack.elements.get(i)).getFolderStack(), uuid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void insertAt(int index, TreeElement element) { this.insertAt(index, element, true); }
+	public void insertAt(int index, TreeElement element, boolean removeFromOld) {
 		element.setParent(this.stackElement, removeFromOld, false);
 		this.elements.insert(index, element);
 	}
@@ -88,35 +111,5 @@ public class ElementStack {
 			}
 		}
 		this.elements.clear();
-	}
-	
-	//TODO remove
-	public boolean selfRemove(TreeElement element) { return element != null && element.uuid != null ? this.selfRemove(element.uuid) : false; }
-	public boolean selfRemove(String uuid) { return uuid != null ? this.selfRemove(UUID.fromString(uuid)) : false; }
-	public boolean selfRemove(UUID uuid) {
-		TreeElement element = this.searchFor(uuid);
-		if (element != null) {
-			if (element.getParent() instanceof ITreeElementFolder && ((ITreeElementFolder)element.getParent()).getFolderStack().elements.removeValue(element, true) || this.elements.removeValue(element, true)) {
-				element.setParent(null);
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected TreeElement searchFor(UUID uuid) { return searchFor(this.elements, uuid); }
-	public static TreeElement searchFor(Array<TreeElement> iterable, UUID uuid) {
-		TreeElement target = null;
-		for (TreeElement element : iterable) {
-			if (target != null) break;
-			if (element.uuid.compareTo(uuid) == 0) {
-				target = element;
-				break;
-			}
-			if (element instanceof ITreeElementFolder) {
-				target = searchFor(((ITreeElementFolder)element).getFolderStack().elements, uuid);
-			}
-		}
-		return target;
 	}
 }

@@ -37,7 +37,7 @@ public class AddonManager {
 					if (this.checkDependencies(addon.getInfo().dependencies)) {
 						this.activeAddons.put(addon.getInfo().addonID, addon);
 						addon.onLoad();
-					} else ; //FIXME dependencies are not implemented
+					} else ; //FIXME Add dependency.missing message, dependencies are not implemented
 				} else Utils.logDebug("[AddonManager#loadAddon] ", "adready loaded");
 			} else Utils.logDebug("[AddonManager#loadAddon] ", "null info");
 		} else Utils.logDebug("[AddonManager#loadAddon] ", "null addon");

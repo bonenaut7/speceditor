@@ -184,7 +184,7 @@ public class GizmosModule implements IFocusable {
 			
 			this.framebuffer.capture(0f, 0f, 0f, 0f);
 			this.modelBatch.begin(camera);
-			//TODO add grid rendering if tool is being interacted
+			//XXX [IDEA] add grid rendering if tool is being interacted
 			if (this.selectedTool != null) {
 				this.modelBatch.render(this.gizmoModel[this.selectedTool.ordinal()]);
 			}

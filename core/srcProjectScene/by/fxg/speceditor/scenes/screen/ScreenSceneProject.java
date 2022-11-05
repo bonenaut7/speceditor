@@ -23,7 +23,7 @@ public class ScreenSceneProject extends BaseScreen {
 
 	private UDropdownClick dropdownButtonApp, dropdownButtonProject;
 	public SubscreenProjectManager subObjectTree;
-	public SubscreenExplorer unnamedUselessModule; //TODO do something with it lol
+	public SubscreenExplorer unnamedUselessModule; //TODO do something with it lol, or at least give it a name
 	public SubscreenSceneEditor subEditorPane;
 	public SubscreenViewport subViewport;
 	

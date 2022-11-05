@@ -14,17 +14,20 @@ import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
+import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import by.fxg.speceditor.ui.URenderBlock;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneHitboxStack extends EditorPane implements ISTDInputFieldListener {
 	private ElementHitboxStack element = null;
 	private STDInputField elementName;
+	private UDropdownSelectSingle stackType;
 	private TransformBlock transform;
 	
 	public EditorPaneHitboxStack() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
-
+		this.stackType = new UDropdownSelectSingle(15, "Hitbox Array", "Combined Stack");
+		
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
 	}
 	
@@ -34,7 +37,15 @@ public class EditorPaneHitboxStack extends EditorPane implements ISTDInputFieldL
 		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
 		
+		yOffset -= 8;
+		foster.setString("Type:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
+		this.stackType.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
+		if (this.stackType.isDropped()) yOffset -= this.stackType.getVariants().length * 15;
+		this.element.isArrayStack = this.stackType.getVariant() == 0;
+		
 		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
+		this.stackType.update();
+		
 		return yOffset;
 	}
 

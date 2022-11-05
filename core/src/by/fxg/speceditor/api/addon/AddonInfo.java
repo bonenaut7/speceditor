@@ -4,7 +4,7 @@ public class AddonInfo {
 	public String name;
 	public String addonID;
 	public String version;
-	@Deprecated /** FIXME not implemented **/
+	@Deprecated /** FIXME Dependencies are not implemented, so implement them **/
 	public String dependencies;
 	public String[] authors;
 	

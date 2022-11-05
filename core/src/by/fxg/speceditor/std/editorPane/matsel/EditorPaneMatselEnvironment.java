@@ -52,7 +52,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 		this.refreshAttributes();
 	}
 
-	//FIXME requires UI reworking and nice offsets
+	//FIXME [UI] re-markup required for elements
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
 		this.buttonAddAttribute.setTransforms(this.x, yOffset -= 14, 14, 14).render(shape, foster);
 		if (this.buttonAddAttribute.isPressed()) {

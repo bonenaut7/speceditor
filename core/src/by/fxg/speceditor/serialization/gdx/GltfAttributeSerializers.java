@@ -68,7 +68,7 @@ public class GltfAttributeSerializers {
 		public PBRTextureAttribute read(Kryo kryo, Input input, Class<PBRTextureAttribute> type) { return null; }
 	}
 	
-	@Deprecated //TODO
+	@Deprecated //TODO search convenient way to serialize textures for cubemaps, implement PBR Cubemaps serialization
 	public static class PBRCubemapAttributeSerializer extends Serializer<PBRCubemapAttribute> {
 		public void write(Kryo kryo, Output output, PBRCubemapAttribute object) {}
 		public PBRCubemapAttribute read(Kryo kryo, Input input, Class<PBRCubemapAttribute> type) { return null; }

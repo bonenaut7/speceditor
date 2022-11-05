@@ -31,8 +31,8 @@ public class ScreenMainMenu extends BaseScreen {
 	
 	public ScreenMainMenu() {
 		this.buttonCreateProject = new UButton("Create project");
-		this.buttonSelectProject = new UButton("Select project").setEnabled(false); //TODO Select project (with descriptions)
-		this.buttonImportProject = new UButton("Import project").setEnabled(false); //TODO Import project
+		this.buttonSelectProject = new UButton("Select project").setEnabled(false); //TODO [UI] Add Select project gui (selector with descriptions)
+		this.buttonImportProject = new UButton("Import project").setEnabled(false); //TODO [UI] Add Import project gui
 		this.buttonOpenRecentProject = new UButton("Open recent project");
 		this.buttonAddonsList = new UButton("Manage addons").setEnabled(false); //TODO Manage addons screen
 		this.buttonSettings = new UButton("Settings").setEnabled(false); //TODO Settings
