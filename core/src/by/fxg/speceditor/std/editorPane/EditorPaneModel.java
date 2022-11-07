@@ -51,7 +51,7 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		}
 		
 		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
-		yOffset = this.matsel.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset);
+		yOffset = this.matsel.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.transform.isDropped() ? yOffset - 5 : yOffset);
 		if (this.matsel.dropdownArea.isFocused()) this.matsel.dropdownArea.render(shape, foster);
 		return yOffset;
 	}

@@ -10,9 +10,9 @@ import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.screen.BaseScreen;
-import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.objectTree.TreeElementFolder;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
@@ -124,9 +124,9 @@ public class GuiObjectTreeDelete extends BaseScreen implements IFocusable {
 	private void inspect(TreeElement element, boolean insideFolder) {
 		if (insideFolder) this.folderElements++;
 		else this.totalElements++;
-		if (element instanceof ITreeElementFolder) {
+		if (element instanceof TreeElementFolder) {
 			this.folders++;
-			for (TreeElement element$ : ((ITreeElementFolder)element).getFolderStack().getElements()) {
+			for (TreeElement element$ : ((TreeElementFolder)element).getFolderStack().getElements()) {
 				this.inspect(element$, true);
 			}
 		}

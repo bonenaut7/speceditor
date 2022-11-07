@@ -29,6 +29,7 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 	private boolean isProjectFolderValid, isProjectNameValid, isBackupIntervalValid;
 	private FileHandle projectFolder;
 	
+	
 	public ScenesSubscreenCreateProject(ProjectSolver projectSolver) {
 		this.projectSolver = projectSolver;
 		this.projectName = (ColoredInputField)new ColoredInputField().setBackgroundColor(UColor.redgray).setMaxLength(128).setListener(this, "projectName");

@@ -17,6 +17,7 @@ import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleBlendingAtt
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleColorAttribute;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleDepthTestAttribute;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleFloatAttribute;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleIntAttribute;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModuleTextureAttribute;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 
@@ -88,6 +89,7 @@ public class STDManager {
 			//Remove attribute module,
 			new EditorPaneMatselModuleDepthTestAttribute(),
 			new EditorPaneMatselModuleBlendingAttribute(),
+			new EditorPaneMatselModuleIntAttribute(),
 			new EditorPaneMatselModuleFloatAttribute(),
 			new EditorPaneMatselModuleTextureAttribute(),
 			new EditorPaneMatselModuleColorAttribute()

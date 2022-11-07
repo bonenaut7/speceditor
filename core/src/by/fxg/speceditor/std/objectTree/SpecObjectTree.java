@@ -22,6 +22,7 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UDropdownArea;
 import by.fxg.speceditor.ui.UDropdownArea.IUDropdownAreaListener;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
+import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
@@ -123,7 +124,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 		
 		for (int i = 0; i != iterable.size; i++) {
 			TreeElement element = iterable.get(i);
-			if ((isFolder = element instanceof ITreeElementFolder) && !isChild) vector.add(16, 0); //Adding 16px if folder created with ObjectTree as parent
+			if ((isFolder = element instanceof TreeElementFolder) && !isChild) vector.add(16, 0); //Adding 16px if folder created with ObjectTree as parent
 			foster.setString(element.getName()); //preparing foster to text work
 			if (this.elementsCanvasSize.x < vector.x + foster.getWidth() + 26) this.elementsCanvasSize.x = vector.x + foster.getWidth() + 26; //25 - size of box + textWidth
 			
@@ -155,7 +156,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 				} else if (isFolder && this.input.isMouseDown(0, false) && GDXUtil.isMouseInArea(vector.x - 15, vector.y + 2, 14, 14) && SpecInterface.isFocused(null)) {
 					//Small arrow click, Visibility of folders
 					if (SpecEditor.get.getTick() - this._folderInteractTime > 20L) {
-						((ITreeElementFolder)element).setFolderOpened(!((ITreeElementFolder)element).isFolderOpened());
+						((TreeElementFolder)element).setFolderOpened(!((TreeElementFolder)element).isFolderOpened());
 						this._folderInteractTime = SpecEditor.get.getTick();
 					}
 					this.setClick(null, true);
@@ -174,7 +175,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 				if (isDragNDropValid) {
 					float color = shape.getPackedColor();
 					shape.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-					if (element instanceof ITreeElementFolder) {
+					if (element instanceof TreeElementFolder) {
 						if (GDXUtil.isMouseInArea(vector.x - 1, vector.y + 13, 25 + foster.getWidth(), 7)) {
 							shape.line(vector.x + 4, vector.y + 20, vector.x + 20 + foster.getWidth(), vector.y + 20);
 						} else if (GDXUtil.isMouseInArea(vector.x - 1, vector.y + 4, 25 + foster.getWidth(), 9)) {
@@ -192,7 +193,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 					
 					if (!this.input.isMouseDown(0, true)) {
 						int move = -1;
-						if (element instanceof ITreeElementFolder) move = GDXUtil.isMouseInArea(vector.x - 1, vector.y + 13, 25 + foster.getWidth(), 7) ? 2 : GDXUtil.isMouseInArea(vector.x - 1, vector.y + 4, 25 + foster.getWidth(), 9) ? 1 : GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 6) ? 0 : -1;
+						if (element instanceof TreeElementFolder) move = GDXUtil.isMouseInArea(vector.x - 1, vector.y + 13, 25 + foster.getWidth(), 7) ? 2 : GDXUtil.isMouseInArea(vector.x - 1, vector.y + 4, 25 + foster.getWidth(), 9) ? 1 : GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 6) ? 0 : -1;
 						else move = GDXUtil.isMouseInArea(vector.x - 1, vector.y + 10, 25 + foster.getWidth(), 10) ? 2 : GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 11) ? 0 : -1;
 						if (move > -1) {
 							this._dragNDropMove = move;
@@ -207,7 +208,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 			if (isFolder) {
 				 if (GDXUtil.isMouseInArea(vector.x - 15, vector.y + 2, 14, 14) && SpecInterface.isFocused(null)) shape.filledRectangle(vector.x - 15, vector.y + 2, 14, 14);
 				 shape.setColor(1, 1, 1, 1);
-				 if (((ITreeElementFolder)element).isFolderOpened()) shape.filledTriangle(vector.x - 12, vector.y + 13, vector.x - 4, vector.y + 13, vector.x - 8, vector.y + 4);
+				 if (((TreeElementFolder)element).isFolderOpened()) shape.filledTriangle(vector.x - 12, vector.y + 13, vector.x - 4, vector.y + 13, vector.x - 8, vector.y + 4);
 				 else shape.filledTriangle(vector.x - 10, vector.y + 14, vector.x - 4, vector.y + 9, vector.x - 10, vector.y + 4);
 				 shape.setColor(1, 1, 1, 0.4f);
 			}
@@ -225,8 +226,8 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 			vector.add(0, -22); 
 			
 			//sub-elements render
-			if (isFolder && ((ITreeElementFolder)element).isFolderOpened()) {
-				ITreeElementFolder folder = (ITreeElementFolder)element;
+			if (isFolder && ((TreeElementFolder)element).isFolderOpened()) {
+				TreeElementFolder folder = (TreeElementFolder)element;
 				vector.add(16, 0);
 				this.drawTree(batch, shape, foster, vector, folder.getFolderStack().getElements(), true);
 				vector.add(-16, 0);
@@ -286,12 +287,12 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 						}
 					}
 					if (isDragNDropValid) {
-						if (this._dragNDropMove == 1 && this._dragNDropElement instanceof ITreeElementFolder) {
+						if (this._dragNDropMove == 1 && this._dragNDropElement instanceof TreeElementFolder) {
 							for (int i = 0; i != this.elementSelector.size(); i++) {
 								this.elementSelector.get(i).setParent(this.elementStack, this._dragNDropElement, true, true);
 							}
 						} else {
-							ElementStack stack = this._dragNDropElement.getParent() instanceof ITreeElementFolder ? ((ITreeElementFolder)this._dragNDropElement.getParent()).getFolderStack() : this.elementStack;
+							ElementStack stack = this._dragNDropElement.getParent() instanceof TreeElementFolder ? ((TreeElementFolder)this._dragNDropElement.getParent()).getFolderStack() : this.elementStack;
 							int index = stack.findIndexHere(this._dragNDropElement.uuid);
 							if (index > -1) stack.insertAt(index + (this._dragNDropMove == 2 ? 0 : 1), this.elementSelector.getIterable(), this.elementStack, true);
 						}
@@ -393,7 +394,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 	private void getDisplayStack(ElementStack stack, Array<TreeElement> elements) {
 		for (TreeElement element : stack.getElements()) {
 			elements.add(element);
-			if (element instanceof ITreeElementFolder && ((ITreeElementFolder)element).isFolderOpened()) this.getDisplayStack(((ITreeElementFolder)element).getFolderStack(), elements);
+			if (element instanceof TreeElementFolder && ((TreeElementFolder)element).isFolderOpened()) this.getDisplayStack(((TreeElementFolder)element).getFolderStack(), elements);
 		}
 	}
 }

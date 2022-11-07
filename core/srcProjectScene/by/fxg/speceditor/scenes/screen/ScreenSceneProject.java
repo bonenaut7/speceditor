@@ -14,19 +14,20 @@ import by.fxg.speceditor.screen.deprecated.SubscreenProjectManager;
 import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
 import by.fxg.speceditor.screen.gui.GuiAbout;
 import by.fxg.speceditor.screen.gui.GuiError;
+import by.fxg.speceditor.ui.UDragArea;
 import by.fxg.speceditor.ui.UDropdownClick;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class ScreenSceneProject extends BaseScreen {
 	public ScenesProject project;
-
-	private UDropdownClick dropdownButtonApp, dropdownButtonProject;
 	public SubscreenProjectManager subObjectTree;
 	public SubscreenExplorer unnamedUselessModule; //TODO do something with it lol, or at least give it a name
 	public SubscreenSceneEditor subEditorPane;
 	public SubscreenViewport subViewport;
 	
+	private UDropdownClick dropdownButtonApp, dropdownButtonProject;
+	private UDragArea viewObjectTreeExplorer, viewEditorPaneExplorer, viewAssetSelector;
 	private int timer;
 	private long nextBackupTime;
 	
@@ -42,6 +43,25 @@ public class ScreenSceneProject extends BaseScreen {
 		this.subEditorPane = new SubscreenSceneEditor(this, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
 		this.subViewport = new SubscreenViewport(project.renderer, project.objectTree, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 		
+		this.viewObjectTreeExplorer = new UDragArea() {
+			public void onDrag(int start, int value, boolean disfocus) {
+				ScreenSceneProject.this.project.setPreference("screen.view.objectTreeExplorer.width", (float)value / (float)Utils.getWidth());
+				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
+			}
+		}.setTransforms(this.sObjectTreeX + this.sObjectTreeW - 1, 2, 3, height - 25).setParameters(50, this.sEditorX - 50, false);
+		this.viewEditorPaneExplorer = new UDragArea() {
+			public void onDrag(int start, int value, boolean disfocus) {
+				ScreenSceneProject.this.project.setPreference("screen.view.editorPanesEditor.width", (float)value / (float)Utils.getWidth());
+				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
+			}
+		}.setTransforms(this.sEditorX - 3, 2, 3, height - 25).setParameters(this.sObjectTreeW + 100, width - 50, false);
+		this.viewAssetSelector = new UDragArea() {
+			public void onDrag(int start, int value, boolean disfocus) {
+				ScreenSceneProject.this.project.setPreference("screen.view.assetSelector.height", (float)value / (float)Utils.getHeight());
+				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
+			}
+		}.setTransforms(this.sUUMX, this.sUUMY + this.sUUMH, this.sUUMW, 2).setParameters(20, height - 75, true);
+
 		this.nextBackupTime = System.currentTimeMillis() + project.getBackupInterval() * 1000L;
 	}
 	
@@ -53,6 +73,9 @@ public class ScreenSceneProject extends BaseScreen {
 			this.subViewport.update(batch, shape, foster, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 		}
 		
+		this.viewObjectTreeExplorer.update();
+		this.viewAssetSelector.update();
+		this.viewEditorPaneExplorer.update();
 		if (++this.timer > 59) {
 			this.timer = 0;
 			if (this.project.isBackupsEnabled() && this.nextBackupTime < System.currentTimeMillis()) {
@@ -75,6 +98,9 @@ public class ScreenSceneProject extends BaseScreen {
 		shape.filledRectangle(0, height - 22, width, 22);
 		this.dropdownButtonApp.render(shape, foster);
 		this.dropdownButtonProject.render(shape, foster);
+		this.viewObjectTreeExplorer.render(shape);
+		this.viewAssetSelector.render(shape);
+		this.viewEditorPaneExplorer.render(shape);
 		batch.end();
 		this.postUpdate();
 	}
@@ -128,25 +154,30 @@ public class ScreenSceneProject extends BaseScreen {
 		this.unnamedUselessModule.resize(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
 		this.subEditorPane.resize(this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
 		this.subViewport.resize(this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
+		this.viewObjectTreeExplorer.setTransforms(this.sObjectTreeX + this.sObjectTreeW - 1, 2, 3, height - 25).setParameters(50, this.sEditorX - 50, false);
+		this.viewAssetSelector.setTransforms(this.sUUMX, this.sUUMY + this.sUUMH, this.sUUMW, 2).setParameters(20, height - 75, true);
+		this.viewEditorPaneExplorer.setTransforms(this.sEditorX - 3, 2, 3, height - 25).setParameters(this.sObjectTreeW + 100, width - 50, false);
 	}
-	
+
 	private void updateDimensions(int width, int height) {
-		int leftBlock = width / 6, rightBlock = width / 5;
+		int blockObjectTreeExplorer = (int)(width * this.project.getPreference("screen.view.objectTreeExplorer.width", float.class, 0.15F));
+		int blockAssetSelector = (int)(height * this.project.getPreference("screen.view.assetSelector.height", float.class, 0.025F));
+		int blockEditorPanesEditor = (int)(width * this.project.getPreference("screen.view.editorPanesEditor.width", float.class, 0.8F));
 		this.sObjectTreeX = 1;
 		this.sObjectTreeY = 1;
-		this.sObjectTreeW = leftBlock - 2;
+		this.sObjectTreeW = blockObjectTreeExplorer - 2;
 		this.sObjectTreeH = height - 24;
-		this.sUUMX = leftBlock + 1;
+		this.sUUMX = blockObjectTreeExplorer + 1;
 		this.sUUMY = 1;
-		this.sUUMW = width - leftBlock - rightBlock - 2;
-		this.sUUMH = height / 14 - 2;
-		this.sEditorX = width - rightBlock + 1;
+		this.sUUMW = width - blockObjectTreeExplorer - (width - blockEditorPanesEditor) - 2;
+		this.sUUMH = blockAssetSelector - 2;
+		this.sEditorX = blockEditorPanesEditor + 1;
 		this.sEditorY = 1;
-		this.sEditorW = rightBlock - 3;
+		this.sEditorW = width - blockEditorPanesEditor - 3;
 		this.sEditorH = height - 24;
-		this.sViewportX = leftBlock + 1;
-		this.sViewportY = this.sUUMH + 1;
-		this.sViewportW = width - leftBlock - rightBlock - 2;
-		this.sViewportH = height - 24 - this.sUUMH;
+		this.sViewportX = blockObjectTreeExplorer + 1;
+		this.sViewportY = this.sUUMH + 2;
+		this.sViewportW = width - blockObjectTreeExplorer - (width - blockEditorPanesEditor) - 2;
+		this.sViewportH = height - 25 - this.sUUMH;
 	}
 }

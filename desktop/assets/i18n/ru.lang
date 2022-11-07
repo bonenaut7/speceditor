@@ -2,3 +2,14 @@ speceditor.utils.SpecFileChooser.file:=Открыть файл(ы)
 speceditor.utils.SpecFileChooser.folder:=Открыть папку(и)
 speceditor.utils.fileNameFilter.models:=Файлы моделей
 speceditor.utils.fileNameFilter.images:=Файлы изображений
+
+speceditor.std.matsel.blending.blending.name:=Смешивание
+speceditor.std.matsel.blending.src:=Источник:
+speceditor.std.matsel.blending.dest:=Цель:
+speceditor.std.matsel.blending.opacity:=Непрозрачность:
+speceditor.std.matsel.blending.blended:=Смешивание:
+
+speceditor.std.matsel.float.name:=Значение
+speceditor.std.matsel.float.alphaTest.name:=Тест прозрачности
+speceditor.std.matsel.float.shininess.name:=Блеск
+speceditor.std.matsel.float.value:=Значение:

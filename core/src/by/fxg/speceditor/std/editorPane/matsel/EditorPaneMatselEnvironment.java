@@ -89,6 +89,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 					this.environment.remove(attribute.type);
 					this.selectedAttribute.setSelectedVariant(0);
 					this.refreshAttributes();
+					this.onAttributeSelect();
 				}
 			}
 		} else yOffset -= this.selectedAttribute.getVariants().length * 15 + 2;

@@ -26,8 +26,7 @@ public class SubscreenProjectManager extends BaseSubscreen {
 		this.objectTree.update();
 		if (this.projectExplorerAddButton.isPressed()) {
 			switch (this.projectExplorerAddButton.getVariant()) {
-				case 0: this.objectTree.getStack().add(new ElementFolder(null)); break;
-//				case 1: this.objectTree.elementStack.add(new ElementMultiHitbox()); break;
+				case 0: this.objectTree.getStack().add(new ElementFolder("New root folder")); break;
 			}
 		}
 	}

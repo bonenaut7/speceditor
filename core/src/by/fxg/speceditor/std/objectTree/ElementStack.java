@@ -7,17 +7,12 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.speceditor.utils.Utils;
 
 public class ElementStack {
+	private TreeElement parent;
 	private Array<TreeElement> elements = new Array<>();
-	private TreeElement stackElement;
-	
-	public ElementStack() { this(null); }
-	public ElementStack(TreeElement element) {
-		this.stackElement = element;
-	}
 	
 	public boolean add(TreeElement element) {
 		if (element != null) {
-			element.setParent(this.stackElement);
+			element.setParent(this.parent);
 			this.elements.add(element);
 			return true;
 		}
@@ -48,8 +43,8 @@ public class ElementStack {
 	
 	public boolean removeElementFromHierarchy(TreeElement element) {
 		if (element == null) return false;
-		if (element.parent != null && element.parent instanceof ITreeElementFolder) {
-			if (((ITreeElementFolder)element.parent).getFolderStack().elements.removeValue(element, true)) {
+		if (element.parent != null && element.parent instanceof TreeElementFolder) {
+			if (((TreeElementFolder)element.parent).getFolderStack().elements.removeValue(element, true)) {
 				element.parent = null;
 				return true;
 			}
@@ -64,7 +59,7 @@ public class ElementStack {
 				stack.elements.removeIndex(i);
 				return true;
 			}
-			if (stack.elements.get(i) instanceof ITreeElementFolder && this.removeElementFromHierarchy(((ITreeElementFolder)stack.elements.get(i)).getFolderStack(), uuid)) {
+			if (stack.elements.get(i) instanceof TreeElementFolder && this.removeElementFromHierarchy(((TreeElementFolder)stack.elements.get(i)).getFolderStack(), uuid)) {
 				return true;
 			}
 		}
@@ -73,7 +68,7 @@ public class ElementStack {
 	
 	public void insertAt(int index, TreeElement element) { this.insertAt(index, element, true); }
 	public void insertAt(int index, TreeElement element, boolean removeFromOld) {
-		element.setParent(this.stackElement, removeFromOld, false);
+		element.setParent(this.parent, removeFromOld, false);
 		this.elements.insert(index, element);
 	}
 	
@@ -92,12 +87,28 @@ public class ElementStack {
 					this.elements.reverse();
 					this.elements.insert(_index + 1, element);
 				} else this.elements.insert(_index, element);
-				element.setParent(nullStack, this.stackElement, removeFromOld, false);
+				element.setParent(nullStack, this.parent, removeFromOld, false);
 				_index++;
 			} catch (IndexOutOfBoundsException indexOutOfBoundsException) {
 				Utils.logError(indexOutOfBoundsException, "ElementStack", "IOB at insertAt(int, Iterable<>, boolean). " + indexOutOfBoundsException.getMessage());
 			}
 		}
+	}
+	
+	/** Added for purpose of fixing parent link in TreeElement after deserialization **/
+	public void updateElementsParent() { this.updateElementsParent(this); }
+	private void updateElementsParent(ElementStack stack) {
+		for (int i = 0; i != this.elements.size; i++) {
+			this.elements.get(i).parent = this.parent;
+			if (this.elements.get(i) instanceof TreeElementFolder) {
+				this.updateElementsParent(((TreeElementFolder)this.elements.get(i)).getFolderStack());
+			}
+		}
+	}
+	
+	public ElementStack setParent(TreeElement element) {
+		this.parent = element;
+		return this;
 	}
 	
 	public Array<TreeElement> getElements() { 
@@ -106,8 +117,8 @@ public class ElementStack {
 	
 	public void clear() {
 		for (TreeElement element : this.elements) {
-			if (element instanceof ITreeElementFolder) {
-				((ITreeElementFolder)element).getFolderStack().clear();
+			if (element instanceof TreeElementFolder) {
+				((TreeElementFolder)element).getFolderStack().clear();
 			}
 		}
 		this.elements.clear();

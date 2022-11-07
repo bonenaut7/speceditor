@@ -5,20 +5,19 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.std.objectTree.ElementStack;
-import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
-import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.objectTree.TreeElementFolder;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 
-public class ElementFolder extends TreeElement implements ITreeElementFolder {
+public class ElementFolder extends TreeElementFolder {
 	protected boolean isFolderOpened = false;
 	protected ElementStack folderStack;
 	
 	public ElementFolder() { this("New folder"); }
 	public ElementFolder(String name) {
+		super();
 		this.displayName = name;
-		this.folderStack = new ElementStack(this);
 	}
 	
 	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
@@ -55,10 +54,4 @@ public class ElementFolder extends TreeElement implements ITreeElementFolder {
 	public Sprite getObjectTreeSprite() {
 		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/folder.", this.isFolderOpened));
 	}
-	
-	public boolean isFolderAccepting(TreeElement element) { return true; }
-	public boolean isFolderOpened() { return this.isFolderOpened; }
-	public void setFolderOpened(boolean isFolderOpened) { this.isFolderOpened = isFolderOpened; }
-	public ElementStack getFolderStack() { return this.folderStack; }
-	public void setFolderStack(ElementStack stack) { this.folderStack = stack; }
 }

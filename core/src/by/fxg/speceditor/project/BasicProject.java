@@ -1,7 +1,6 @@
 package by.fxg.speceditor.project;
 
 import java.io.IOException;
-import java.time.Instant;
 
 import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
@@ -70,11 +69,11 @@ public abstract class BasicProject {
 	public void saveConfiguration() {
 		try {
 			if (this.config == null) this.config = new Ini();
-			this.config.remove("PROJECT-HEADER");
-			Section header = this.config.add("PROJECT-HEADER");
+			Section header = this.config.get("PROJECT-HEADER");
+			header.clear();
 			header.add("project-type", this.solver.solverType);
 			header.add("project-name", this.name);
-			header.add("last-save-date", Instant.now().toString()); 
+			header.add("last-save-date", this.lastSaveDate); 
 			header.add("backup-saving", this.backupSaving);
 			header.add("backup-interval", this.backupInterval);
 			FileHandle projectFile = this.projectFolder.child("project.ini");

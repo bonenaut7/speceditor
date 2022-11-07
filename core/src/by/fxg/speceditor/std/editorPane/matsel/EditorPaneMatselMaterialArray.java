@@ -97,6 +97,7 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 						if (this.buttonRemoveAttribute.isPressed()) {
 							material.remove(attribute.type);
 							this.refreshAttributes();
+							this.onAttributeSelect();
 						}
 					}
 				} else yOffset -= this.selectedAttribute.getVariants().length * 15 + 2;

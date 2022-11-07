@@ -71,7 +71,7 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 		}
 		
 		yOffset = this.viewportFeatures.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 10);
-		yOffset = this.environmentMatsel.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset);
+		yOffset = this.environmentMatsel.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.viewportFeatures.isDropped() ? yOffset - 5 : yOffset);
 		if (this.environmentMatsel.dropdownArea.isFocused()) this.environmentMatsel.dropdownArea.render(shape, foster);
 		return yOffset;
 	}

@@ -2,3 +2,14 @@ speceditor.utils.SpecFileChooser.file:=Open file(s)
 speceditor.utils.SpecFileChooser.folder:=Open folder(s)
 speceditor.utils.fileNameFilter.models:=Model files
 speceditor.utils.fileNameFilter.images:=Image files
+
+speceditor.std.matsel.blending.blending.name:=Blending
+speceditor.std.matsel.blending.src:=Blend source:
+speceditor.std.matsel.blending.dest:=Blend dest:
+speceditor.std.matsel.blending.opacity:=Opacity:
+speceditor.std.matsel.blending.blended:=Blending:
+
+speceditor.std.matsel.float.name:=Float value
+speceditor.std.matsel.float.alphaTest.name:=Alpha test
+speceditor.std.matsel.float.shininess.name:=Shininess
+speceditor.std.matsel.float.value:=Value

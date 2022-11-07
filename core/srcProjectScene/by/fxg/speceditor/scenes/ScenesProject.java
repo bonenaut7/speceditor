@@ -49,6 +49,12 @@ public class ScenesProject extends BasicProject {
 		return true;
 	}	
 	
+	public void saveConfiguration() {
+		LocalDateTime date = LocalDateTime.now();
+		this.lastSaveDate = String.format("%04d.%s.%02d %02d:%02d", date.getYear(), date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase(), date.getDayOfMonth(), date.getHour(), date.getMinute());
+		super.saveConfiguration();
+	}
+	
 	public boolean saveProject() {
 		return this.io.writeProjectData(this.scenesDataFile, ProjectAssetManager.INSTANCE, this.renderer, this.objectTree);
 	}
@@ -62,6 +68,5 @@ public class ScenesProject extends BasicProject {
 		LocalDateTime date = LocalDateTime.now();
 		String fileName = String.format("[%02d%s%04d][%02d-%02d-%02d]scenes.data", date.getDayOfMonth(), date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase(), date.getYear(), date.getHour(), date.getMinute(), date.getSecond());
 		this.io.writeProjectData(this.projectFolder.child("backups/").child(fileName), ProjectAssetManager.INSTANCE, this.renderer, this.objectTree);
-		this.lastSaveDate = String.format("%04d.%s.%02d %02d:%02d", date.getDayOfMonth(), date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase(), date.getYear(), date.getHour(), date.getMinute());
 	}
 }

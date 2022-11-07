@@ -14,7 +14,6 @@ import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
-import by.fxg.speceditor.utils.IOUtils;
 
 /** Basic element of {@link by.fxg.speceditor.std.objectTree.SpecObjectTree}. <br>
  *  Contains: <br>
@@ -33,10 +32,10 @@ public abstract class TreeElement {
 	protected boolean visible = true;
 
 	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
-		int cloneType = tree.elementSelector.get(0) instanceof ITreeElementFolder ? 1 : 2;
+		int cloneType = tree.elementSelector.get(0) instanceof TreeElementFolder ? 1 : 2;
 		for (int i = 0; i != tree.elementSelector.size(); i++) {
-			if (tree.elementSelector.get(i) instanceof ITreeElementFolder && cloneType == 2) { cloneType = -1; break; }
-			else if (!(tree.elementSelector.get(i) instanceof ITreeElementFolder) && cloneType == 1) { cloneType = -1; break; }
+			if (tree.elementSelector.get(i) instanceof TreeElementFolder && cloneType == 2) { cloneType = -1; break; }
+			else if (!(tree.elementSelector.get(i) instanceof TreeElementFolder) && cloneType == 1) { cloneType = -1; break; }
 		}
 		if (cloneType > 0) items.add(new UDAElement("default.clone", "Clone"));
 		items.add(new UDAElement("default.delete", "Delete"));
@@ -49,8 +48,8 @@ public abstract class TreeElement {
 				for (int i = 0; i != tree.elementSelector.size(); i++) {
 					TreeElement element = tree.elementSelector.get(i), clone = element.cloneElement();
 					if (clone != null) {
-						if (element.parent instanceof ITreeElementFolder) {
-							((ITreeElementFolder)element.parent).getFolderStack().add(clone);
+						if (element.parent instanceof TreeElementFolder) {
+							((TreeElementFolder)element.parent).getFolderStack().add(clone);
 						} else tree.getStack().add(clone);
 					}
 				}
@@ -89,10 +88,10 @@ public abstract class TreeElement {
 	public void setParent(TreeElement parent, boolean removeFromOld, boolean addToNew) { this.setParent(null, parent, removeFromOld, addToNew); }
 	public void setParent(ElementStack nullStack, TreeElement parent, boolean removeFromOld, boolean addToNew) {
 		if (removeFromOld) {
-			if (this.parent instanceof ITreeElementFolder) ((ITreeElementFolder)this.parent).getFolderStack().remove(this);
+			if (this.parent instanceof TreeElementFolder) ((TreeElementFolder)this.parent).getFolderStack().remove(this);
 			else if (nullStack != null) nullStack.remove(this);
 		}
-		if (addToNew && parent instanceof ITreeElementFolder) ((ITreeElementFolder)parent).getFolderStack().add(this);
+		if (addToNew && parent instanceof TreeElementFolder) ((TreeElementFolder)parent).getFolderStack().add(this);
 		this.parent = parent;
 	}
 	public void setName(String displayName) { this.displayName = displayName; }

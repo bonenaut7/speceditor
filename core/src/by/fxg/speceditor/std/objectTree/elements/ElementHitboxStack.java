@@ -10,13 +10,13 @@ import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.ElementStack;
-import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.objectTree.TreeElementFolder;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 
-public class ElementHitboxStack extends TreeElement implements ITreeElementFolder, ITreeElementGizmos, IDebugDraw {
+public class ElementHitboxStack extends TreeElementFolder implements ITreeElementGizmos, IDebugDraw {
 	protected boolean isFolderOpened = false;
 	protected ElementStack folderStack;
 	
@@ -29,7 +29,6 @@ public class ElementHitboxStack extends TreeElement implements ITreeElementFolde
 	public ElementHitboxStack() { this("New hitbox stack"); }
 	public ElementHitboxStack(String name) {
 		this.displayName = name;
-		this.folderStack = new ElementStack(this);
 	}
 	
 	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
@@ -81,9 +80,7 @@ public class ElementHitboxStack extends TreeElement implements ITreeElementFolde
 		return true;
 	}
 	
-	public boolean isFolderAccepting(TreeElement element) { return element instanceof ElementHitbox || element instanceof ElementHitboxStack || element instanceof ElementHitboxMesh; }
-	public boolean isFolderOpened() { return this.isFolderOpened; }
-	public void setFolderOpened(boolean isFolderOpened) { this.isFolderOpened = isFolderOpened; }
-	public ElementStack getFolderStack() { return this.folderStack; }
-	public void setFolderStack(ElementStack stack) { this.folderStack = stack; }
+	public boolean isFolderAccepting(TreeElement element) {
+		return element instanceof ElementHitbox || element instanceof ElementHitboxStack || element instanceof ElementHitboxMesh;
+	}
 }

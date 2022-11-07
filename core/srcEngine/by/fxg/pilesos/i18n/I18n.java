@@ -13,7 +13,7 @@ public class I18n {
 		
 		//freeing memory (at least i hope this freeing memory)
 		for (I18nPool pool : map.values()) {
-			if (!pool.language.equals(language) || !pool.language.equals("en")) {
+			if (!pool.language.equals(language) && !pool.language.equals("en")) {
 				pool.map.clear();
 			}
 		}

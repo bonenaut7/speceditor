@@ -96,7 +96,7 @@ public class NumberCursorInputField extends STDInputField implements IMouseContr
 	/** Override to intercept use of other characters than numbers **/
 	public STDInputField setAllowedCharacters(String allowedCharacters) { return this; }
 	/** Override to intercept use of other characters than numbers **/
-	public STDInputField setText(String text) { return this.setNumber(this.getTextAsNumber(this.lastValidNumber)); }
+	public STDInputField setText(String text) { this.currentString = text; return this.setNumber(this.getTextAsNumber(this.lastValidNumber)); }
 
 	public void onMouseInput(float x, float y) {
 		if (this.isFocused()) {

@@ -31,7 +31,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 public class STDInputField extends UIElement implements IFocusable {
 	protected static long LAST_TAB_CLICK_TIME = 0L;
 	protected static final StringBuilder builder = new StringBuilder(4096);
-	protected Foster foster = null;
+	protected Foster foster = SpecEditor.fosterNoDraw;
 	protected int maxTextLength = 256;
 	protected String allowedCharacters = null; //null to allow everything
 	protected boolean allowToFullfocus = false;
