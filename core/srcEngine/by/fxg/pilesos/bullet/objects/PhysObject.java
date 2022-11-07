@@ -26,9 +26,9 @@ public class PhysObject extends PhysBaseObject {
 	}
 	
 	/** Creates static PhysObject with provided shape**/
-	public PhysObject(String name, btCollisionShape shape) { this(name, shape, CollisionFlags.CF_STATIC_OBJECT, OBJECT_STATIC); }
+	public PhysObject(String name, btCollisionShape shape) { this(name, shape, CollisionFlags.CF_STATIC_OBJECT, 0); }
 	/** Creates static PhysObject with provided shape and flags **/
-	public PhysObject(String name, btCollisionShape shape, long flags) { this(name, shape, CollisionFlags.CF_STATIC_OBJECT, flags | OBJECT_STATIC); }
+	public PhysObject(String name, btCollisionShape shape, long flags) { this(name, shape, CollisionFlags.CF_STATIC_OBJECT, flags); }
 	/** Creates PhysObject with provided shape and flags **/
 	public PhysObject(String name, btCollisionShape shape, int bulletFlags, long flags) {
 		this.name = name;
@@ -159,7 +159,6 @@ public class PhysObject extends PhysBaseObject {
 		}
 		
 		public PhysObject build() {
-			if (this.physObject.flags == 0) this.physObject.flags = IPhysObject.OBJECT_STATIC;
 			return this.physObject;
 		}
 	}

@@ -4,16 +4,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElementFolder;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 
 public class ElementFolder extends TreeElementFolder {
-	protected boolean isFolderOpened = false;
-	protected ElementStack folderStack;
-	
 	public ElementFolder() { this("New folder"); }
 	public ElementFolder(String name) {
 		super();
@@ -39,13 +35,13 @@ public class ElementFolder extends TreeElementFolder {
 	/** Used after using one of dropdown items, return true to close dropdown **/
 	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
 		switch (itemID) {
-			case "folder.add.folder": this.folderStack.add(new ElementFolder()); return this.isFolderOpened = true;
-			case "folder.add.hitboxstack": this.folderStack.add(new ElementHitboxStack()); return this.isFolderOpened = true;
+			case "folder.add.folder": this.elementStack.add(new ElementFolder()); return this.isFolderOpened = true;
+			case "folder.add.hitboxstack": this.elementStack.add(new ElementHitboxStack()); return this.isFolderOpened = true;
 			
-			case "folder.add.model": this.folderStack.add(new ElementModel()); return this.isFolderOpened = true;
-			case "folder.add.light": this.folderStack.add(new ElementLight()); return this.isFolderOpened = true;
-			case "folder.add.decal": this.folderStack.add(new ElementDecal()); return this.isFolderOpened = true;
-			case "folder.add.hitbox": this.folderStack.add(new ElementHitbox()); return this.isFolderOpened = true;
+			case "folder.add.model": this.elementStack.add(new ElementModel()); return this.isFolderOpened = true;
+			case "folder.add.light": this.elementStack.add(new ElementLight()); return this.isFolderOpened = true;
+			case "folder.add.decal": this.elementStack.add(new ElementDecal()); return this.isFolderOpened = true;
+			case "folder.add.hitbox": this.elementStack.add(new ElementHitbox()); return this.isFolderOpened = true;
 			
 			default: return super.processDropdownAction(tree, itemID);
 		}

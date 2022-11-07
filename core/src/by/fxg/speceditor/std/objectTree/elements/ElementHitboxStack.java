@@ -9,7 +9,6 @@ import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
-import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.objectTree.TreeElementFolder;
@@ -17,10 +16,12 @@ import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 
 public class ElementHitboxStack extends TreeElementFolder implements ITreeElementGizmos, IDebugDraw {
-	protected boolean isFolderOpened = false;
-	protected ElementStack folderStack;
+	public long specFlags;
+	public long bulletFlags;
+	public long bulletFilterMask;
+	public long bulletFilterGroup;
+	public boolean[] linkFlagsToParent = new boolean[4];
 	
-	public long flags;
 	public boolean isArrayStack = true; //means will be objects split after export or be combined, false = combine, true = keep as split objects
 	private Vector3 position = new Vector3();
 	private Vector3 rotation = new Vector3();
@@ -46,9 +47,9 @@ public class ElementHitboxStack extends TreeElementFolder implements ITreeElemen
 	/** Used after using one of dropdown items, return true to close dropdown **/
 	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
 		switch (itemID) {
-			case "hitboxstack.add.hitboxstack": this.folderStack.add(new ElementHitboxStack()); return this.isFolderOpened = true;
-			case "hitboxstack.add.hitbox": this.folderStack.add(new ElementHitbox()); return this.isFolderOpened = true;
-			case "hitboxstack.add.hitboxmesh": this.folderStack.add(new ElementHitboxMesh()); return this.isFolderOpened = true;
+			case "hitboxstack.add.hitboxstack": this.elementStack.add(new ElementHitboxStack()); return this.isFolderOpened = true;
+			case "hitboxstack.add.hitbox": this.elementStack.add(new ElementHitbox()); return this.isFolderOpened = true;
+			case "hitboxstack.add.hitboxmesh": this.elementStack.add(new ElementHitboxMesh()); return this.isFolderOpened = true;
 			
 			default: return super.processDropdownAction(tree, itemID);
 		}
@@ -75,12 +76,17 @@ public class ElementHitboxStack extends TreeElementFolder implements ITreeElemen
 	public Sprite getObjectTreeSprite() {
 		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/question"));
 	}
-
-	public boolean isTransformSupported(GizmoTransformType transformType) {
-		return true;
-	}
 	
 	public boolean isFolderAccepting(TreeElement element) {
 		return element instanceof ElementHitbox || element instanceof ElementHitboxStack || element instanceof ElementHitboxMesh;
+	}
+	
+	public void setParent(TreeElement parent) {
+		super.setParent(parent);
+		if (!(parent instanceof ElementHitboxStack)) {
+			for (int i = 0; i != this.linkFlagsToParent.length; i++) {
+				this.linkFlagsToParent[i] = false;
+			}
+		}
 	}
 }

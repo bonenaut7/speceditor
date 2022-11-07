@@ -14,7 +14,12 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.utils.Utils;
 
 public class ElementHitbox extends TreeElement implements ITreeElementGizmos, IDebugDraw {
-	public long flags;
+	public long specFlags;
+	public long bulletFlags;
+	public long bulletFilterMask;
+	public long bulletFilterGroup;
+	public boolean[] linkFlagsToParent = new boolean[4];
+	
 	private Vector3 position = new Vector3();
 	private Vector3 rotation = new Vector3();
 	private Vector3 scale = new Vector3(1, 1, 1);
@@ -65,7 +70,12 @@ public class ElementHitbox extends TreeElement implements ITreeElementGizmos, ID
 		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/question"));
 	}
 	
-	public boolean isTransformSupported(GizmoTransformType transformType) {
-		return true;
+	public void setParent(TreeElement parent) {
+		super.setParent(parent);
+		if (!(parent instanceof ElementHitboxStack)) {
+			for (int i = 0; i != this.linkFlagsToParent.length; i++) {
+				this.linkFlagsToParent[i] = false;
+			}
+		}
 	}
 }

@@ -22,22 +22,22 @@ public interface IPhysObject {
 	
 	/*=== Flags next here, implemented here because lower code amount may be used inside classes ===*/
 	public static final long 
-		NO_COLLISION 		= (long)Math.pow(2, 1),  /*2        *//* No collideable object */
-		NO_FREEZE	 		= (long)Math.pow(2, 2),  /*4        *//* Not freezeable by bullet */
-		OBJECT_STATIC 		= (long)Math.pow(2, 3),  /*8        *//* Static object */
-		OBJECT_DYNAMIC 		= (long)Math.pow(2, 4),  /*16       *//* Dynamic object */
-		RESERVED5	 		= (long)Math.pow(2, 5),  /*32       *//*  */
+		ACT_ACTIVE 			= (long)Math.pow(2, 1),  /*2        *//* Bullet activation state flag. Makes object active. */
+		ACT_INACTIVE	 	= (long)Math.pow(2, 2),  /*4        *//* Bullet activation state flag. Makes object inactive. */
+		ACT_WANT_DEACTIVATE = (long)Math.pow(2, 3),  /*8        *//* Bullet activation state flag. Sets flag that object needs to be deactivated. */
+		ACT_ALWAYS_ACTIVE   = (long)Math.pow(2, 4),  /*16       *//* Bullet activation state flag. Makes object active for ever. */
+		ACT_ALWAYS_INACTIVE = (long)Math.pow(2, 5),  /*32       *//* Bullet activation state flag. Makes object inactive for ever. */
 		RESERVED6	 		= (long)Math.pow(2, 6),  /*64       *//*  */
 		RESERVED7	 		= (long)Math.pow(2, 7),  /*128      *//*  */
 		
-		RAYCASTABLE			= (long)Math.pow(2, 8),  /*256      *//* Raycastable */
-		RESERVED9			= (long)Math.pow(2, 9),  /*512      *//*  */
+		DISABLE_LISTEN		= (long)Math.pow(2, 8),  /*256      *//* Disables object for listen in listener */
+		RAYCASTABLE			= (long)Math.pow(2, 9),  /*512      *//* Allows object to be raycasted (64, mask & group) */
 		RESERVED10			= (long)Math.pow(2, 10), /*1024     *//*  */
 		RESERVED11			= (long)Math.pow(2, 11), /*2048     *//*  */
 		RESERVED12			= (long)Math.pow(2, 12), /*4096     *//*  */
 		RESERVED13			= (long)Math.pow(2, 13), /*8192     *//*  */
 		RESERVED14			= (long)Math.pow(2, 14), /*16384    *//*  */
-		DISABLE_LISTEN		= (long)Math.pow(2, 15), /*32768    *//* Disables object for listen in listener */
+		RESERVED15			= (long)Math.pow(2, 15), /*32768    *//*  */
 	
 		RESERVED16			= (long)Math.pow(2, 16), /*32768    *//*  */
 		RESERVED17			= (long)Math.pow(2, 17), /*65536    *//*  */

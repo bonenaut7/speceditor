@@ -92,7 +92,7 @@ public abstract class TreeElement {
 			else if (nullStack != null) nullStack.remove(this);
 		}
 		if (addToNew && parent instanceof TreeElementFolder) ((TreeElementFolder)parent).getFolderStack().add(this);
-		this.parent = parent;
+		this.setParent(parent);
 	}
 	public void setName(String displayName) { this.displayName = displayName; }
 	public void setVisible(boolean visible) { this.visible = visible; }

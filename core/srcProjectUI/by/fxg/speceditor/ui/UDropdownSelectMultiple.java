@@ -10,25 +10,18 @@ import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UDropdownSelectMultiple extends UIElement implements IFocusable {
-	private int dropHeight;
-	private String[] variants;
-	private boolean[] variantValues;
+	protected int dropHeight;
+	protected String[] variants;
+	protected boolean[] variantValues;
 	
 	//Local caching
 	private String displayString = "None";
 	
-	public UDropdownSelectMultiple(int x, int y, int width, int height, int dropHeight, String... variants) {
+	public UDropdownSelectMultiple(int x, int y, int width, int height, int dropHeight, String... variants) { this(dropHeight, variants); this.setTransforms(x, y, width, height); }
+	public UDropdownSelectMultiple(int dropHeight, String... variants) {
 		this.variantValues = new boolean[variants.length];
 		this.dropHeight = dropHeight;
 		this.variants = variants;
-		this.setTransforms(x, y, width, height);
-	}
-	
-	public UDropdownSelectMultiple set(boolean... variants) {
-		for (int i = 0; i != Math.min(this.variantValues.length, variants.length); i++) {
-			this.variantValues[i] = variants[i];
-		}
-		return this;
 	}
 	
 	public void update(Foster foster) {
@@ -37,7 +30,7 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 				if (this.isMouseOver(this.x, this.y - this.dropHeight * this.variants.length - 2, this.width, this.dropHeight * this.variants.length + 2)) {
 					int idx = (this.y - GDXUtil.getMouseY() - 2) / this.dropHeight;
 					if (idx < this.variants.length && idx > -1) {
-						this.variantValues[idx] = !this.variantValues[idx];
+						this.invertSelected(idx);
 						this.updateDisplayString(foster);
 					}
 				} else this.setFocused(false);
@@ -82,24 +75,26 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 		}
 	}
 	
-	private void updateDisplayString(Foster foster) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i != this.variants.length; i++) {
-			if (this.variantValues[i]) sb.append(this.variants[i]).append(", ");
+	public UDropdownSelectMultiple set(boolean... variants) {
+		for (int i = 0; i != Math.min(this.variantValues.length, variants.length); i++) {
+			this.variantValues[i] = variants[i];
 		}
-		if (sb.length() == 0) sb.append("None");
-		else sb.setLength(sb.length() - 2);
-		if (foster.setString(sb.toString()).getWidth() + 4 >= this.width) {
-			sb.setLength((this.width - (int)(foster.setString(" ").getWidth() * 4f)) / (int)foster.getWidth());
-			sb.append("...");
-		}
-		this.displayString = sb.toString();
+		return this;
+	}
+	
+	public void invertSelected(int variant) {
+		this.variantValues[variant] = !this.variantValues[variant];
+	}
+	
+	public void setVariantSelected(int variant, boolean value) {
+		this.variantValues[variant] = value;
 	}
 
 	public boolean[] getVariantsSelected() { return this.variantValues; }
 	public String[] getVariants() { return this.variants; }
-	public UDropdownSelectMultiple setVariants(String... variants) {
+	public UDropdownSelectMultiple setVariants(String[] variants, boolean[] values) {
 		this.variants = variants;
+		this.variantValues = values;
 		return this;
 	}
 
@@ -113,5 +108,19 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 	
 	public boolean isDropped() {
 		return this.isFocused();
+	}
+	
+	private void updateDisplayString(Foster foster) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i != this.variants.length; i++) {
+			if (this.variantValues[i]) sb.append(this.variants[i]).append(", ");
+		}
+		if (sb.length() == 0) sb.append("None");
+		else sb.setLength(sb.length() - 2);
+		if (foster.setString(sb.toString()).getWidth() + 4 >= this.width) {
+			sb.setLength((this.width - (int)(foster.setString(" ").getWidth() * 4f)) / (int)foster.getWidth());
+			sb.append("...");
+		}
+		this.displayString = sb.toString();
 	}
 }

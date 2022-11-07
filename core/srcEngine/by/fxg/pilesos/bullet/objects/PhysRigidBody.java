@@ -196,7 +196,6 @@ public class PhysRigidBody extends PhysBaseObject {
 		}
 		
 		public PhysRigidBody build() {
-			if (this.physRigidBody.flags == 0) this.physRigidBody.flags = IPhysObject.OBJECT_STATIC;
 			return this.physRigidBody;
 		}
 	}

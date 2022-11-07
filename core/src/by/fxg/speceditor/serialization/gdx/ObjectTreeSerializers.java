@@ -195,7 +195,12 @@ public class ObjectTreeSerializers {
 			output.writeBoolean(object.isVisible());
 			output.writeBoolean(object.isFolderOpened());
 			kryo.writeObject(output, object.getFolderStack());
-			output.writeLong(object.flags);
+			output.writeLong(object.specFlags);
+			output.writeLong(object.bulletFlags);
+			output.writeLong(object.bulletFilterMask);
+			output.writeLong(object.bulletFilterGroup);
+			output.writeByte(object.linkFlagsToParent.length);
+			for (int i = 0; i != object.linkFlagsToParent.length; i++) output.writeBoolean(object.linkFlagsToParent[i]);
 			output.writeBoolean(object.isArrayStack);
 			kryo.writeObject(output, object.getTransform(GizmoTransformType.TRANSLATE));
 			kryo.writeObject(output, object.getTransform(GizmoTransformType.ROTATE));
@@ -207,7 +212,12 @@ public class ObjectTreeSerializers {
 			elementHitboxStack.setVisible(input.readBoolean());
 			elementHitboxStack.setFolderOpened(input.readBoolean());
 			elementHitboxStack.setFolderStack(kryo.readObject(input, ElementStack.class));
-			elementHitboxStack.flags = input.readLong();
+			elementHitboxStack.specFlags = input.readLong();
+			elementHitboxStack.bulletFlags = input.readLong();
+			elementHitboxStack.bulletFilterMask = input.readLong();
+			elementHitboxStack.bulletFilterGroup = input.readLong();
+			byte booleanValues = input.readByte();
+			for (int i = 0; i != booleanValues && i < elementHitboxStack.linkFlagsToParent.length; i++) elementHitboxStack.linkFlagsToParent[i] = input.readBoolean();
 			elementHitboxStack.isArrayStack = input.readBoolean();
 			elementHitboxStack.getTransform(GizmoTransformType.TRANSLATE).set(kryo.readObject(input, Vector3.class));
 			elementHitboxStack.getTransform(GizmoTransformType.ROTATE).set(kryo.readObject(input, Vector3.class));
@@ -220,7 +230,12 @@ public class ObjectTreeSerializers {
 		public void write(Kryo kryo, Output output, ElementHitbox object) {
 			output.writeString(object.getName());
 			output.writeBoolean(object.isVisible());
-			output.writeLong(object.flags);
+			output.writeLong(object.specFlags);
+			output.writeLong(object.bulletFlags);
+			output.writeLong(object.bulletFilterMask);
+			output.writeLong(object.bulletFilterGroup);
+			output.writeByte(object.linkFlagsToParent.length);
+			for (int i = 0; i != object.linkFlagsToParent.length; i++) output.writeBoolean(object.linkFlagsToParent[i]);
 			kryo.writeObject(output, object.getTransform(GizmoTransformType.TRANSLATE));
 			kryo.writeObject(output, object.getTransform(GizmoTransformType.ROTATE));
 			kryo.writeObject(output, object.getTransform(GizmoTransformType.SCALE));
@@ -229,7 +244,12 @@ public class ObjectTreeSerializers {
 		public ElementHitbox read(Kryo kryo, Input input, Class<ElementHitbox> type) {
 			ElementHitbox elementHitbox = new ElementHitbox(input.readString());
 			elementHitbox.setVisible(input.readBoolean());
-			elementHitbox.flags = input.readLong();
+			elementHitbox.specFlags = input.readLong();
+			elementHitbox.bulletFlags = input.readLong();
+			elementHitbox.bulletFilterMask = input.readLong();
+			elementHitbox.bulletFilterGroup = input.readLong();
+			byte booleanValues = input.readByte();
+			for (int i = 0; i != booleanValues && i < elementHitbox.linkFlagsToParent.length; i++) elementHitbox.linkFlagsToParent[i] = input.readBoolean();
 			elementHitbox.getTransform(GizmoTransformType.TRANSLATE).set(kryo.readObject(input, Vector3.class));
 			elementHitbox.getTransform(GizmoTransformType.ROTATE).set(kryo.readObject(input, Vector3.class));
 			elementHitbox.getTransform(GizmoTransformType.SCALE).set(kryo.readObject(input, Vector3.class));

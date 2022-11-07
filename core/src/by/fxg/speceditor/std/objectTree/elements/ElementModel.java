@@ -76,8 +76,9 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 		}
 	}
 	
-	public boolean isTransformSupported(GizmoTransformType transformType) { return true; }
-	public RenderableProvider getRenderableProvider() { return this.modelInstance; }
+	public RenderableProvider getRenderableProvider() {
+		return this.modelInstance;
+	}
 	
 	public void onAssetHandlerAdded(ProjectAsset asset) {
 		if (this.modelAsset != null) this.modelAsset.removeHandlerWithoutNotify(this);

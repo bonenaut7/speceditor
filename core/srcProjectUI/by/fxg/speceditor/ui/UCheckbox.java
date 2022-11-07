@@ -8,7 +8,8 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UCheckbox extends UIElement {
-	private boolean enabled = true, value = false;
+	protected boolean enabled = true;
+	protected boolean value = false;
 
 	public UCheckbox() { this(false); }
 	public UCheckbox(int x, int y, int width, int height) { this(false); this.setTransforms(x, y, width, height); }
@@ -19,7 +20,9 @@ public class UCheckbox extends UIElement {
 	}
 
 	public void update() {
-		if (this.enabled && SpecEditor.get.getInput().isMouseDown(0, false) && this.isMouseOver()) this.value = !this.value;
+		if (this.enabled && SpecEditor.get.getInput().isMouseDown(0, false) && this.isMouseOver()) {
+			this.setValue(!this.getValue());
+		}
 	}
 	
 	public void render(ShapeDrawer shape) {

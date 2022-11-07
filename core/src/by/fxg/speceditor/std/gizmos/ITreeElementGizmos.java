@@ -9,7 +9,7 @@ public interface ITreeElementGizmos {
 	default boolean enableGizmos() { return true; }
 	
 	/** Returns true if specified type of transform supported **/
-	boolean isTransformSupported(GizmoTransformType transformType);
+	default boolean isTransformSupported(GizmoTransformType transformType) { return true; }
 	
 	/** Object transform based on specified transform type **/
 	Vector3 getTransform(GizmoTransformType transformType);
