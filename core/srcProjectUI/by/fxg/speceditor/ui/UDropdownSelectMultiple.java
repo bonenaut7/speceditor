@@ -110,15 +110,15 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 		return this.isFocused();
 	}
 	
-	private void updateDisplayString(Foster foster) {
+	public void updateDisplayString(Foster foster) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i != this.variants.length; i++) {
 			if (this.variantValues[i]) sb.append(this.variants[i]).append(", ");
 		}
 		if (sb.length() == 0) sb.append("None");
 		else sb.setLength(sb.length() - 2);
-		if (foster.setString(sb.toString()).getWidth() + 4 >= this.width) {
-			sb.setLength((this.width - (int)(foster.setString(" ").getWidth() * 4f)) / (int)foster.getWidth());
+		if (foster.setString(sb.toString()).getWidth() + 5 > this.width) {
+			sb.setLength(Math.max(0, (this.width - (int)(foster.setString(" ").getWidth() * 4f)) / (int)foster.getWidth()));
 			sb.append("...");
 		}
 		this.displayString = sb.toString();

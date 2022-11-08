@@ -43,8 +43,8 @@ public class ElementStack {
 	
 	public boolean removeElementFromHierarchy(TreeElement element) {
 		if (element == null) return false;
-		if (element.parent != null && element.parent instanceof TreeElementFolder) {
-			if (((TreeElementFolder)element.parent).getFolderStack().elements.removeValue(element, true)) {
+		if (element.parent != null && element.parent instanceof ITreeElementFolder) {
+			if (((ITreeElementFolder)element.parent).getFolderStack().elements.removeValue(element, true)) {
 				element.parent = null;
 				return true;
 			}
@@ -59,7 +59,7 @@ public class ElementStack {
 				stack.elements.removeIndex(i);
 				return true;
 			}
-			if (stack.elements.get(i) instanceof TreeElementFolder && this.removeElementFromHierarchy(((TreeElementFolder)stack.elements.get(i)).getFolderStack(), uuid)) {
+			if (stack.elements.get(i) instanceof ITreeElementFolder && this.removeElementFromHierarchy(((ITreeElementFolder)stack.elements.get(i)).getFolderStack(), uuid)) {
 				return true;
 			}
 		}
@@ -100,8 +100,8 @@ public class ElementStack {
 	private void updateElementsParent(ElementStack stack) {
 		for (int i = 0; i != this.elements.size; i++) {
 			this.elements.get(i).parent = this.parent;
-			if (this.elements.get(i) instanceof TreeElementFolder) {
-				this.updateElementsParent(((TreeElementFolder)this.elements.get(i)).getFolderStack());
+			if (this.elements.get(i) instanceof ITreeElementFolder) {
+				this.updateElementsParent(((ITreeElementFolder)this.elements.get(i)).getFolderStack());
 			}
 		}
 	}
@@ -117,8 +117,8 @@ public class ElementStack {
 	
 	public void clear() {
 		for (TreeElement element : this.elements) {
-			if (element instanceof TreeElementFolder) {
-				((TreeElementFolder)element).getFolderStack().clear();
+			if (element instanceof ITreeElementFolder) {
+				((ITreeElementFolder)element).getFolderStack().clear();
 			}
 		}
 		this.elements.clear();

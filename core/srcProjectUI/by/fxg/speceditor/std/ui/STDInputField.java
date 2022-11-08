@@ -98,8 +98,8 @@ public class STDInputField extends UIElement implements IFocusable {
 			this.foster.setString(this.currentString).draw(this.x - this.xTextOffset, this.y + this.height / 2 - this.foster.getHalfHeight(), Align.left);
 			if (this.havePointerSelection()) {
 				shape.setColor(0.25F, 0.25F, 1.0F, 0.5F);
-				int from = (int)this.foster.setString(this.currentString.substring(0, this.selectPointerFrom)).getWidth() - this.xTextOffset;
-				int to = (int)this.foster.setString(this.currentString.substring(0, this.selectPointerTo)).getWidth() - this.xTextOffset;
+				int from = (int)this.foster.setString(this.currentString.substring(0, Math.min(this.selectPointerFrom, this.currentString.length()))).getWidth() - this.xTextOffset;
+				int to = (int)this.foster.setString(this.currentString.substring(0, Math.min(this.selectPointerTo, this.currentString.length()))).getWidth() - this.xTextOffset;
 				shape.filledRectangle(this.x + from, this.y, to - from, this.height);
 			}
 			if (this.isFocused()) {

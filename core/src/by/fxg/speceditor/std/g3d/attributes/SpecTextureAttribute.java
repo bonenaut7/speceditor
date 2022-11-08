@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
@@ -12,7 +13,7 @@ import by.fxg.speceditor.project.assets.ProjectAsset;
 /** Tips: <br>
  * 	 - To connect ProjectAsset, use {@link ProjectAsset#addHandler(IProjectAssetHandler)} with object of this class.
  * **/
-public class SpecTextureAttribute extends TextureAttribute implements IProjectAssetHandler<Texture> {
+public class SpecTextureAttribute extends TextureAttribute implements IProjectAssetHandler<Texture>, Disposable {
 	public ProjectAsset<Texture> asset;
 	public boolean flipX, flipY;
 	
@@ -67,6 +68,16 @@ public class SpecTextureAttribute extends TextureAttribute implements IProjectAs
 		this.setTexture(DefaultResources.INSTANCE.standardTexture);
 	}
 	
+	public Attribute copy() {
+		return new SpecTextureAttribute(this);
+	}
+
+	public void dispose() {
+		if (this.asset != null) {
+			this.asset.removeHandlerWithoutNotify(this);
+		}
+	}
+	
 	/** Sets texture with flips **/
 	private void setTexture(Texture texture) {
 		TextureRegion region = new TextureRegion(texture);
@@ -76,9 +87,5 @@ public class SpecTextureAttribute extends TextureAttribute implements IProjectAs
 		this.offsetV = region.getV();
 		this.scaleU = region.getU2() - this.offsetU;
 		this.scaleV = region.getV2() - this.offsetV;
-	}
-	
-	public Attribute copy() {
-		return new SpecTextureAttribute(this);
 	}
 }

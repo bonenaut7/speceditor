@@ -1,9 +1,13 @@
 package by.fxg.speceditor.std.editorPane;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.project.assets.ProjectAsset;
+import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselMaterialArray;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
@@ -19,8 +23,10 @@ import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.URenderBlock;
 import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class EditorPaneModel extends EditorPane implements ISTDInputFieldListener {
 	private ElementModel element = null;
 	private STDInputField elementName;
@@ -46,7 +52,14 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Select model:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectModel.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
-			this.element.setModelAsset(SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).file());
+			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).file();
+			if (handle != null) {
+				ProjectAsset projectAsset = null;
+				if (handle.extension().equalsIgnoreCase("gltf") || handle.extension().equalsIgnoreCase("glb")) {
+					projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(SceneAsset.class, handle);
+				} else projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(Model.class, handle);
+				projectAsset.addHandler(this.element);
+			}
 			this.matsel.update(this.element.modelInstance.materials);
 		}
 		

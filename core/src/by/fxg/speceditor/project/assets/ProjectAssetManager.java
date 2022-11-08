@@ -64,7 +64,7 @@ public class ProjectAssetManager implements Disposable {
 		Array<ProjectAsset<?>> unidentifiedAssets = new Array<>();
 		for (ProjectAsset<?> projectAsset : INSTANCE.projectAssets.values()) { //idk what the fuck is happened, but got this working only through INSTANCE lol...
 			if (projectAsset.getType() != null) {
-				if (!indexes.contains(projectAsset.getType(), true)) {
+				if (!indexes.contains(projectAsset.getType(), true) && projectAsset.getAssetHandlersSize() > 0) {
 					indexes.add(projectAsset.getType());
 				}
 			} else unidentifiedAssets.add(projectAsset);

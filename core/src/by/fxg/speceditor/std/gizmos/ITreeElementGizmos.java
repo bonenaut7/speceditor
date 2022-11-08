@@ -12,8 +12,8 @@ public interface ITreeElementGizmos {
 	default boolean isTransformSupported(GizmoTransformType transformType) { return true; }
 	
 	/** Object transform based on specified transform type **/
-	Vector3 getTransform(GizmoTransformType transformType);
+	default Vector3 getTransform(GizmoTransformType transformType) { return Vector3.Zero; }
 	
 	/** Offset position transform of gizmos. Basically needed when treeObject has parent with own transform, and you need to return parent transform here [XXX refactor]**/
-	Vector3 getOffsetTransform(GizmoTransformType transformType);
+	default Vector3 getOffsetTransform(GizmoTransformType transformType) { return Vector3.Zero; }
 }

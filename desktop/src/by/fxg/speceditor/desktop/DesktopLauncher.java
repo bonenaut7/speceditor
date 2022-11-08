@@ -2,7 +2,6 @@ package by.fxg.speceditor.desktop;
 
 import javax.swing.UIManager;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import by.fxg.speceditor.SpecEditor;
@@ -14,8 +13,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 1366;
 		config.height = 768;
-		//config.resizable = false; //POHUI
 		config.title = "SpecEditor";
-		new LwjglApplication(new SpecEditor().setProgramArgs(args), config);
+		SpecEditor specEditor = new SpecEditor(new SpecEditorApplicationTools(), args);
+		new LwjglApplicationSpecEditor(specEditor, config);
 	}
 }

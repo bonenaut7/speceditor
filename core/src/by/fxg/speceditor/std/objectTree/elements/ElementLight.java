@@ -53,11 +53,10 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos, IDe
 					case SPOT: this._viewportDecal.getDecal().setPosition(this.getLight(PointLight.class).position); return this.getLight(SpotLight.class).position;
 				}
 			} break;
-			case ROTATE: {
-				if (this.type == ElementLightType.SPOT) return this.getLight(SpotLight.class).direction;
-			} break;
+			case ROTATE: if (this.type == ElementLightType.SPOT) return this.getLight(SpotLight.class).direction; break;
+			default: return Vector3.Zero;
 		}
-		return gizmoVector.set(0, 0, 0);
+		return Vector3.Zero;
 	}
 	
 	public <T extends BaseLight<?>> T getLight(Class<T> clazz) {
@@ -75,6 +74,22 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos, IDe
 	public boolean isTransformSupported(GizmoTransformType transformType) {
 		if (transformType == GizmoTransformType.ROTATE) return this.type == ElementLightType.SPOT;
 		return transformType == GizmoTransformType.TRANSLATE;
+	}
+	
+	public TreeElement cloneElement() {
+		ElementLight elementLight = new ElementLight(this.getName());
+		elementLight.type = this.type;
+		switch (this.type) {
+			case POINT: {
+				PointLight light = this.getLight(PointLight.class);
+				elementLight.light = new PointLight().set(light.color, light.position, light.intensity);
+			} break;
+			case SPOT: {
+				SpotLight light = this.getLight(SpotLight.class);
+				elementLight.light = new SpotLight().set(light.color, light.position, light.direction, light.intensity, light.cutoffAngle, light.exponent);
+			} break;
+		}
+		return elementLight;
 	}
 	
 	public static enum ElementLightType {

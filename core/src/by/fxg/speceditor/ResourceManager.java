@@ -22,6 +22,9 @@ import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.i18n.I18n.I18nPool;
 import by.fxg.pilesos.i18n.I18nPoolLoader;
+import net.mgsx.gltf.loaders.glb.GLBAssetLoader;
+import net.mgsx.gltf.loaders.gltf.GLTFAssetLoader;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 public class ResourceManager {
 	public static ResourceManager INSTANCE;
@@ -34,8 +37,12 @@ public class ResourceManager {
 		INSTANCE = this;
 		this.assetManager = new AssetManager();
 		this.assetManager.setLoader(I18nPool.class, ".lang", new I18nPoolLoader(new InternalFileHandleResolver()));
+		this.assetManager.setLoader(SceneAsset.class, ".gltf", new GLTFAssetLoader(new InternalFileHandleResolver()));
+		this.assetManager.setLoader(SceneAsset.class, ".glb", new GLBAssetLoader(new InternalFileHandleResolver()));
 		this.assetMarkers.put("lang", I18nPool.class);
 		this.assetMarkers.put("obj", Model.class);
+		this.assetMarkers.put("glb", SceneAsset.class);
+		this.assetMarkers.put("gltf", SceneAsset.class);
 		this.assetMarkers.put("png", Texture.class);
 		SpriteStack.DEFAULT_PATH = Gdx.files.local("assets/");
 		Foster.defaultFont = smallFont = this.generateFont(Gdx.files.local("assets/font/monogram.ttf"), 16);

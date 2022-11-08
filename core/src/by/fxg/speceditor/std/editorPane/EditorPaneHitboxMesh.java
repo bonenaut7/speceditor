@@ -1,34 +1,51 @@
 package by.fxg.speceditor.std.editorPane;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.project.assets.ProjectAsset;
+import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
-import by.fxg.speceditor.std.objectTree.elements.ElementHitboxStack;
+import by.fxg.speceditor.std.objectTree.elements.ElementHitboxMesh;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
-import by.fxg.speceditor.ui.UDropdownSelectSingle;
+import by.fxg.speceditor.ui.UButton;
+import by.fxg.speceditor.ui.UDropdownSelectMultiple;
 import by.fxg.speceditor.ui.URenderBlock;
+import by.fxg.speceditor.utils.SpecFileChooser;
+import by.fxg.speceditor.utils.Utils;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class EditorPaneHitboxStack extends EditorPaneTreeElementHitbox implements ISTDInputFieldListener {
-	private ElementHitboxStack element = null;
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements ISTDInputFieldListener {
+	private ElementHitboxMesh element = null;
 	private STDInputField elementName;
-	private UDropdownSelectSingle stackType;
+	private UButton buttonSelectModel;
+	private UDropdownSelectMultiple nodesSelector;
+	
 	private TransformBlock transform;
 	private SpecFlagsBlock specFlags;
 	private BulletFlagsBlock bulletFlags;
 	
-	public EditorPaneHitboxStack() {
+	public EditorPaneHitboxMesh() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
-		this.stackType = new UDropdownSelectSingle(15, "Combined Stack", "Hitbox Array");
+		this.buttonSelectModel = new UButton("Open file");
+		this.nodesSelector = new UDropdownSelectMultiple(15, "None") {
+			public void invertSelected(int variant) {
+				element.nodes[variant] = this.variantValues[variant] = !this.variantValues[variant];
+			}
+		};
 		
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
 		this.specFlags = (SpecFlagsBlock)new SpecFlagsBlock(this).setDropped(true);
@@ -41,17 +58,33 @@ public class EditorPaneHitboxStack extends EditorPaneTreeElementHitbox implement
 		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
 		
-		yOffset -= 8;
-		foster.setString("Type:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
-		this.stackType.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
-		if (this.stackType.isDropped()) yOffset -= this.stackType.getVariants().length * 15;
-		this.element.isArrayStack = this.stackType.getVariant() == 1;
+		foster.setString("Select model:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
+		this.buttonSelectModel.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
+		if (this.buttonSelectModel.isPressed()) {
+			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).file();
+			if (handle != null) {
+				ProjectAsset projectAsset = null;
+				if (handle.extension().equalsIgnoreCase("gltf") || handle.extension().equalsIgnoreCase("glb")) {
+					projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(SceneAsset.class, handle);
+				} else projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(Model.class, handle);
+				projectAsset.addHandler(this.element);
+				this.element.generateMesh();
+				if (this.element.model != null) {
+					String[] nodes = new String[this.element.model.nodes.size];
+					for (int i = 0 ; i != this.element.model.nodes.size; i++) nodes[i] = this.element.model.nodes.get(i).id;
+					this.nodesSelector.setVariants(nodes, this.element.nodes);
+				} else this.nodesSelector.setVariants(new String[]{"None available"}, new boolean[]{false});
+			}
+		}
 		
-		//yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
-		yOffset = this.specFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);//this.transform.isDropped() ? yOffset - 5 : yOffset);
+		foster.setString("Flags:").draw(x + 5, yOffset -= foster.getHeight() + 7, Align.left);
+		this.nodesSelector.setTransforms(x + (int)foster.getWidth() + 10, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, width - (int)foster.getWidth() - 15, 14).update(foster);
+		if (this.nodesSelector.isDropped()) yOffset -= this.nodesSelector.getVariants().length * 15 + 2;
+		
+		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
+		yOffset = this.specFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.transform.isDropped() ? yOffset - 5 : yOffset);
 		yOffset = this.bulletFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.specFlags.isDropped() ? yOffset - 5 : yOffset);
-		this.stackType.update();
-		
+		this.nodesSelector.render(shape, foster);
 		return yOffset;
 	}
 
@@ -63,25 +96,29 @@ public class EditorPaneHitboxStack extends EditorPaneTreeElementHitbox implement
 	
 	public void updatePane(ITreeElementSelector<?> selector) {
 		super.updatePane(selector);
-		this.element = (ElementHitboxStack)selector.get(0);
+		this.element = (ElementHitboxMesh)selector.get(0);
 		this.elementName.setText(this.element.getName());
-		this.stackType.setSelectedVariant(this.element.isArrayStack ? 1 : 0);
-
+		if (this.element.model != null) {
+			String[] nodes = new String[this.element.model.nodes.size];
+			for (int i = 0 ; i != this.element.model.nodes.size; i++) nodes[i] = this.element.model.nodes.get(i).id;
+			this.nodesSelector.setVariants(nodes, this.element.nodes).updateDisplayString(SpecEditor.fosterNoDraw);
+		} else this.nodesSelector.setVariants(new String[]{"None available"}, new boolean[]{false}).updateDisplayString(SpecEditor.fosterNoDraw);
+		
 		this.transform.updateBlock(this.element);
 		this.specFlags.updateBlock(this.element);
 		this.bulletFlags.updateBlock(this.element);
 	}
 
 	public boolean acceptElement(ITreeElementSelector<?> selector) {
-		return selector.size() == 1 && selector.get(0) instanceof ElementHitboxStack;
+		return selector.size() == 1 && selector.get(0) instanceof ElementHitboxMesh;
 	}
 	
 	private class TransformBlock extends URenderBlock implements ISTDInputFieldListener {
 		private final String[] coords = {"X", "Y", "Z"};
-		private EditorPaneHitboxStack parent;
+		private EditorPaneHitboxMesh parent;
 		private STDInputField[] position = new STDInputField[3], rotation = new STDInputField[3], scale = new STDInputField[3];
 		
-		private TransformBlock(EditorPaneHitboxStack parent) {
+		private TransformBlock(EditorPaneHitboxMesh parent) {
 			super("Transforms");
 			this.parent = parent;
 
@@ -134,10 +171,10 @@ public class EditorPaneHitboxStack extends EditorPaneTreeElementHitbox implement
 			try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
 		}
 		
-		private void updateBlock(ElementHitboxStack hitboxStack) {
-			this.parent._convertVector3ToText(hitboxStack.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
-			this.parent._convertVector3ToText(hitboxStack.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);
-			this.parent._convertVector3ToText(hitboxStack.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], true);
+		private void updateBlock(ElementHitboxMesh model) {
+			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
+			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);
+			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], true);
 		}
 		
 		private void updateGizmoValues() {

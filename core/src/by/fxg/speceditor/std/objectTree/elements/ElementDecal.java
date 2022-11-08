@@ -25,7 +25,7 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 		switch(transformType) {
 			case TRANSLATE: return this.decal.position;
 			case ROTATE: return this.decal.rotation;
-			default: return gizmoVector.set(0, 0, 0);
+			default: return Vector3.Zero;
 		}
 	}
 	
@@ -33,7 +33,9 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 		return DefaultResources.INSTANCE.sprites.get("icons/decal");
 	}
 	
-	public boolean isTransformSupported(GizmoTransformType transformType) { return transformType != GizmoTransformType.SCALE; }
+	public boolean isTransformSupported(GizmoTransformType transformType) {
+		return transformType != GizmoTransformType.SCALE;
+	}
 
 	public void onAssetHandlerAdded(ProjectAsset<Texture> asset) {
 		if (this.decalAsset != null) this.decalAsset.removeHandlerWithoutNotify(this);
@@ -47,5 +49,22 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 	
 	public void onAssetUnload(ProjectAsset<Texture> asset) {
 		this.decal.setDefaultDecal();
+	}
+	
+	public TreeElement cloneElement() {
+		ElementDecal elementDecal = new ElementDecal(this.getName());
+		if (this.decalAsset != null) this.decalAsset.addHandler(elementDecal);
+		elementDecal.decal.setBillboard(this.decal.isBillboard());
+		elementDecal.decal.setVisible(this.decal.isVisible());
+		elementDecal.decal.position.set(this.decal.position);
+		elementDecal.decal.rotation.set(this.decal.rotation);
+		elementDecal.decal.scale.set(this.decal.scale);
+		return elementDecal;
+	}
+	
+	public void onDelete() {
+		if (this.decalAsset != null) {
+			this.decalAsset.removeHandlerWithoutNotify(this);
+		}
 	}
 }

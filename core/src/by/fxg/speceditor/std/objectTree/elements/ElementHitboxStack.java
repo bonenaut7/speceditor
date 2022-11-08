@@ -1,26 +1,21 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
+import by.fxg.speceditor.std.objectTree.ElementStack;
+import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.objectTree.TreeElementFolder;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
-import by.fxg.speceditor.utils.Utils;
 
-public class ElementHitboxStack extends TreeElementFolder implements ITreeElementGizmos, IDebugDraw {
-	public long specFlags;
-	public long bulletFlags;
-	public long bulletFilterMask;
-	public long bulletFilterGroup;
-	public boolean[] linkFlagsToParent = new boolean[4];
+public class ElementHitboxStack extends TreeElementHitbox implements ITreeElementFolder, ITreeElementGizmos, IDebugDraw {
+	private boolean isFolderOpened = false;
+	private ElementStack elementStack;
 	
 	public boolean isArrayStack = true; //means will be objects split after export or be combined, false = combine, true = keep as split objects
 	private Vector3 position = new Vector3();
@@ -30,6 +25,7 @@ public class ElementHitboxStack extends TreeElementFolder implements ITreeElemen
 	public ElementHitboxStack() { this("New hitbox stack"); }
 	public ElementHitboxStack(String name) {
 		this.displayName = name;
+		this.elementStack = new ElementStack();
 	}
 	
 	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
@@ -64,29 +60,23 @@ public class ElementHitboxStack extends TreeElementFolder implements ITreeElemen
 		draw.drawer.drawTransform(tmpMatrix, 0.5f);
 	}
 	
+	//Temporary remove gizmos, check todo's for fixing HitboxStack
+	public boolean isTransformSupported(GizmoTransformType transformType) { return false; }
 	public Vector3 getTransform(GizmoTransformType transformType) {
 		switch(transformType) {
 			case TRANSLATE: return this.position;
 			case ROTATE: return this.rotation;
 			case SCALE: return this.scale;
-			default: return gizmoVector.set(0, 0, 0);
+			default: return Vector3.Zero;
 		}
 	}
 	
-	public Sprite getObjectTreeSprite() {
-		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/question"));
-	}
-	
-	public boolean isFolderAccepting(TreeElement element) {
-		return element instanceof ElementHitbox || element instanceof ElementHitboxStack || element instanceof ElementHitboxMesh;
-	}
-	
-	public void setParent(TreeElement parent) {
-		super.setParent(parent);
-		if (!(parent instanceof ElementHitboxStack)) {
-			for (int i = 0; i != this.linkFlagsToParent.length; i++) {
-				this.linkFlagsToParent[i] = false;
-			}
-		}
+	public boolean isFolderAccepting(TreeElement element) { return element instanceof ElementHitbox || element instanceof ElementHitboxStack || element instanceof ElementHitboxMesh; }
+	public boolean isFolderOpened() { return this.isFolderOpened; }
+	public void setFolderOpened(boolean isFolderOpened) { this.isFolderOpened = isFolderOpened; }
+	public ElementStack getFolderStack() { return this.elementStack; }
+	public void setFolderStack(ElementStack stack) {
+		this.elementStack = stack.setParent(this);
+		this.elementStack.updateElementsParent();
 	}
 }

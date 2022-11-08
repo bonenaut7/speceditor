@@ -91,6 +91,7 @@ public class ProjectAsset<TYPE> {
 	public TYPE getAsset() { return this.asset; }
 	public String getPathToAsset() { return this.pathToAsset; }
 	public AssetDescriptor<TYPE> getAssetDescriptor() { return this.descriptor; }
+	public int getAssetHandlersSize() { return this.assetHandlers.size; }
 	
 	public final Class<TYPE> getType() { return this.classType; }
 }

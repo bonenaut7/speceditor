@@ -2,7 +2,9 @@ package by.fxg.speceditor.std.g3d.attributes;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
@@ -12,7 +14,7 @@ import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 /** Tips: <br>
  * 	 - To connect ProjectAsset, use {@link ProjectAsset#addHandler(IProjectAssetHandler)} with object of this class.
  * **/
-public class SpecPBRTextureAttribute extends PBRTextureAttribute implements IProjectAssetHandler<Texture> {
+public class SpecPBRTextureAttribute extends PBRTextureAttribute implements IProjectAssetHandler<Texture>, Disposable {
 	public ProjectAsset<Texture> asset;
 	public boolean flipX, flipY;
 	
@@ -66,6 +68,16 @@ public class SpecPBRTextureAttribute extends PBRTextureAttribute implements IPro
 	
 	public void onAssetUnload(ProjectAsset<Texture> asset) {
 		this.setTexture(DefaultResources.INSTANCE.standardTexture);
+	}
+	
+	public Attribute copy() {
+		return new SpecPBRTextureAttribute(this);
+	}
+	
+	public void dispose() {
+		if (this.asset != null) {
+			this.asset.removeHandlerWithoutNotify(this);
+		}
 	}
 	
 	/** Sets texture with flips **/

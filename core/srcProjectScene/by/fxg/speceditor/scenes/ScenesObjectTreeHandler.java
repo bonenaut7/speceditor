@@ -2,10 +2,10 @@ package by.fxg.speceditor.scenes;
 
 import com.badlogic.gdx.utils.Array;
 
+import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.ITreeElementHandler;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.objectTree.TreeElementFolder;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 
 public class ScenesObjectTreeHandler implements ITreeElementHandler {
@@ -34,8 +34,8 @@ public class ScenesObjectTreeHandler implements ITreeElementHandler {
 				if ((parentVisible && element.isVisible() || objectTree.elementSelector.isElementSelected(element))) {
 					renderer.add(objectTree, element);
 				}
-				if (element instanceof TreeElementFolder) {
-					this.searchRenderables(renderer, objectTree, ((TreeElementFolder)element).getFolderStack().getElements(), parentVisible ? element.isVisible() : parentVisible);
+				if (element instanceof ITreeElementFolder) {
+					this.searchRenderables(renderer, objectTree, ((ITreeElementFolder)element).getFolderStack().getElements(), parentVisible ? element.isVisible() : parentVisible);
 				}
 			}
 		}

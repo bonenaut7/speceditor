@@ -13,18 +13,26 @@ import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.serialization.SpecEditorSerialization;
 import by.fxg.speceditor.std.STDManager;
 import by.fxg.speceditor.std.ui.SpecInterface;
+import by.fxg.speceditor.utils.ApplicationTools;
 import by.fxg.speceditor.utils.Utils;
 
 public class SpecEditor extends Apparat<GInputProcessor> {
 	public static boolean DEBUG = false;
 	public static SpecEditor get;
 	public static Foster fosterNoDraw;
+	public ApplicationTools tools;
+	
 	public ResourceManager resourceManager;
 	public RenderManager renderer;
 	
+	public SpecEditor(ApplicationTools tools, String... args) {
+		this.tools = tools;
+		this.setProgramArgs(args);
+		if (this.hasProgramArgument("-debug")) DEBUG = true;
+	}
+	
 	public void create() {
 		this.onCreate(get = this);
-		if (this.hasProgramArgument("-debug")) DEBUG = true;
 		Gdx.input.setInputProcessor(super.input = new GInputProcessor());
 		this.resourceManager = new ResourceManager();
 		this.renderer = new RenderManager(this);

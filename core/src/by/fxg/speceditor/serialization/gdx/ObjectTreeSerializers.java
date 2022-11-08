@@ -23,6 +23,7 @@ import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.objectTree.elements.ElementDecal;
 import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
 import by.fxg.speceditor.std.objectTree.elements.ElementHitbox;
+import by.fxg.speceditor.std.objectTree.elements.ElementHitboxMesh;
 import by.fxg.speceditor.std.objectTree.elements.ElementHitboxStack;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight.ElementLightType;
@@ -254,6 +255,54 @@ public class ObjectTreeSerializers {
 			elementHitbox.getTransform(GizmoTransformType.ROTATE).set(kryo.readObject(input, Vector3.class));
 			elementHitbox.getTransform(GizmoTransformType.SCALE).set(kryo.readObject(input, Vector3.class));
 			return elementHitbox;
+		}
+	}
+	
+	public static class ElementHitboxMeshSerializer extends Serializer<ElementHitboxMesh> {
+		public void write(Kryo kryo, Output output, ElementHitboxMesh object) {
+			output.writeString(object.getName());
+			output.writeBoolean(object.isVisible());
+			output.writeLong(object.specFlags);
+			output.writeLong(object.bulletFlags);
+			output.writeLong(object.bulletFilterMask);
+			output.writeLong(object.bulletFilterGroup);
+			output.writeByte(object.linkFlagsToParent.length);
+			for (int i = 0; i != object.linkFlagsToParent.length; i++) output.writeBoolean(object.linkFlagsToParent[i]);
+			if (object.modelAsset != null) {
+				output.writeBoolean(true);
+				output.writeString(object.modelAsset.getUUID().toString());
+				output.writeInt(object.nodes.length);
+				for (int i = 0; i != object.nodes.length; i++) output.writeBoolean(object.nodes[i]);
+			} else output.writeBoolean(false);
+			kryo.writeObject(output, object.getTransform(GizmoTransformType.TRANSLATE));
+			kryo.writeObject(output, object.getTransform(GizmoTransformType.ROTATE));
+			kryo.writeObject(output, object.getTransform(GizmoTransformType.SCALE));
+		}
+
+		//TODO optimize loading, currently making static shape 3 times before final result: Default, all_nodes, needed_nodes
+		public ElementHitboxMesh read(Kryo kryo, Input input, Class<ElementHitboxMesh> type) {
+			ElementHitboxMesh elementHitboxMesh = new ElementHitboxMesh(input.readString());
+			elementHitboxMesh.setVisible(input.readBoolean());
+			elementHitboxMesh.specFlags = input.readLong();
+			elementHitboxMesh.bulletFlags = input.readLong();
+			elementHitboxMesh.bulletFilterMask = input.readLong();
+			elementHitboxMesh.bulletFilterGroup = input.readLong();
+			byte booleanValues = input.readByte();
+			for (int i = 0; i != booleanValues && i < elementHitboxMesh.linkFlagsToParent.length; i++) elementHitboxMesh.linkFlagsToParent[i] = input.readBoolean();
+			if (input.readBoolean()) {
+				UUID uuid = UUID.fromString(input.readString());
+				boolean[] nodes = new boolean[input.readInt()];
+				for (int i = 0; i != nodes.length; i++) nodes[i] = input.readBoolean();
+				ProjectAsset<?> projectAsset = ProjectAssetManager.INSTANCE.getAsset(uuid);
+				if (projectAsset != null) {
+					projectAsset.addHandler(elementHitboxMesh);
+					elementHitboxMesh.generateMesh(nodes);
+				} else Utils.logDebug("[ElementHitboxMesh][Deserialization] Can't find asset `", uuid.toString(), "` with Unknown type loaded.");
+			}
+			elementHitboxMesh.getTransform(GizmoTransformType.TRANSLATE).set(kryo.readObject(input, Vector3.class));
+			elementHitboxMesh.getTransform(GizmoTransformType.ROTATE).set(kryo.readObject(input, Vector3.class));
+			elementHitboxMesh.getTransform(GizmoTransformType.SCALE).set(kryo.readObject(input, Vector3.class));
+			return elementHitboxMesh;
 		}
 	}
 }

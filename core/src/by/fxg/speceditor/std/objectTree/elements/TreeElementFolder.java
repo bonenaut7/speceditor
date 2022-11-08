@@ -1,6 +1,10 @@
-package by.fxg.speceditor.std.objectTree;
+package by.fxg.speceditor.std.objectTree.elements;
 
-public abstract class TreeElementFolder extends TreeElement {
+import by.fxg.speceditor.std.objectTree.ElementStack;
+import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
+import by.fxg.speceditor.std.objectTree.TreeElement;
+
+public abstract class TreeElementFolder extends TreeElement implements ITreeElementFolder {
 	protected boolean isFolderOpened = false;
 	protected ElementStack elementStack;
 	

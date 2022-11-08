@@ -9,8 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.SpecEditor;
-import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
+import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
@@ -32,10 +31,10 @@ public abstract class TreeElement {
 	protected boolean visible = true;
 
 	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
-		int cloneType = tree.elementSelector.get(0) instanceof TreeElementFolder ? 1 : 2;
+		int cloneType = tree.elementSelector.get(0) instanceof ITreeElementFolder ? 1 : 2;
 		for (int i = 0; i != tree.elementSelector.size(); i++) {
-			if (tree.elementSelector.get(i) instanceof TreeElementFolder && cloneType == 2) { cloneType = -1; break; }
-			else if (!(tree.elementSelector.get(i) instanceof TreeElementFolder) && cloneType == 1) { cloneType = -1; break; }
+			if (tree.elementSelector.get(i) instanceof ITreeElementFolder && cloneType == 2) { cloneType = -1; break; }
+			else if (!(tree.elementSelector.get(i) instanceof ITreeElementFolder) && cloneType == 1) { cloneType = -1; break; }
 		}
 		if (cloneType > 0) items.add(new UDAElement("default.clone", "Clone"));
 		items.add(new UDAElement("default.delete", "Delete"));
@@ -45,26 +44,24 @@ public abstract class TreeElement {
 	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
 		switch (itemID) {
 			case "default.clone": {
-				for (int i = 0; i != tree.elementSelector.size(); i++) {
-					TreeElement element = tree.elementSelector.get(i), clone = element.cloneElement();
-					if (clone != null) {
-						if (element.parent instanceof TreeElementFolder) {
-							((TreeElementFolder)element.parent).getFolderStack().add(clone);
-						} else tree.getStack().add(clone);
-					}
+				TreeElement clone = this.cloneElement();
+				if (clone != null) {
+					if (this.parent instanceof ITreeElementFolder) {
+						((ITreeElementFolder)this.parent).getFolderStack().add(clone);
+					} else tree.getStack().add(clone);
 				}
 			} break;
-			case "default.delete": {
-				Array<TreeElement> toDelete = new Array<>();
-				for (int i = 0; i != tree.elementSelector.size(); i++) toDelete.add(tree.elementSelector.get(i));
-				SpecEditor.get.renderer.currentGui = new GuiObjectTreeDelete(tree, toDelete);
-			} break;
+			//default.delete is being processed in the SpecObjectTree#onDropdownClick!
 		}
 		return true;
 	}
 	
 	/** Called before object deletion from ObjectTree **/
-	public void onDelete() {}
+	public void onDelete() {
+		if (this instanceof IProjectAssetHandler) {
+			throw new IllegalStateException("Project asset handler objects must override onDelete() method and remove self from asset.");
+		}
+	}
 	
 	/** Element cloning default implementation. In case of returning null object won't clone **/
 	public TreeElement cloneElement() {
@@ -73,10 +70,7 @@ public abstract class TreeElement {
 	
 	/** Default {@link ITreeElementGizmos#getOffsetTransform(GizmoTransformType)} implementation **/
 	public Vector3 getOffsetTransform(GizmoTransformType transformType) {
-		if (this.parent instanceof ITreeElementGizmos) {
-			return ((ITreeElementGizmos)this.parent).getOffsetTransform(transformType).add(((ITreeElementGizmos)this.parent).getTransform(transformType));
-		}
-		return ITreeElementGizmos.gizmoVector.set(0, 0, 0);
+		return Vector3.Zero; //FIXME make getOffset work normally, also causes trouble for gizmos :( return (parentOffsetTransform+)parentTransform+thisTransform
 	}
 	
 	public Sprite getObjectTreeSprite() { return DefaultResources.INSTANCE.sprites.get("icons/question"); }
@@ -87,11 +81,12 @@ public abstract class TreeElement {
 	public void setParent(TreeElement parent) { this.parent = parent; }
 	public void setParent(TreeElement parent, boolean removeFromOld, boolean addToNew) { this.setParent(null, parent, removeFromOld, addToNew); }
 	public void setParent(ElementStack nullStack, TreeElement parent, boolean removeFromOld, boolean addToNew) {
+		if (parent instanceof ITreeElementFolder && !((ITreeElementFolder)parent).isFolderAccepting(this)) return;
 		if (removeFromOld) {
-			if (this.parent instanceof TreeElementFolder) ((TreeElementFolder)this.parent).getFolderStack().remove(this);
+			if (this.parent instanceof ITreeElementFolder) ((ITreeElementFolder)this.parent).getFolderStack().remove(this);
 			else if (nullStack != null) nullStack.remove(this);
 		}
-		if (addToNew && parent instanceof TreeElementFolder) ((TreeElementFolder)parent).getFolderStack().add(this);
+		if (addToNew && parent instanceof ITreeElementFolder) ((ITreeElementFolder)parent).getFolderStack().add(this);
 		this.setParent(parent);
 	}
 	public void setName(String displayName) { this.displayName = displayName; }

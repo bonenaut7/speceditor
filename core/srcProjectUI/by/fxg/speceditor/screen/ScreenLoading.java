@@ -34,7 +34,6 @@ public class ScreenLoading extends BaseScreen {
 			if (++this.timer > 60) {
 				SpecEditor editor = SpecEditor.get;
 				if (editor.hasProgramArgument("-UITest")) editor.renderer.currentScreen = new ScreenTestUI();
-				else if (editor.hasProgramArgument("-edit")) editor.renderer.currentScreen = new ScreenCreateProject(new ScreenSelectProject());
 				else editor.renderer.currentScreen = new ScreenMainMenu();
 			}
 		}

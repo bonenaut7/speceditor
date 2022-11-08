@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.STDManager;
@@ -86,6 +87,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 				this.buttonRemoveAttribute.setTransforms(this.x, yOffset -= 15, this.width, 12).update();
 				this.buttonRemoveAttribute.render(shape, foster);
 				if (this.buttonRemoveAttribute.isPressed()) {
+					if (attribute instanceof Disposable) ((Disposable)attribute).dispose();
 					this.environment.remove(attribute.type);
 					this.selectedAttribute.setSelectedVariant(0);
 					this.refreshAttributes();

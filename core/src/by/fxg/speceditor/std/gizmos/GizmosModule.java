@@ -22,7 +22,7 @@ import by.fxg.pilesos.graphics.TextureFrameBuffer;
 import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.DebugDraw3D;
-import by.fxg.speceditor.screen.deprecated.SubscreenViewport;
+import by.fxg.speceditor.screen.project.SubscreenViewport;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.ui.SpecInterface;

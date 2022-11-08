@@ -64,5 +64,6 @@ public class SpecEditorSerialization {
 		this.kryo.register(ElementModel.class, new ElementModelSerializer());
 		this.kryo.register(ElementHitboxStack.class, new ElementHitboxStackSerializer());
 		this.kryo.register(ElementHitbox.class, new ElementHitboxSerializer());
+		this.kryo.register(ElementHitboxMesh.class, new ElementHitboxMeshSerializer());
 	}
 }

@@ -1,4 +1,4 @@
-package by.fxg.speceditor.screen.deprecated;
+package by.fxg.speceditor.scenes.screen;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 

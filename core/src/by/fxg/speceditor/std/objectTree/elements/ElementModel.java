@@ -1,6 +1,5 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.project.assets.ProjectAsset;
-import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.ITreeElementModelProvider;
@@ -36,16 +34,6 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 		this.modelInstance = new ModelInstance(DefaultResources.INSTANCE.standardModel);
 	}
 	
-	public void setModelAsset(FileHandle handle) {
-		if (handle != null) {
-			ProjectAsset projectAsset = null;
-			if (handle.extension().equalsIgnoreCase("gltf") || handle.extension().equalsIgnoreCase("glb")) {
-				projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(SceneAsset.class, handle);
-			} else projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(Model.class, handle);
-			projectAsset.addHandler(this);
-		}
-	}
-	
 	public ITreeElementModelProvider applyTransforms() {
 		if (this.modelInstance != null) {
 			this.modelInstance.transform.setToTranslation(this.position);
@@ -62,17 +50,7 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 			case TRANSLATE: return this.position;
 			case ROTATE: return this.rotation;
 			case SCALE: return this.scale;
-			default: return gizmoVector.set(0, 0, 0);
-		}
-	}
-	
-	public Sprite getObjectTreeSprite() {
-		return DefaultResources.INSTANCE.sprites.get("icons/model");
-	}
-	
-	public void onDelete() {
-		if (this.modelAsset != null) {
-			this.modelAsset.removeHandlerWithoutNotify(this);
+			default: return Vector3.Zero;
 		}
 	}
 	
@@ -108,6 +86,31 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	public void onAssetHandlerRemoved(ProjectAsset asset) {
 		this.modelAsset = null;
 		this.setModel(DefaultResources.INSTANCE.standardModel);
+	}
+	
+	public Sprite getObjectTreeSprite() {
+		return DefaultResources.INSTANCE.sprites.get("icons/model");
+	}
+	
+	public TreeElement cloneElement() {
+		ElementModel elementModel = new ElementModel(this.getName());
+		if (this.modelAsset != null) {
+			elementModel._modelInstanceMaterialsCache.size = 0;
+			for (Material material : this.modelInstance.materials) {
+				elementModel._modelInstanceMaterialsCache.add(material.copy());
+			}
+			this.modelAsset.addHandler(elementModel);
+		}
+		elementModel.position.set(this.position);
+		elementModel.rotation.set(this.rotation);
+		elementModel.scale.set(this.scale);
+		return elementModel;
+	}
+	
+	public void onDelete() {
+		if (this.modelAsset != null) {
+			this.modelAsset.removeHandlerWithoutNotify(this);
+		}
 	}
 
 	private void setModel(Model model) {
