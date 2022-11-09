@@ -22,9 +22,9 @@ public class GuiError extends BaseScreen implements IFocusable {
 		this.strings.add("We've got error at: " + exceptionPlace, "");
 		
 		if (exception != null) {
-			this.strings.add(exception.getMessage(), "");
-			for (int i = 0; i != 4 && i < exception.getStackTrace().length; i++) {
-				this.strings.add(exception.getStackTrace()[i].toString());
+			this.strings.add(exception.getMessage() == null ? exception.getClass().getTypeName() : exception.getMessage(), "");
+			for (int i = 0; i != 16 && i < exception.getStackTrace().length; i++) {
+				this.strings.add(exception.getStackTrace()[i].toString() == null ? "null" : exception.getStackTrace()[i].toString());
 			}
 		} else this.strings.add("No exception provided! :(");
 		
@@ -34,17 +34,18 @@ public class GuiError extends BaseScreen implements IFocusable {
 	
 	public void init(int width, int height) {
 		float longestString = 0f;
-		for (String str : strings) {
+		for (String str : this.strings) {
+			if (str == null) continue;
 			RenderManager.foster.setString(str);
 			if (RenderManager.foster.getWidth() > longestString) longestString = RenderManager.foster.getWidth();
 		}
 		float boxSizeX = Math.max(longestString + 20, width / 4);
-		float boxSizeY = 45 + this.strings.size * 12;
+		float boxSizeY = 80 + this.strings.size * RenderManager.foster.getHeight();
 		float x = width / 2 - boxSizeX / 2, y = height / 2 - boxSizeY / 2;
 		
 		int buttonWidth = ((int)boxSizeX / 2 - 30) / 2;
 		
-		this.buttonClose = new UButton("Cancel", (int)(x + boxSizeX) - 10 - buttonWidth, (int)y + 10, buttonWidth, 20) {
+		this.buttonClose = new UButton("Cancel", (int)(x + boxSizeX) - 5 - buttonWidth, (int)y + 5, buttonWidth, 15) {
 			public boolean isMouseOver(int x, int y, int width, int height) {
 				return GDXUtil.isMouseInArea(x, y, width, height);
 			}
@@ -70,7 +71,7 @@ public class GuiError extends BaseScreen implements IFocusable {
 		}
 	
 		float boxSizeX = Math.max(longestString + 20, width / 4);
-		float boxSizeY = 45 + this.strings.size * 12;
+		float boxSizeY = 80 + this.strings.size * foster.getHeight();
 		
 		float x = width / 2 - boxSizeX / 2, y = height / 2 - boxSizeY / 2;
 		shape.setColor(0.12f, 0.12f, 0.12f, 1);
@@ -92,8 +93,8 @@ public class GuiError extends BaseScreen implements IFocusable {
 		}
 		
 		float boxSizeX = Math.max(longestString + 20, width / 4);
-		float x = width / 2 - boxSizeX / 2, y = height / 2 - (45 + this.strings.size * 12) / 2;
+		float x = width / 2 - boxSizeX / 2, y = height / 2 - (80 + this.strings.size * RenderManager.foster.getHeight()) / 2;
 		int buttonWidth = ((int)boxSizeX / 2 - 30) / 2;
-		this.buttonClose.setTransforms((int)(x + boxSizeX) - 10 - buttonWidth, (int)y + 10, buttonWidth, 20);
+		this.buttonClose.setTransforms((int)(x + boxSizeX) - 5 - buttonWidth, (int)y + 5, buttonWidth, 15);
 	}
 }

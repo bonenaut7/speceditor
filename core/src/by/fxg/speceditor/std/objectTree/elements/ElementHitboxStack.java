@@ -1,5 +1,7 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
@@ -25,7 +27,23 @@ public class ElementHitboxStack extends TreeElementHitbox implements ITreeElemen
 	public ElementHitboxStack() { this("New hitbox stack"); }
 	public ElementHitboxStack(String name) {
 		this.displayName = name;
-		this.elementStack = new ElementStack();
+		this.elementStack = new ElementStack().setParent(this);
+	}
+	
+	private ElementHitboxStack(ElementHitboxStack copy) {
+		this.displayName = copy.displayName;
+		this.visible = copy.visible;
+		this.specFlags = copy.specFlags;
+		this.bulletFlags = copy.bulletFlags;
+		this.bulletFilterMask = copy.bulletFilterMask;
+		this.bulletFilterGroup = copy.bulletFilterGroup;
+		this.linkFlagsToParent = Arrays.copyOf(copy.linkFlagsToParent, copy.linkFlagsToParent.length);
+		this.isFolderOpened = copy.isFolderOpened;
+		this.elementStack = copy.elementStack.clone(this);
+		this.isArrayStack = copy.isArrayStack;
+		this.position.set(copy.position);
+		this.rotation.set(copy.rotation);
+		this.scale.set(copy.scale);
 	}
 	
 	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
@@ -52,16 +70,14 @@ public class ElementHitboxStack extends TreeElementHitbox implements ITreeElemen
 	}
 	
 	public void draw(SpecObjectTree objectTree, DebugDraw3D draw) {
-		tmpMatrix.setToTranslation(this.position);
-		tmpMatrix.scale(this.scale.x, this.scale.y, this.scale.z);
-		tmpMatrix.rotate(1F, 0F, 0F, this.rotation.x);
-		tmpMatrix.rotate(0F, 1F, 0F, this.rotation.y);
-		tmpMatrix.rotate(0F, 0F, 1F, this.rotation.z);
+		tmpMatrix.setToTranslation(this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.TRANSLATE).add(this.position));
+		this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.ROTATE).add(this.rotation);
+		tmpMatrix.rotate(1, 0, 0, tmpVector.x).rotate(0, 1, 0, tmpVector.y).rotate(0, 1, 1, tmpVector.z);
+		this.getOffsetTransform(tmpVector.set(1, 1, 1), GizmoTransformType.SCALE).scl(this.scale); //XXX Hitbox, not sure what to use, scl or add
+		tmpMatrix.scale(tmpVector.x, tmpVector.y, tmpVector.z);
 		draw.drawer.drawTransform(tmpMatrix, 0.5f);
 	}
 	
-	//Temporary remove gizmos, check todo's for fixing HitboxStack
-	public boolean isTransformSupported(GizmoTransformType transformType) { return false; }
 	public Vector3 getTransform(GizmoTransformType transformType) {
 		switch(transformType) {
 			case TRANSLATE: return this.position;
@@ -78,5 +94,9 @@ public class ElementHitboxStack extends TreeElementHitbox implements ITreeElemen
 	public void setFolderStack(ElementStack stack) {
 		this.elementStack = stack.setParent(this);
 		this.elementStack.updateElementsParent();
+	}
+	
+	public TreeElement cloneElement() {
+		return new ElementHitboxStack(this);
 	}
 }

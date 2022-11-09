@@ -34,6 +34,22 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 		this.modelInstance = new ModelInstance(DefaultResources.INSTANCE.standardModel);
 	}
 	
+	private ElementModel(ElementModel copy) {
+		this.displayName = copy.displayName;
+		this.visible = copy.visible;
+		if (this.modelAsset != null) { 
+			if (copy.modelInstance != null) {
+				for (Material material : copy.modelInstance.materials) {
+					this._modelInstanceMaterialsCache.add(material.copy());
+				}
+			}
+			copy.modelAsset.addHandler(this);
+		}
+		this.position.set(copy.position);
+		this.rotation.set(copy.rotation);
+		this.scale.set(copy.scale);
+	}
+	
 	public ITreeElementModelProvider applyTransforms() {
 		if (this.modelInstance != null) {
 			this.modelInstance.transform.setToTranslation(this.position);
@@ -93,18 +109,7 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	}
 	
 	public TreeElement cloneElement() {
-		ElementModel elementModel = new ElementModel(this.getName());
-		if (this.modelAsset != null) {
-			elementModel._modelInstanceMaterialsCache.size = 0;
-			for (Material material : this.modelInstance.materials) {
-				elementModel._modelInstanceMaterialsCache.add(material.copy());
-			}
-			this.modelAsset.addHandler(elementModel);
-		}
-		elementModel.position.set(this.position);
-		elementModel.rotation.set(this.rotation);
-		elementModel.scale.set(this.scale);
-		return elementModel;
+		return new ElementModel(this);
 	}
 	
 	public void onDelete() {

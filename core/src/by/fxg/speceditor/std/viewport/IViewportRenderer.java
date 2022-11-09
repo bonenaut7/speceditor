@@ -25,6 +25,8 @@ public interface IViewportRenderer {
 	/** Editor pane of the renderer **/
 	EditorPane getEditorPane();
 	
+	default void resize(int x, int y, int width, int height) {}
+	
 	/** Method needed to write settings of ViewportRenderer to the project data **/
 	default void writeData(Kryo kryo, Output output) {}
 	/** Method needed to read settings of ViewportRenderer from the project data **/

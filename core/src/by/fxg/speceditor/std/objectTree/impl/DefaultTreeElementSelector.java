@@ -24,6 +24,10 @@ public class DefaultTreeElementSelector implements ITreeElementSelector<TreeElem
 		return this.array.contains(element, true);
 	}
 	
+	public boolean isElementOrParentsSelected(TreeElement element) {
+		return this.isElementSelected(element) || (element != null ? this.isElementOrParentsSelected(element.getParent()) : false);
+	}
+	
 	public void selectElement(TreeElement element) {
 		if (element != null && !this.array.contains(element, true)) {
 			this.array.add(element);
@@ -38,5 +42,5 @@ public class DefaultTreeElementSelector implements ITreeElementSelector<TreeElem
 
 	public void clearSelection() {
 		this.array.size = 0;
-	}	
+	}
 }

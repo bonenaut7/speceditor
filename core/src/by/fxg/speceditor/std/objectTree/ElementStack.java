@@ -98,10 +98,10 @@ public class ElementStack {
 	/** Added for purpose of fixing parent link in TreeElement after deserialization **/
 	public void updateElementsParent() { this.updateElementsParent(this); }
 	private void updateElementsParent(ElementStack stack) {
-		for (int i = 0; i != this.elements.size; i++) {
-			this.elements.get(i).parent = this.parent;
-			if (this.elements.get(i) instanceof ITreeElementFolder) {
-				this.updateElementsParent(((ITreeElementFolder)this.elements.get(i)).getFolderStack());
+		for (int i = 0; i != stack.elements.size; i++) {
+			stack.elements.get(i).setParent(stack.parent);
+			if (stack.elements.get(i) instanceof ITreeElementFolder) {
+				this.updateElementsParent(((ITreeElementFolder)stack.elements.get(i)).getFolderStack());
 			}
 		}
 	}
@@ -113,6 +113,17 @@ public class ElementStack {
 	
 	public Array<TreeElement> getElements() { 
 		return this.elements; 
+	}
+	
+	public ElementStack clone(TreeElement parentElement) {
+		ElementStack elementStack = new ElementStack().setParent(parentElement);
+		TreeElement tmp = null;
+		for (int i = 0; i != this.elements.size; i++) {
+			if ((tmp = this.elements.get(i).cloneElement()) != null) {
+				elementStack.add(tmp);
+			}
+		}
+		return elementStack;
 	}
 	
 	public void clear() {

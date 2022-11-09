@@ -1,5 +1,7 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.speceditor.render.DebugDraw3D;
@@ -20,32 +22,29 @@ public class ElementHitbox extends TreeElementHitbox implements ITreeElementGizm
 		this.displayName = name;
 	}
 	
+	private ElementHitbox(ElementHitbox copy) {
+		this.displayName = copy.displayName;
+		this.visible = copy.visible;
+		this.specFlags = copy.specFlags;
+		this.bulletFlags = copy.bulletFlags;
+		this.bulletFilterMask = copy.bulletFilterMask;
+		this.bulletFilterGroup = copy.bulletFilterGroup;
+		this.linkFlagsToParent = Arrays.copyOf(copy.linkFlagsToParent, copy.linkFlagsToParent.length);
+		this.position.set(copy.position);
+		this.rotation.set(copy.rotation);
+		this.scale.set(copy.scale);
+	}
+	
 	public void draw(SpecObjectTree objectTree, DebugDraw3D draw) {
-		boolean isSelected = objectTree.elementSelector.isElementSelected(this);
 		tmpVectorMin.set(-0.5F, -0.5F, -0.5F);
 		tmpVectorMax.set(0.5F, 0.5F, 0.5F);
-		if (this.parent instanceof ElementHitboxStack) {
-			ElementHitboxStack parent = (ElementHitboxStack)this.parent;
-			tmpVectorMin.scl(parent.getTransform(GizmoTransformType.SCALE)).scl(this.scale);
-			tmpVectorMax.scl(parent.getTransform(GizmoTransformType.SCALE)).scl(this.scale);
-			tmpMatrix.setToTranslation(parent.getTransform(GizmoTransformType.TRANSLATE));
-			tmpMatrix.rotate(1F, 0F, 0F, parent.getTransform(GizmoTransformType.ROTATE).x);
-			tmpMatrix.rotate(0F, 1F, 0F, parent.getTransform(GizmoTransformType.ROTATE).y);
-			tmpMatrix.rotate(0F, 0F, 1F, parent.getTransform(GizmoTransformType.ROTATE).z);
-			tmpMatrix.translate(this.position);
-			tmpMatrix.rotate(1F, 0F, 0F, this.rotation.x);
-			tmpMatrix.rotate(0F, 1F, 0F, this.rotation.y);
-			tmpMatrix.rotate(0F, 0F, 1F, this.rotation.z);
-			if (!isSelected) isSelected = objectTree.elementSelector.isElementSelected(this.parent);
-		} else {
-			tmpVectorMin.scl(this.scale);
-			tmpVectorMax.scl(this.scale);
-			tmpMatrix.setToTranslation(this.position);
-			tmpMatrix.rotate(1F, 0F, 0F, this.rotation.x);
-			tmpMatrix.rotate(0F, 1F, 0F, this.rotation.y);
-			tmpMatrix.rotate(0F, 0F, 1F, this.rotation.z);
-		}
-		draw.drawer.drawBox(tmpVectorMin, tmpVectorMax, tmpMatrix, isSelected ? UColor.hitboxSelected : UColor.hitbox);
+		tmpMatrix.setToTranslation(this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.TRANSLATE).add(this.position));
+		this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.ROTATE).add(this.rotation);
+		tmpMatrix.rotate(1, 0, 0, tmpVector.x).rotate(0, 1, 0, tmpVector.y).rotate(0, 1, 1, tmpVector.z);
+		this.getOffsetTransform(tmpVector.set(1, 1, 1), GizmoTransformType.SCALE).scl(this.scale);
+		tmpVectorMin.scl(tmpVector.x, tmpVector.y, tmpVector.z);
+		tmpVectorMax.scl(tmpVector.x, tmpVector.y, tmpVector.z);
+		draw.drawer.drawBox(tmpVectorMin, tmpVectorMax, tmpMatrix, objectTree.elementSelector.isElementOrParentsSelected(this) ? UColor.hitboxSelected : UColor.hitbox);
 	}
 	
 	public Vector3 getTransform(GizmoTransformType transformType) {
@@ -58,15 +57,6 @@ public class ElementHitbox extends TreeElementHitbox implements ITreeElementGizm
 	}
 	
 	public TreeElement cloneElement() {
-		ElementHitbox elementHitbox = new ElementHitbox(this.getName());
-		elementHitbox.specFlags = this.specFlags;
-		elementHitbox.bulletFlags = this.bulletFlags;
-		elementHitbox.bulletFilterMask = this.bulletFilterMask;
-		elementHitbox.bulletFilterGroup = this.bulletFilterGroup;
-		System.arraycopy(this.linkFlagsToParent, 0, elementHitbox.linkFlagsToParent, 0, this.linkFlagsToParent.length);
-		elementHitbox.position.set(this.position);
-		elementHitbox.rotation.set(this.rotation);
-		elementHitbox.scale.set(this.scale);
-		return elementHitbox;
+		return new ElementHitbox(this);
 	}
 }

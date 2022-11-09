@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
+import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 
@@ -13,6 +14,13 @@ public class ElementFolder extends TreeElementFolder {
 	public ElementFolder(String name) {
 		super();
 		this.displayName = name;
+	}
+	
+	private ElementFolder(ElementFolder copy) {
+		this.displayName = copy.displayName;
+		this.visible = copy.visible;
+		this.isFolderOpened = copy.isFolderOpened;
+		this.elementStack = copy.elementStack.clone(this);
 	}
 	
 	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
@@ -50,5 +58,9 @@ public class ElementFolder extends TreeElementFolder {
 	
 	public Sprite getObjectTreeSprite() {
 		return DefaultResources.INSTANCE.sprites.get(Utils.format("icons/folder.", this.isFolderOpened));
+	}
+	
+	public TreeElement cloneElement() {
+		return new ElementFolder(this);
 	}
 }

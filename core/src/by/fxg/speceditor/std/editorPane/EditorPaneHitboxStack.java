@@ -47,8 +47,8 @@ public class EditorPaneHitboxStack extends EditorPaneTreeElementHitbox implement
 		if (this.stackType.isDropped()) yOffset -= this.stackType.getVariants().length * 15;
 		this.element.isArrayStack = this.stackType.getVariant() == 1;
 		
-		//yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
-		yOffset = this.specFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);//this.transform.isDropped() ? yOffset - 5 : yOffset);
+		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
+		yOffset = this.specFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.transform.isDropped() ? yOffset - 5 : yOffset);
 		yOffset = this.bulletFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.specFlags.isDropped() ? yOffset - 5 : yOffset);
 		this.stackType.update();
 		

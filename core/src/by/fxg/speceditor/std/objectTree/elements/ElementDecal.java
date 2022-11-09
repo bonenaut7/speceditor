@@ -21,6 +21,17 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 		this.displayName = name;
 	}
 	
+	private ElementDecal(ElementDecal copy) {
+		this.displayName = copy.displayName;
+		this.visible = copy.visible;
+		if (copy.decalAsset != null) copy.decalAsset.addHandler(this);
+		this.decal.setBillboard(copy.decal.isBillboard());
+		this.decal.setVisible(copy.decal.isVisible());
+		this.decal.position.set(copy.decal.position);
+		this.decal.rotation.set(copy.decal.rotation);
+		this.decal.scale.set(copy.decal.scale);
+	}
+	
 	public Vector3 getTransform(GizmoTransformType transformType) {
 		switch(transformType) {
 			case TRANSLATE: return this.decal.position;
@@ -52,14 +63,7 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 	}
 	
 	public TreeElement cloneElement() {
-		ElementDecal elementDecal = new ElementDecal(this.getName());
-		if (this.decalAsset != null) this.decalAsset.addHandler(elementDecal);
-		elementDecal.decal.setBillboard(this.decal.isBillboard());
-		elementDecal.decal.setVisible(this.decal.isVisible());
-		elementDecal.decal.position.set(this.decal.position);
-		elementDecal.decal.rotation.set(this.decal.rotation);
-		elementDecal.decal.scale.set(this.decal.scale);
-		return elementDecal;
+		return new ElementDecal(this);
 	}
 	
 	public void onDelete() {

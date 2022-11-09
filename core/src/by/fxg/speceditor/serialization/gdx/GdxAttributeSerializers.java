@@ -17,18 +17,33 @@ import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.PointLightsAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.SpotLightsAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 public class GdxAttributeSerializers {
+	public static boolean SERIALIZE_NOT_REGISTERED_ATTRIBUTES = false;
+	static Array<Attribute> tmpAttributeArray = new Array<>();
+	
 	public static class AttributesSerializer extends Serializer<Attributes> {
 		public void write(Kryo kryo, Output output, Attributes object) {
 			Iterator<Attribute> iterator = object.iterator();
-			output.writeInt(object.size());
-			while (iterator.hasNext()) {
-				kryo.writeClassAndObject(output, iterator.next());
+			if (SERIALIZE_NOT_REGISTERED_ATTRIBUTES) {
+				output.writeInt(object.size());
+				while (iterator.hasNext()) {
+					kryo.writeClassAndObject(output, iterator.next());
+				}
+			} else {
+				tmpAttributeArray.size = 0;
+				while (iterator.hasNext()) tmpAttributeArray.add(iterator.next());
+				output.writeInt(tmpAttributeArray.size);
+				for (int i = 0; i != tmpAttributeArray.size; i++) {
+					if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(i).getClass()) != null) {
+						kryo.writeClassAndObject(output, tmpAttributeArray.get(i));
+					}
+				}
 			}
 		}
 
@@ -49,9 +64,17 @@ public class GdxAttributeSerializers {
 	public static class EnvironmentSerializer extends Serializer<Environment> {
 		public void write(Kryo kryo, Output output, Environment object) {
 			Iterator<Attribute> iterator = object.iterator();
-			output.writeInt(object.size());
-			while (iterator.hasNext()) {
-				kryo.writeClassAndObject(output, iterator.next());
+//			output.writeInt(object.size());
+//			while (iterator.hasNext()) {
+//				kryo.writeClassAndObject(output, iterator.next());
+//			}
+			tmpAttributeArray.size = 0;
+			while (iterator.hasNext()) tmpAttributeArray.add(iterator.next());
+			output.writeInt(tmpAttributeArray.size);
+			for (int i = 0; i != tmpAttributeArray.size; i++) {
+				if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(i).getClass()) != null) {
+					kryo.writeClassAndObject(output, tmpAttributeArray.get(i));
+				}
 			}
 		}
 
@@ -72,9 +95,17 @@ public class GdxAttributeSerializers {
 		public void write(Kryo kryo, Output output, Material object) {
 			Iterator<Attribute> iterator = object.iterator();
 			output.writeString(object.id);
-			output.writeInt(object.size());
-			while (iterator.hasNext()) {
-				kryo.writeClassAndObject(output, iterator.next());
+//			output.writeInt(object.size());
+//			while (iterator.hasNext()) {
+//				kryo.writeClassAndObject(output, iterator.next());
+//			}
+			tmpAttributeArray.size = 0;
+			while (iterator.hasNext()) tmpAttributeArray.add(iterator.next());
+			output.writeInt(tmpAttributeArray.size);
+			for (int i = 0; i != tmpAttributeArray.size; i++) {
+				if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(i).getClass()) != null) {
+					kryo.writeClassAndObject(output, tmpAttributeArray.get(i));
+				}
 			}
 		}
 

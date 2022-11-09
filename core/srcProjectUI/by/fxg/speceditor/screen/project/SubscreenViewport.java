@@ -21,6 +21,7 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.BaseSubscreen;
+import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class SubscreenViewport extends BaseSubscreen implements IMouseController {
@@ -131,10 +132,11 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 		else if (this.lookVector.y <= -90F) this.lookVector.y = -90F;
 	}
 
-	public void resize(int subX, int subY, int subWidth, int subHeight) {
+	public void resize(int x, int y, int width, int height) {
 		PerspectiveCamera camera = this.renderer.getCamera();
-		camera.viewportWidth = subWidth - 6;
-		camera.viewportHeight = subHeight - 6;
+		camera.viewportWidth = width - 6;
+		camera.viewportHeight = height - 6;
 		this.renderer.updateCamera();
+		this.renderer.resize(x + 3, y + 3, width - 6, height - 6);
 	}
 }

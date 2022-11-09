@@ -4,19 +4,17 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
-import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.pilesos.decals.BaseDecal;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.render.DebugDraw3D;
-import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 
-public class ElementLight extends TreeElement implements ITreeElementGizmos, IDebugDraw {
+public class ElementLight extends TreeElement implements ITreeElementGizmos {
 	public ElementLightType type;
 	private BaseLight<?> light;
 	public BaseDecal _viewportDecal;
@@ -27,6 +25,17 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos, IDe
 		this.light = new PointLight().setColor(1, 1, 1, 1).setIntensity(5.0F);
 		this.type = ElementLightType.POINT;
 		
+		this._viewportDecal = new BaseDecal().setBillboard(true).setDecal(DefaultResources.INSTANCE.standardDecal);
+	}
+	
+	private ElementLight(ElementLight copy) {
+		this.displayName = copy.displayName;
+		this.visible = copy.visible;
+		this.type = copy.type;
+		switch (this.type) {
+			case POINT: this.light = new PointLight().set(copy.getLight(PointLight.class)); break;
+			case SPOT: this.light = new SpotLight().set(copy.getLight(SpotLight.class)); break;
+		}
 		this._viewportDecal = new BaseDecal().setBillboard(true).setDecal(DefaultResources.INSTANCE.standardDecal);
 	}
 	
@@ -43,20 +52,6 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos, IDe
 				} break;
 			}
 		}
-	}
-	
-	public Vector3 getTransform(GizmoTransformType transformType) {
-		switch(transformType) {
-			case TRANSLATE: {
-				switch (this.type) {
-					case POINT: this._viewportDecal.getDecal().setPosition(this.getLight(PointLight.class).position); return this.getLight(PointLight.class).position;
-					case SPOT: this._viewportDecal.getDecal().setPosition(this.getLight(PointLight.class).position); return this.getLight(SpotLight.class).position;
-				}
-			} break;
-			case ROTATE: if (this.type == ElementLightType.SPOT) return this.getLight(SpotLight.class).direction; break;
-			default: return Vector3.Zero;
-		}
-		return Vector3.Zero;
 	}
 	
 	public <T extends BaseLight<?>> T getLight(Class<T> clazz) {
@@ -77,19 +72,7 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos, IDe
 	}
 	
 	public TreeElement cloneElement() {
-		ElementLight elementLight = new ElementLight(this.getName());
-		elementLight.type = this.type;
-		switch (this.type) {
-			case POINT: {
-				PointLight light = this.getLight(PointLight.class);
-				elementLight.light = new PointLight().set(light.color, light.position, light.intensity);
-			} break;
-			case SPOT: {
-				SpotLight light = this.getLight(SpotLight.class);
-				elementLight.light = new SpotLight().set(light.color, light.position, light.direction, light.intensity, light.cutoffAngle, light.exponent);
-			} break;
-		}
-		return elementLight;
+		return new ElementLight(this);
 	}
 	
 	public static enum ElementLightType {

@@ -239,9 +239,11 @@ public class GizmosModule implements IFocusable {
 		this.gizmoRenderPosition.set(0, 0, 0);
 		if (!this.elements.isEmpty()) {
 			int positions = 0;
+			Vector3 tmp = new Vector3();
 			for (ITreeElementGizmos gizmoElement : this.elements) {
 				if (gizmoElement.isTransformSupported(GizmoTransformType.TRANSLATE)) {
-					this.gizmoRenderPosition.add(gizmoElement.getOffsetTransform(GizmoTransformType.TRANSLATE)).add(gizmoElement.getTransform(GizmoTransformType.TRANSLATE));
+					this.gizmoRenderPosition.add(gizmoElement.getOffsetTransform(tmp, GizmoTransformType.TRANSLATE).add(gizmoElement.getTransform(GizmoTransformType.TRANSLATE)));
+					tmp.setZero();
 					positions++;
 				}
 			}

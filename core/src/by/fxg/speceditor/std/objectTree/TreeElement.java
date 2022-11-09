@@ -69,8 +69,17 @@ public abstract class TreeElement {
 	}
 	
 	/** Default {@link ITreeElementGizmos#getOffsetTransform(GizmoTransformType)} implementation **/
-	public Vector3 getOffsetTransform(GizmoTransformType transformType) {
-		return Vector3.Zero; //FIXME make getOffset work normally, also causes trouble for gizmos :( return (parentOffsetTransform+)parentTransform+thisTransform
+	public Vector3 getOffsetTransform(Vector3 inputVector, GizmoTransformType transformType) {
+		if (this.parent != null) {
+			if (this.parent instanceof ITreeElementGizmos && ((ITreeElementGizmos)this.parent).isTransformSupported(transformType)) {
+				switch (transformType) {
+					case SCALE: inputVector.scl(((ITreeElementGizmos)this.parent).getTransform(transformType)); break;
+					default: inputVector.add(((ITreeElementGizmos)this.parent).getTransform(transformType)); break;
+				}
+			}
+			return this.parent.getOffsetTransform(inputVector, transformType);
+		}
+		return inputVector;
 	}
 	
 	public Sprite getObjectTreeSprite() { return DefaultResources.INSTANCE.sprites.get("icons/question"); }

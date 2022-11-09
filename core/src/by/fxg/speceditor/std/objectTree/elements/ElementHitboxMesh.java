@@ -1,5 +1,7 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Vector3;
@@ -38,6 +40,24 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 		this.setNewModel(DefaultResources.INSTANCE.standardModel);
 	}
 	
+	private ElementHitboxMesh(ElementHitboxMesh copy) {
+		this.displayName = copy.displayName;
+		this.visible = copy.visible;
+		this.specFlags = copy.specFlags;
+		this.bulletFlags = copy.bulletFlags;
+		this.bulletFilterMask = copy.bulletFilterMask;
+		this.bulletFilterGroup = copy.bulletFilterGroup;
+		this.linkFlagsToParent = Arrays.copyOf(copy.linkFlagsToParent, copy.linkFlagsToParent.length);
+		if (copy.modelAsset != null) {
+			copy.modelAsset.addHandler(this);
+			this.nodes = Arrays.copyOf(copy.nodes, copy.nodes.length);
+			this.generateMesh();
+		}
+		this.position.set(copy.position);
+		this.rotation.set(copy.rotation);
+		this.scale.set(copy.scale);
+	}
+	
 	public void generateMesh() { this.generateMesh(this.nodes); }
 	public void generateMesh(boolean[] nodes) {
 		if (this.shape != null) this.shape.release();
@@ -56,27 +76,12 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 	
 	public void draw(SpecObjectTree objectTree, DebugDraw3D draw) {
 		if (this.shape == null) return;
-		boolean isSelected = objectTree.elementSelector.isElementSelected(this);
-		if (this.parent instanceof ElementHitboxStack) {
-			tmpMatrix.setToTranslation(parent.getOffsetTransform(GizmoTransformType.TRANSLATE));
-			tmpMatrix.translate(this.position);
-			tmpMatrix.rotate(1F, 0F, 0F, parent.getOffsetTransform(GizmoTransformType.ROTATE).x);
-			tmpMatrix.rotate(0F, 1F, 0F, parent.getOffsetTransform(GizmoTransformType.ROTATE).y);
-			tmpMatrix.rotate(0F, 0F, 1F, parent.getOffsetTransform(GizmoTransformType.ROTATE).z);
-			tmpMatrix.rotate(1F, 0F, 0F, this.rotation.x);
-			tmpMatrix.rotate(0F, 1F, 0F, this.rotation.y);
-			tmpMatrix.rotate(0F, 0F, 1F, this.rotation.z);
-			tmpMatrix.scale(parent.getOffsetTransform(GizmoTransformType.SCALE).x, parent.getOffsetTransform(GizmoTransformType.SCALE).y, parent.getOffsetTransform(GizmoTransformType.SCALE).z);
-			tmpMatrix.scale(this.scale.x, this.scale.y, this.scale.z);
-			if (!isSelected) isSelected = objectTree.elementSelector.isElementSelected(this.parent);
-		} else {
-			tmpMatrix.setToTranslation(this.position);
-			tmpMatrix.rotate(1F, 0F, 0F, this.rotation.x);
-			tmpMatrix.rotate(0F, 1F, 0F, this.rotation.y);
-			tmpMatrix.rotate(0F, 0F, 1F, this.rotation.z);
-			tmpMatrix.scale(this.scale.x, this.scale.y, this.scale.z);
-		}
-		draw.world.debugDrawObject(tmpMatrix, this.shape, isSelected ? UColor.hitboxSelected : UColor.hitbox);
+		tmpMatrix.setToTranslation(this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.TRANSLATE).add(this.position));
+		this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.ROTATE).add(this.rotation);
+		tmpMatrix.rotate(1, 0, 0, tmpVector.x).rotate(0, 1, 0, tmpVector.y).rotate(0, 1, 1, tmpVector.z);
+		this.getOffsetTransform(tmpVector.set(1, 1, 1), GizmoTransformType.SCALE).scl(this.scale);
+		tmpMatrix.scale(tmpVector.x, tmpVector.y, tmpVector.z);
+		draw.world.debugDrawObject(tmpMatrix, this.shape, objectTree.elementSelector.isElementOrParentsSelected(this) ? UColor.hitboxSelected : UColor.hitbox);
 	}
 
 	public Vector3 getTransform(GizmoTransformType transformType) {
@@ -113,19 +118,7 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 	}
 	
 	public TreeElement cloneElement() {
-		ElementHitboxMesh elementHitboxMesh = new ElementHitboxMesh(this.getName());
-		elementHitboxMesh.specFlags = this.specFlags;
-		elementHitboxMesh.bulletFlags = this.bulletFlags;
-		elementHitboxMesh.bulletFilterMask = this.bulletFilterMask;
-		elementHitboxMesh.bulletFilterGroup = this.bulletFilterGroup;
-		System.arraycopy(this.linkFlagsToParent, 0, elementHitboxMesh.linkFlagsToParent, 0, this.linkFlagsToParent.length);
-		if (this.modelAsset != null) this.modelAsset.addHandler(elementHitboxMesh);
-		elementHitboxMesh.nodes = new boolean[this.nodes.length];
-		System.arraycopy(this.nodes, 0, elementHitboxMesh.nodes, 0, this.nodes.length);
-		elementHitboxMesh.position.set(this.position);
-		elementHitboxMesh.rotation.set(this.rotation);
-		elementHitboxMesh.scale.set(this.scale);
-		return elementHitboxMesh;
+		return new ElementHitboxMesh(this);
 	}
 	
 	public void onDelete() {

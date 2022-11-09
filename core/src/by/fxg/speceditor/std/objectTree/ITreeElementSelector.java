@@ -8,6 +8,9 @@ public interface ITreeElementSelector<T extends TreeElement> {
 	/** Returns true if selector contains specified value **/
 	boolean isElementSelected(TreeElement element);
 	
+	/** Returns true if selector contains specified value's parents **/
+	boolean isElementOrParentsSelected(TreeElement element);
+	
 	/** Selects specified value **/
 	void selectElement(TreeElement element);
 	
