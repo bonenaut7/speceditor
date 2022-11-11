@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 //debug code: float c=shape.getPackedColor();shape.setColor(1,0,0,1);shape.rectangle(x+3,yOffset,1,1);shape.setColor(c);
@@ -15,6 +15,7 @@ public abstract class URenderBlock {
 	protected String name;
 	protected int x, width;
 	protected boolean isDropped;
+	private int xBorder, widthBorder;
 	
 	public URenderBlock(String name) { this(name, 0, 0); }
 	public URenderBlock(String name, int x, int width) {
@@ -24,27 +25,30 @@ public abstract class URenderBlock {
 	}
 
 	public int render(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-		if (SpecInterface.isFocused(this) && SpecEditor.get.getInput().isMouseDown(0, false) && GDXUtil.isMouseInArea(this.x, yOffset - 13, this.width, 13)) {
+		if (SpecEditor.get.getInput().isMouseDown(0, false) && SpecInterface.isFocused(this) && UIElement.isMouseInArea(this.x, yOffset - 10, this.width, 10)) {
 			this.isDropped = !this.isDropped;
 		}
-		
+
+		UIElement.prevColor = shape.getPackedColor();
 		if (this.isDropped) {
 			final int prevY = yOffset;
-			yOffset = this.renderInside(batch, shape, foster, yOffset - 14) + 10;
-			shape.setColor(UColor.gray);
-			shape.rectangle(this.x - 5, prevY - 5, this.width + 10, yOffset - prevY - 10);
-			
-			shape.setColor(UColor.white);
-			shape.filledTriangle(this.x - 1, prevY - 1, this.x + 7, prevY - 1, this.x + 3, prevY - 10);
-			foster.setString(this.name).draw(this.x + 10, prevY - foster.getHeight() - 1, Align.left);
-			shape.line(this.x + foster.getWidth() + 15, prevY - 5, this.x + this.width, prevY - 5, 3F);
+			yOffset = this.renderInside(batch, shape, foster, yOffset - 6) + 6;
+			shape.setColor(UColor.elementDefaultColor);
+			shape.rectangle(this.xBorder, prevY - 6, this.widthBorder, yOffset - prevY);
+			shape.setColor(UColor.elementIntensiveColor);
+			shape.filledTriangle(this.xBorder + 3, prevY - 1, this.xBorder + 11, prevY - 1, this.xBorder + 7, prevY - 10);
+			foster.setString(this.name).draw(this.xBorder + 15, prevY - 5 - foster.getHeight() / 2, Align.left);
+			shape.line(this.xBorder + foster.getWidth() + 20, prevY - 6, this.xBorder + this.widthBorder - 5, prevY - 6, 3F);
+			yOffset -= 6;
 		} else {
-			shape.setColor(UColor.white);
-			shape.filledTriangle(this.x, yOffset, this.x + 6, yOffset - 5, this.x, yOffset - 10);
-			foster.setString(this.name).draw(this.x + 10, yOffset - foster.getHeight() - 1, Align.left);
-			shape.line(this.x + foster.getWidth() + 15, yOffset - 5, this.x + this.width, yOffset - 5, 3F);
+			shape.setColor(UColor.elementIntensiveColor);
+			shape.filledTriangle(this.xBorder + 5, yOffset, this.xBorder + 11, yOffset - 5, this.xBorder + 5, yOffset - 10); //5, 6, 10 appropriate sizes
+			foster.setString(this.name).draw(this.xBorder + 15, yOffset - 5 - foster.getHeight() / 2, Align.left);
+			shape.line(this.xBorder + foster.getWidth() + 20, yOffset - 6, this.xBorder + this.widthBorder - 5, yOffset - 6, 3F);
+			yOffset -= 9;
 		}
-		return yOffset -= 17;
+		shape.setColor(UIElement.prevColor);
+		return yOffset;
 	}
 	
 	/** you need to return changed yOffset XXX**/
@@ -60,9 +64,12 @@ public abstract class URenderBlock {
 		return this;
 	}
 	
-	public URenderBlock setTransforms(float x, float width) { 
-		this.x = (int)x;
-		this.width = (int)width;
+	public URenderBlock setTransforms(float x, float width) {
+		//borders overrides 1px on horizon line, x+1,width-2
+		this.x = (int)x + 1;
+		this.width = (int)width - 2;
+		this.xBorder = (int)x;
+		this.widthBorder = (int)width;
 		return this;
 	}
 	

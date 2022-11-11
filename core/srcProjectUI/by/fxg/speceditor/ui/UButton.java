@@ -19,25 +19,26 @@ public class UButton extends UIElement {
 	public UButton(String name, int x, int y, int width, int height) { this(name); this.setTransforms(x, y, width, height); }
 	public UButton(String name) { 
 		this.name = name;
-		this.color = UColor.gray;
+		this.color = UColor.elementDefaultColor;
 	}
 
 	public void render(ShapeDrawer shape, Foster foster) {
+		prevColor = shape.getPackedColor();
 		if (this.enabled) {
 			shape.setColor(this.color);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
 			if (SpecEditor.get.getInput().isMouseDown(0, true) && this.isMouseOver()) {
 				SpecInterface.setCursor(AppCursor.POINTING);
-				shape.setColor(UColor.select);
-				shape.rectangle(this.x, this.y, this.width, this.height, 2);
+				shape.setColor(UColor.elementBoundsClicked);
+				shape.rectangle(this.x, this.y + 1, this.width - 1, this.height - 1, 2);
 			} else if (this.isMouseOver()) {
 				SpecInterface.setCursor(AppCursor.POINT);
-				shape.setColor(UColor.overlay);
+				shape.setColor(UColor.elementHover);
 				shape.filledRectangle(this.x, this.y, this.width, this.height);
 			}
 		} else {
 			if (this.isMouseOver()) SpecInterface.setCursor(AppCursor.UNAVAILABLE);
-			shape.setColor(UColor.gray);
+			shape.setColor(UColor.elementDefaultColor);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
 		}
 		shape.getBatch().flush();
@@ -46,6 +47,7 @@ public class UButton extends UIElement {
 			shape.getBatch().flush();
 			PilesosScissorStack.instance.popScissors();
 		}
+		shape.setColor(prevColor);
 	}
 	
 	public String getName() { return this.name; }

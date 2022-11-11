@@ -10,10 +10,10 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.i18n.I18n;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UCheckbox;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -32,7 +32,7 @@ public class EditorPaneMatselModuleBlendingAttribute extends EditorPaneMatselMod
 	public EditorPaneMatselModuleBlendingAttribute() {
 		this.opacity = (NumberCursorInputField)new NumberCursorInputField().setAllowFullfocus(false).setMaxLength(12).setListener(this, "opacity");
 		this.blendSrc = new UDropdownSelectSingle(15, this.blendSrcModesNames) {
-			public UDropdownSelectSingle setSelectedVariant(int variant) {
+			public UDropdownSelectSingle setVariantSelected(int variant) {
 				this.selectedVariant = variant;
 				if (EditorPaneMatselModuleBlendingAttribute.this.matsel.getSelectedAttribute() != null) {
 					((BlendingAttribute)EditorPaneMatselModuleBlendingAttribute.this.matsel.getSelectedAttribute()).sourceFunction = EditorPaneMatselModuleBlendingAttribute.this.blendSrcModes[variant];
@@ -41,7 +41,7 @@ public class EditorPaneMatselModuleBlendingAttribute extends EditorPaneMatselMod
 			}
 		};
 		this.blendDst = new UDropdownSelectSingle(15, this.blendDstModesNames) {
-			public UDropdownSelectSingle setSelectedVariant(int variant) {
+			public UDropdownSelectSingle setVariantSelected(int variant) {
 				this.selectedVariant = variant;
 				if (EditorPaneMatselModuleBlendingAttribute.this.matsel.getSelectedAttribute() != null) {
 					((BlendingAttribute)EditorPaneMatselModuleBlendingAttribute.this.matsel.getSelectedAttribute()).destFunction = EditorPaneMatselModuleBlendingAttribute.this.blendDstModes[variant];
@@ -57,11 +57,11 @@ public class EditorPaneMatselModuleBlendingAttribute extends EditorPaneMatselMod
 		foster.setString(I18n.get("speceditor.std.matsel.blending.src")).draw(x, yOffset -= foster.getHeight() + 2, Align.left);
 		this.blendSrc.setTransforms(x + (int)foster.getWidth() + 5, (yOffset -= 1) - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 5, 14).update();
 		this.blendSrc.render(shape, foster);
-		if (this.blendSrc.isDropped()) yOffset -= this.blendSrcModesNames.length * 15 + 2;
+		if (this.blendSrc.isFocused()) yOffset -= this.blendSrcModesNames.length * 15 + 2;
 		foster.setString(I18n.get("speceditor.std.matsel.blending.dest")).draw(x, yOffset -= foster.getHeight() + 9, Align.left);
 		this.blendDst.setTransforms(x + (int)foster.getWidth() + 5, (yOffset -= 1) - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 5, 14).update();
 		this.blendDst.render(shape, foster);
-		if (this.blendDst.isDropped()) yOffset -= this.blendSrcModesNames.length * 15 + 2;
+		if (this.blendDst.isFocused()) yOffset -= this.blendSrcModesNames.length * 15 + 2;
 		foster.setString(I18n.get("speceditor.std.matsel.blending.opacity")).draw(x, yOffset -= foster.getHeight() + 10, Align.left);
 		this.opacity.setTransforms(x + (int)foster.getWidth() + 5, (yOffset -= 1) - 3, width - (int)foster.getWidth() - 5, 15).setFoster(foster).update();
 		this.opacity.render(batch, shape);
@@ -72,11 +72,11 @@ public class EditorPaneMatselModuleBlendingAttribute extends EditorPaneMatselMod
 		return yOffset;
 	}
 
-	public void onAttributeCreationPress(Array<UDAElement> elements) {
-		elements.add(new UDAElement("default.blending.blending", I18n.get("speceditor.std.matsel.blending.blending.name")));
+	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.button("default.blending.blending", I18n.get("speceditor.std.matsel.blending.blending.name")));
 	}
 
-	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
+	public void onDropdownAreaClick(EditorPaneMatsel matsel, STDDropdownAreaElement element, String id) {
 		switch (id) {
 			case "default.blending.blending": matsel.addAttribute(new BlendingAttribute(true, 0.5F)); break;
 		}
@@ -88,13 +88,13 @@ public class EditorPaneMatselModuleBlendingAttribute extends EditorPaneMatselMod
 			BlendingAttribute blendingAttribute = (BlendingAttribute)attribute;
 			for (int i = 0; i != this.blendSrcModes.length; i++) {
 				if (blendingAttribute.sourceFunction == this.blendSrcModes[i]) {
-					this.blendSrc.setSelectedVariant(i);
+					this.blendSrc.setVariantSelected(i);
 					break;
 				}
 			}
 			for (int i = 0; i != this.blendDstModes.length; i++) {
 				if (blendingAttribute.destFunction == this.blendDstModes[i]) {
-					this.blendDst.setSelectedVariant(i);
+					this.blendDst.setVariantSelected(i);
 					break;
 				}
 			}

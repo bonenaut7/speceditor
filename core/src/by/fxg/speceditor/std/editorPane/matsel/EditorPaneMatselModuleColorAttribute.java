@@ -9,10 +9,10 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.NumberCursorInputField;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -59,19 +59,19 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 		try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
 	}
 
-	public void onAttributeCreationPress(Array<UDAElement> elements) {
-		UDAElement colorAttributes = new UDAElement("", "Color");
-		colorAttributes.addElement(new UDAElement("default.color.diffuse", "Diffuse"));
-		colorAttributes.addElement(new UDAElement("default.color.specular", "Specular"));
-		colorAttributes.addElement(new UDAElement("default.color.ambient", "Ambient"));
-		colorAttributes.addElement(new UDAElement("default.color.emissive", "Emissive"));
-		colorAttributes.addElement(new UDAElement("default.color.reflection", "Reflection"));
-		colorAttributes.addElement(new UDAElement("default.color.ambientLight", "Ambient Light"));
-		colorAttributes.addElement(new UDAElement("default.color.fog", "Fog"));
-		elements.add(colorAttributes);
+	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow("Color")
+			.add(STDDropdownAreaElement.button("default.color.diffuse", "Diffuse"))
+			.add(STDDropdownAreaElement.button("default.color.specular", "Specular"))
+			.add(STDDropdownAreaElement.button("default.color.ambient", "Ambient"))
+			.add(STDDropdownAreaElement.button("default.color.emissive", "Emissive"))
+			.add(STDDropdownAreaElement.button("default.color.reflection", "Reflection"))
+			.add(STDDropdownAreaElement.button("default.color.ambientLight", "Ambient Light"))
+			.add(STDDropdownAreaElement.button("default.color.fog", "Fog"))
+		);
 	}
 
-	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
+	public void onDropdownAreaClick(EditorPaneMatsel matsel, STDDropdownAreaElement element, String id) {
 		switch (id) {
 			case "default.color.diffuse": matsel.addAttribute(ColorAttribute.createDiffuse(1, 1, 1, 1)); break;
 			case "default.color.specular": matsel.addAttribute(ColorAttribute.createSpecular(1, 1, 1, 1)); break;

@@ -9,10 +9,10 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UCheckbox;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -25,7 +25,7 @@ public class EditorPaneMatselModuleDepthTestAttribute extends EditorPaneMatselMo
 	
 	public EditorPaneMatselModuleDepthTestAttribute() {
 		this.depthFunc = new UDropdownSelectSingle(15, this.depthFuncNames) {
-			public UDropdownSelectSingle setSelectedVariant(int variant) {
+			public UDropdownSelectSingle setVariantSelected(int variant) {
 				this.selectedVariant = variant;
 				if (EditorPaneMatselModuleDepthTestAttribute.this.matsel.getSelectedAttribute() != null) {
 					((DepthTestAttribute)EditorPaneMatselModuleDepthTestAttribute.this.matsel.getSelectedAttribute()).depthFunc = EditorPaneMatselModuleDepthTestAttribute.this.depthFuncModes[variant];
@@ -45,7 +45,7 @@ public class EditorPaneMatselModuleDepthTestAttribute extends EditorPaneMatselMo
 		foster.setString("Depth Func:").draw(x, yOffset -= foster.getHeight() + 1, Align.left);
 		this.depthFunc.setTransforms(x + (int)foster.getWidth() + 5, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 5, 12).update();
 		this.depthFunc.render(shape, foster);
-		if (this.depthFunc.isDropped()) yOffset -= this.depthFuncModes.length * 15 + 2;
+		if (this.depthFunc.isFocused()) yOffset -= this.depthFuncModes.length * 15 + 2;
 		foster.setString("Far range:").draw(x, yOffset -= foster.getHeight() + 10, Align.left);
 		this.depthRange[0].setTransforms(x + (int)foster.getWidth() + 5, (yOffset -= 1) - 3, width - (int)foster.getWidth() - 5, 15).setFoster(foster).update();
 		this.depthRange[0].render(batch, shape);
@@ -59,11 +59,13 @@ public class EditorPaneMatselModuleDepthTestAttribute extends EditorPaneMatselMo
 		return yOffset;
 	}
 
-	public void onAttributeCreationPress(Array<UDAElement> elements) {
-		elements.add(new UDAElement("", "Depth Testing").addElement(new UDAElement("default.depthTest.stencil", "Stencil")));
+	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow("Depth Testing")
+			.add(STDDropdownAreaElement.button("default.depthTest.stencil", "Stencil"))
+		);
 	}
 
-	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
+	public void onDropdownAreaClick(EditorPaneMatsel matsel, STDDropdownAreaElement element, String id) {
 		switch (id) {
 			case "default.depthTest.stencil": matsel.addAttribute(new DepthTestAttribute(true)); break;
 		}
@@ -75,7 +77,7 @@ public class EditorPaneMatselModuleDepthTestAttribute extends EditorPaneMatselMo
 			DepthTestAttribute depthTestAttribute = (DepthTestAttribute)attribute;
 			for (int i = 0; i != this.depthFuncModes.length; i++) {
 				if (depthTestAttribute.depthFunc == this.depthFuncModes[i]) {
-					this.depthFunc.setSelectedVariant(i);
+					this.depthFunc.setVariantSelected(i);
 					break;
 				}
 			}

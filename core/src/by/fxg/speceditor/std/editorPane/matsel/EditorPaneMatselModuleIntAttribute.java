@@ -9,9 +9,9 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -23,7 +23,7 @@ public class EditorPaneMatselModuleIntAttribute extends EditorPaneMatselModule i
 	
 	public EditorPaneMatselModuleIntAttribute() {
 		this.cullFaceType = new UDropdownSelectSingle(15, this.cullFaceModesNames) {
-			public UDropdownSelectSingle setSelectedVariant(int variant) {
+			public UDropdownSelectSingle setVariantSelected(int variant) {
 				this.selectedVariant = variant;
 				if (EditorPaneMatselModuleIntAttribute.this.matsel.getSelectedAttribute() != null) {
 					((IntAttribute)EditorPaneMatselModuleIntAttribute.this.matsel.getSelectedAttribute()).value = EditorPaneMatselModuleIntAttribute.this.cullFaceModes[variant];
@@ -40,7 +40,7 @@ public class EditorPaneMatselModuleIntAttribute extends EditorPaneMatselModule i
 			foster.setString("Type:").draw(x, yOffset -= foster.getHeight() + 2, Align.left);
 			this.cullFaceType.setTransforms(x + (int)foster.getWidth() + 5, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, width - (int)foster.getWidth() - 5, 14).update();
 			this.cullFaceType.render(shape, foster);
-			if (this.cullFaceType.isDropped()) yOffset -= this.cullFaceModesNames.length * 15 + 2;
+			if (this.cullFaceType.isFocused()) yOffset -= this.cullFaceModesNames.length * 15 + 2;
 		} else {
 			foster.setString("Value:").draw(x, yOffset -= foster.getHeight() + 4, Align.left);
 			this.inputField.setTransforms(x + (int)foster.getWidth() + 5, (yOffset -= 3), width - (int)foster.getWidth() - 5, 15).setFoster(foster).update();
@@ -49,13 +49,13 @@ public class EditorPaneMatselModuleIntAttribute extends EditorPaneMatselModule i
 		return yOffset;
 	}
 
-	public void onAttributeCreationPress(Array<UDAElement> elements) {
-		UDAElement intAttributes = new UDAElement("", "Integer");
-		intAttributes.addElement(new UDAElement("default.int.cullFace", "Face culling"));
-		elements.add(intAttributes);
+	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow("Integer")
+			.add(STDDropdownAreaElement.button("default.int.cullFace", "Face culling"))	
+		);
 	}
 
-	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
+	public void onDropdownAreaClick(EditorPaneMatsel matsel, STDDropdownAreaElement element, String id) {
 		switch (id) {
 			case "default.int.cullFace": matsel.addAttribute(IntAttribute.createCullFace(-1)); break;
 		}
@@ -67,7 +67,7 @@ public class EditorPaneMatselModuleIntAttribute extends EditorPaneMatselModule i
 			if (attribute.type == IntAttribute.CullFace) {
 				for (int i = 0; i != this.cullFaceModes.length; i++) {
 					if (((IntAttribute)attribute).value == this.cullFaceModes[i]) {
-						this.cullFaceType.setSelectedVariant(i);
+						this.cullFaceType.setVariantSelected(i);
 						break;
 					}
 				}

@@ -17,7 +17,6 @@ public class GDXUtil {
 	}
 	
 	public static boolean isMouseIn(float x, float y, float x1, float y1) {
-		//return x <= Gdx.input.getX() && Gdx.input.getX() <= x1 && y <= (Gdx.graphics.getHeight() + -Gdx.input.getY()) && (Gdx.graphics.getHeight() + -Gdx.input.getY()) <= y1;
 		return x <= Gdx.input.getX() && Gdx.input.getX() <= x1 && y <= (Pilesos.getApp().height + -Gdx.input.getY()) && (Pilesos.getApp().height + -Gdx.input.getY()) <= y1;
 	}
 	

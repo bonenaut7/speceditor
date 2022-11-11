@@ -5,6 +5,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.MathUtils;
@@ -92,6 +93,10 @@ public class STDInputField extends UIElement implements IFocusable {
 	}
 	
 	public void render(Batch batch, ShapeDrawer shape) {
+		float color = shape.getPackedColor();
+		shape.setColor(Color.RED);
+		shape.rectangle(this.x, this.y, this.width, this.height);
+		shape.setColor(color);
 		batch.flush();
 		if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
 			float prevColor = shape.getPackedColor();
@@ -215,7 +220,7 @@ public class STDInputField extends UIElement implements IFocusable {
 
 	@Override
 	public boolean isMouseOver(int x, int y, int width, int height) {
-		return GDXUtil.isMouseInArea(x, y, width, height);
+		return isMouseInArea(x, y, width, height);
 	}
 	
 	@Override

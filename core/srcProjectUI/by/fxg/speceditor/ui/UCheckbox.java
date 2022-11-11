@@ -2,9 +2,9 @@ package by.fxg.speceditor.ui;
 
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.std.ui.SpecInterface;
-import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UCheckbox extends UIElement {
@@ -26,22 +26,26 @@ public class UCheckbox extends UIElement {
 	}
 	
 	public void render(ShapeDrawer shape) {
+		prevColor = shape.getPackedColor();
 		if (this.enabled) {
-			shape.setColor(UColor.gray);
+			shape.setColor(UColor.elementDefaultColor);
+			shape.rectangle(this.x, this.y + 1, this.width - 1, this.height - 1, 2);
 			if (this.isMouseOver()) {
 				SpecInterface.setCursor(SpecEditor.get.getInput().isMouseDown(0, true) ? AppCursor.POINTING : AppCursor.POINT);
+				shape.setColor(UColor.elementHover);
 				shape.filledRectangle(this.x, this.y, this.width, this.height);
-			} else shape.rectangle(this.x + 1, this.y + 1, this.width - 2, this.height - 2, 2);
+			}	
 		} else {
 			if (this.isMouseOver()) SpecInterface.setCursor(AppCursor.UNAVAILABLE);
-			shape.setColor(UColor.gray);
+			shape.setColor(UColor.elementDefaultColor);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
 		}
 		if (this.value) {
-			shape.setColor(UColor.white);
+			shape.setColor(UColor.elementIntensiveColor);
 			shape.line(this.x + 2, this.y + this.height / 2, this.x + this.width / 2, this.y + 2);
 			shape.line(this.x + this.width / 2, this.y + 2, this.x + this.width - 2, this.y + this.height - 2);
 		}
+		shape.setColor(prevColor);
 	}
 	
 	public boolean isEnabled() { return this.enabled; }

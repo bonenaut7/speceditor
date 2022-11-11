@@ -44,8 +44,8 @@ public class EditorPaneHitboxStack extends EditorPaneTreeElementHitbox implement
 		yOffset -= 8;
 		foster.setString("Type:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
 		this.stackType.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
-		if (this.stackType.isDropped()) yOffset -= this.stackType.getVariants().length * 15;
-		this.element.isArrayStack = this.stackType.getVariant() == 1;
+		if (this.stackType.isFocused()) yOffset -= this.stackType.getVariants().length * 15;
+		this.element.isArrayStack = this.stackType.getVariantSelected() == 1;
 		
 		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
 		yOffset = this.specFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.transform.isDropped() ? yOffset - 5 : yOffset);
@@ -65,7 +65,7 @@ public class EditorPaneHitboxStack extends EditorPaneTreeElementHitbox implement
 		super.updatePane(selector);
 		this.element = (ElementHitboxStack)selector.get(0);
 		this.elementName.setText(this.element.getName());
-		this.stackType.setSelectedVariant(this.element.isArrayStack ? 1 : 0);
+		this.stackType.setVariantSelected(this.element.isArrayStack ? 1 : 0);
 
 		this.transform.updateBlock(this.element);
 		this.specFlags.updateBlock(this.element);

@@ -20,7 +20,7 @@ public class ColoredInputField extends STDInputField {
 	public void render(Batch batch, ShapeDrawer shape) {
 		float prevColor = shape.getPackedColor();
 		shape.setColor(UColor.gray);
-		shape.rectangle(this.x, this.y - 1, this.width + 1, this.height + 1);
+		shape.rectangle(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
 		batch.flush();
 		if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
 			if (this.backgroundColor != null) {
@@ -30,8 +30,8 @@ public class ColoredInputField extends STDInputField {
 			this.foster.setString(this.currentString).draw(this.x - this.xTextOffset, this.y + this.height / 2 - this.foster.getHalfHeight(), Align.left);
 			if (this.havePointerSelection()) {
 				shape.setColor(0.25F, 0.25F, 1.0F, 0.5F);
-				int from = (int)this.foster.setString(this.currentString.substring(0, this.selectPointerFrom)).getWidth() - this.xTextOffset;
-				int to = (int)this.foster.setString(this.currentString.substring(0, this.selectPointerTo)).getWidth() - this.xTextOffset;
+				int from = (int)this.foster.setString(this.currentString.substring(0, Math.min(this.selectPointerFrom, this.currentString.length()))).getWidth() - this.xTextOffset;
+				int to = (int)this.foster.setString(this.currentString.substring(0, Math.min(this.selectPointerTo, this.currentString.length()))).getWidth() - this.xTextOffset;
 				shape.filledRectangle(this.x + from, this.y, to - from, this.height);
 			}
 			if (this.isFocused()) {

@@ -1,10 +1,7 @@
 package by.fxg.speceditor.std.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-
-import by.fxg.speceditor.DefaultResources;
 
 public class SpecInterface {
 	public static SpecInterface INSTANCE;
@@ -13,7 +10,7 @@ public class SpecInterface {
 	
 	public void onUpdate() {
 		if (this._cursor != this._prevCursor) {
-			Gdx.graphics.setCursor(DefaultResources.INSTANCE.getCursor(this._cursor));
+			//Gdx.graphics.setCursor(DefaultResources.INSTANCE.getCursor(this._cursor));
 			this._prevCursor = this._cursor;
 		}
 		this._cursor = AppCursor.ARROW;
@@ -95,7 +92,12 @@ public class SpecInterface {
 			background = new Color(0.12f, 0.12f, 0.12f, 1f),
 			overlay = new Color(1f, 1f, 1f, 0.2f),
 			suboverlay = new Color(0f, 0f, 0f, 0.25f),
-			select = new Color(1f, 1f, 1f, 1f)
+			select = new Color(1f, 1f, 1f, 1f),
+			
+			elementDefaultColor = new Color(0.25f, 0.25f, 0.25f, 1.0f),
+			elementIntensiveColor = new Color(1.0f, 1.0f, 1.0f, 1.0f),
+			elementHover = new Color(1.0f, 1.0f, 1.0f, 0.2f),
+			elementBoundsClicked = new Color(1.0f, 1.0f, 1.0f, 0.5f)
 			;
 		
 		public static final Vector3

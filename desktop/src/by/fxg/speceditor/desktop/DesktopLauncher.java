@@ -14,6 +14,7 @@ public class DesktopLauncher {
 		config.width = 1366;
 		config.height = 768;
 		config.title = "SpecEditor";
+		//config.vSyncEnabled=false;config.foregroundFPS=99999; 10.11.2022, 1.2-1.5k fps (<1ms per frame)
 		SpecEditor specEditor = new SpecEditor(new SpecEditorApplicationTools(), args);
 		new LwjglApplicationSpecEditor(specEditor, config);
 	}

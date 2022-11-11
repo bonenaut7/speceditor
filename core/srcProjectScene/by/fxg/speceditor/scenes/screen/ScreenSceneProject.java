@@ -18,15 +18,15 @@ import by.fxg.speceditor.screen.gui.GuiProjectExitSave;
 import by.fxg.speceditor.screen.project.SubscreenExplorer;
 import by.fxg.speceditor.screen.project.SubscreenProjectManager;
 import by.fxg.speceditor.screen.project.SubscreenViewport;
+import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDragArea;
-import by.fxg.speceditor.ui.UDropdownArea;
-import by.fxg.speceditor.ui.UDropdownArea.IUDropdownAreaListener;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class ScreenSceneProject extends BaseScreen implements IUDropdownAreaListener {
+public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaListener {
 	public ScenesProject project;
 	public SubscreenProjectManager subObjectTree;
 	public SubscreenExplorer unnamedUselessModule; //TODO do something with it lol, or at least give it a name
@@ -34,7 +34,7 @@ public class ScreenSceneProject extends BaseScreen implements IUDropdownAreaList
 	public SubscreenViewport subViewport;
 	
 	private UButton dropdownButtonApp;
-	private UDropdownArea dropdownArea;
+	private STDDropdownArea dropdownArea;
 	private UDragArea viewObjectTreeExplorer, viewEditorPaneExplorer, viewAssetSelector;
 	private int timer;
 	private long nextBackupTime;
@@ -43,9 +43,21 @@ public class ScreenSceneProject extends BaseScreen implements IUDropdownAreaList
 		this.project = project;
 		int width = Gdx.graphics.getWidth(), height = Gdx.graphics.getHeight();
 		this.dropdownButtonApp = new UButton("Editor", 1, height - 16, 90, 15);
-		this.dropdownArea = new UDropdownArea(this, 15);
-		//this.dropdownButtonApp = new UDropdownClick("Editor", 1, height - 16, 90, 20, 15, "Close project", "About app"); //change to dropdown lol
-		//this.dropdownButtonProject = new UDropdownClick("Project", 92, height - 16, 75, 20, 15, "Save", "Export as", "Open folder", "Backups");
+		this.dropdownArea = new STDDropdownArea(15).setListener(this);
+		Array<STDDropdownAreaElement> array = this.dropdownArea.getElementsArrayAsEmpty();
+		array.add(STDDropdownAreaElement.button("project.save", "Save project"));
+		array.add(STDDropdownAreaElement.subwindow("Export as...")
+				.add(STDDropdownAreaElement.button("project.export.specformat", "Specformat"))
+				.add(STDDropdownAreaElement.button("project.export.json", "json")));
+		array.add(STDDropdownAreaElement.line());
+		array.add(STDDropdownAreaElement.subwindow("Open...")
+				.add(STDDropdownAreaElement.button("editor.open.projectFolder", "Project folder"))
+				.add(STDDropdownAreaElement.button("editor.open.specEditorFolder", "SpecEditor folder")));
+		array.add(STDDropdownAreaElement.line());
+		array.add(STDDropdownAreaElement.button("editor.closeProject", "Close project"));
+		array.add(STDDropdownAreaElement.button("editor.about", "About"));
+		array.add(STDDropdownAreaElement.button("editor.exit", "Exit"));
+		this.dropdownArea.setElements(array, SpecEditor.fosterNoDraw);
 		
 		this.updateDimensions(width, height);
 		this.subObjectTree = new SubscreenProjectManager(project.objectTree, this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
@@ -77,22 +89,7 @@ public class ScreenSceneProject extends BaseScreen implements IUDropdownAreaList
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		if (this.dropdownButtonApp.isPressed()) {
-			Array<UDAElement> array = new Array<>();
-			array.add(new UDAElement("project.save", "Save project"));
-			UDAElement export = new UDAElement("project.export", "Export as...");
-			export.addElement(new UDAElement("project.export.specformat", "Specformat"));
-			export.addElement(new UDAElement("project.export.json", "json"));
-			array.add(export);
-			array.add(new UDAElement());
-			UDAElement open = new UDAElement("editor.open", "Open...");
-			open.addElement(new UDAElement("editor.open.projectFolder", "Project folder"));
-			open.addElement(new UDAElement("editor.open.specEditorFolder", "SpecEditor folder"));
-			array.add(open);
-			array.add(new UDAElement());
-			array.add(new UDAElement("editor.closeProject", "Close project"));
-			array.add(new UDAElement("editor.about", "About"));
-			array.add(new UDAElement("editor.exit", "Exit"));
-			this.dropdownArea.set(foster, array).open(1, height - 18);
+			this.dropdownArea.open(1, height - 18);
 		}
 		if (!this.dropdownArea.isFocused()) {
 			this.subEditorPane.update(batch, shape, foster, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
@@ -117,6 +114,7 @@ public class ScreenSceneProject extends BaseScreen implements IUDropdownAreaList
 	private int sEditorX, sEditorY, sEditorW, sEditorH, sViewportX, sViewportY, sViewportW, sViewportH;
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		batch.begin();
+		shape.update(true);
 		shape.setColor(0.075f, 0.075f, 0.075f, 1f);
 		shape.filledRectangle(0, height - 17, width, 17);
 		this.dropdownButtonApp.render(shape, foster);
@@ -135,7 +133,7 @@ public class ScreenSceneProject extends BaseScreen implements IUDropdownAreaList
 		batch.end();
 	}
 	
-	public void onDropdownClick(String id) {
+	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {
 		switch (id) {
 			case "project.save": {
 				this.project.saveConfiguration();

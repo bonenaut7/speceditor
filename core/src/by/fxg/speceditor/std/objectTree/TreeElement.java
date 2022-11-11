@@ -12,7 +12,7 @@ import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 
 /** Basic element of {@link by.fxg.speceditor.std.objectTree.SpecObjectTree}. <br>
  *  Contains: <br>
@@ -30,19 +30,19 @@ public abstract class TreeElement {
 	protected String displayName = "undefined";
 	protected boolean visible = true;
 
-	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
+	public void addDropdownItems(SpecObjectTree tree, Array<STDDropdownAreaElement> elements, boolean allSameType) {
 		int cloneType = tree.elementSelector.get(0) instanceof ITreeElementFolder ? 1 : 2;
 		for (int i = 0; i != tree.elementSelector.size(); i++) {
 			if (tree.elementSelector.get(i) instanceof ITreeElementFolder && cloneType == 2) { cloneType = -1; break; }
 			else if (!(tree.elementSelector.get(i) instanceof ITreeElementFolder) && cloneType == 1) { cloneType = -1; break; }
 		}
-		if (cloneType > 0) items.add(new UDAElement("default.clone", "Clone"));
-		items.add(new UDAElement("default.delete", "Delete"));
+		if (cloneType > 0) elements.add(STDDropdownAreaElement.button("default.clone", "Clone"));
+		elements.add(STDDropdownAreaElement.button("default.delete", "Delete"));
 	}
 	
 	/** Used after using one of dropdown items, return true to close dropdown **/
-	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
-		switch (itemID) {
+	public boolean processDropdownAction(SpecObjectTree tree, STDDropdownAreaElement element, String id) {
+		switch (id) {
 			case "default.clone": {
 				TreeElement clone = this.cloneElement();
 				if (clone != null) {

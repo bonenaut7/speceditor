@@ -12,8 +12,8 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.std.g3d.attributes.SpecTextureAttribute;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.ui.UButton;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -46,19 +46,19 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 		return yOffset;
 	}
 
-	public void onAttributeCreationPress(Array<UDAElement> elements) {
-		UDAElement textureAttributes = new UDAElement("", "Texture");
-		textureAttributes.addElement(new UDAElement("default.texture.diffuse", "Diffuse"));
-		textureAttributes.addElement(new UDAElement("default.texture.specular", "Specular"));
-		textureAttributes.addElement(new UDAElement("default.texture.bump", "Bump"));
-		textureAttributes.addElement(new UDAElement("default.texture.normal", "Normal"));
-		textureAttributes.addElement(new UDAElement("default.texture.ambient", "Ambient"));
-		textureAttributes.addElement(new UDAElement("default.texture.emissive", "Emissive"));
-		textureAttributes.addElement(new UDAElement("default.texture.reflection", "Reflection"));
-		elements.add(textureAttributes);
+	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow("Texture")
+			.add(STDDropdownAreaElement.button("default.texture.diffuse", "Diffuse"))
+			.add(STDDropdownAreaElement.button("default.texture.specular", "Specular"))
+			.add(STDDropdownAreaElement.button("default.texture.bump", "Bump"))
+			.add(STDDropdownAreaElement.button("default.texture.normal", "Normal"))
+			.add(STDDropdownAreaElement.button("default.texture.ambient", "Ambient"))
+			.add(STDDropdownAreaElement.button("default.texture.emissive", "Emissive"))
+			.add(STDDropdownAreaElement.button("default.texture.reflection", "Reflection"))
+		);
 	}
 
-	public void onDropdownClick(EditorPaneMatsel matsel, String id) {
+	public void onDropdownAreaClick(EditorPaneMatsel matsel, STDDropdownAreaElement element, String id) {
 		switch (id) {
 			case "default.texture.diffuse": matsel.addAttribute(SpecTextureAttribute.createDiffuse(DefaultResources.INSTANCE.standardTexture)); break;
 			case "default.texture.specular": matsel.addAttribute(SpecTextureAttribute.createSpecular(DefaultResources.INSTANCE.standardTexture)); break;

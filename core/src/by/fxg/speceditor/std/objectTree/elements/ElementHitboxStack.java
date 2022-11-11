@@ -13,7 +13,7 @@ import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 
 public class ElementHitboxStack extends TreeElementHitbox implements ITreeElementFolder, ITreeElementGizmos, IDebugDraw {
 	private boolean isFolderOpened = false;
@@ -46,26 +46,26 @@ public class ElementHitboxStack extends TreeElementHitbox implements ITreeElemen
 		this.scale.set(copy.scale);
 	}
 	
-	public void addDropdownItems(SpecObjectTree tree, Array<UDAElement> items, boolean allSameType) {
-		super.addDropdownItems(tree, items, allSameType);
+	public void addDropdownItems(SpecObjectTree tree, Array<STDDropdownAreaElement> elements, boolean allSameType) {
+		super.addDropdownItems(tree, elements, allSameType);
 		
 		if (tree.elementSelector.size() == 1) {
-			UDAElement add = new UDAElement("hitboxstack.add", "Add");
-			add.addElement(new UDAElement("hitboxstack.add.hitboxstack", "Hitbox Stack"));
-			add.addElement(new UDAElement("hitboxstack.add.hitbox", "Hitbox"));
-			add.addElement(new UDAElement("hitboxstack.add.hitboxmesh", "Mesh Hitbox"));
-			items.add(new UDAElement(), add);
+			elements.add(STDDropdownAreaElement.subwindow("Add element")
+				.add(STDDropdownAreaElement.button("hitboxstack.add.hitboxstack", "Hitbox Stack"))
+				.add(STDDropdownAreaElement.button("hitboxstack.add.hitbox", "Hitbox"))
+				.add(STDDropdownAreaElement.button("hitboxstack.add.hitboxmesh", "Mesh Hitbox"))
+			);
 		}
 	}
 	
 	/** Used after using one of dropdown items, return true to close dropdown **/
-	public boolean processDropdownAction(SpecObjectTree tree, String itemID) {
-		switch (itemID) {
+	public boolean processDropdownAction(SpecObjectTree tree, STDDropdownAreaElement element, String id) {
+		switch (id) {
 			case "hitboxstack.add.hitboxstack": this.elementStack.add(new ElementHitboxStack()); return this.isFolderOpened = true;
 			case "hitboxstack.add.hitbox": this.elementStack.add(new ElementHitbox()); return this.isFolderOpened = true;
 			case "hitboxstack.add.hitboxmesh": this.elementStack.add(new ElementHitboxMesh()); return this.isFolderOpened = true;
 			
-			default: return super.processDropdownAction(tree, itemID);
+			default: return super.processDropdownAction(tree, element, id);
 		}
 	}
 	

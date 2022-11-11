@@ -16,19 +16,19 @@ import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.objectTree.impl.DefaultTreeElementSelector;
+import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
-import by.fxg.speceditor.ui.UDropdownArea;
-import by.fxg.speceditor.ui.UDropdownArea.IUDropdownAreaListener;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
+public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 	private int x, y, width, height;
 	private GInputProcessor input;
-	public UDropdownArea dropdownArea;
+	public STDDropdownArea dropdownArea;
 	public ITreeElementHandler elementHandler;
 	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector();
 	
@@ -50,7 +50,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 	public SpecObjectTree(int x, int y, int width, int height) { this(); this.setTransforms(x, y, width, height); }
 	public SpecObjectTree() {
 		this.input = SpecEditor.get.getInput();
-		this.dropdownArea = new UDropdownArea(this, 15);
+		this.dropdownArea = new STDDropdownArea(15).setListener(this);
 	}
 	
 	public void update() {
@@ -146,10 +146,9 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 								}
 							}
 							
-							Array<UDAElement> items = this.dropdownArea.getElements();
-							items.size = 0;
-							this.elementSelector.get(0).addDropdownItems(this, items, typeClass != null);
-							this.dropdownArea.set(foster, items).open();
+							Array<STDDropdownAreaElement> elements = this.dropdownArea.getElementsArrayAsEmpty();
+							this.elementSelector.get(0).addDropdownItems(this, elements, typeClass != null);
+							this.dropdownArea.setElements(elements, foster).open();
 						}
 					}
 					shape.filledRectangle(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20);
@@ -310,7 +309,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 			if (this._clickElement != null) {
 				if (this.input.isKeyboardDown(Keys.SHIFT_LEFT, true) && this.elementSelector.size() > 0) {
 					Array<TreeElement> elements = new Array<>();
-					this.getDisplayStack(this.elementStack, elements);
+					this.getVisibleElements(this.elementStack, elements);
 					if (elements.contains(this.elementSelector.get(0), true) && elements.contains(this._clickElement, true)) {
 						int startIndex = elements.indexOf(this.elementSelector.get(0), true);
 						int endIndex = elements.indexOf(this._clickElement, true);
@@ -333,9 +332,10 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 		this.refreshTree();
 	}
 
-	public void onDropdownClick(String itemID) {
-		if (this.elementHandler != null && this.elementHandler.onDropdownClick(this, itemID)) return;
-		switch (itemID) {
+	@Override
+	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {
+		if (this.elementHandler != null && this.elementHandler.onDropdownClick(this, id)) return;
+		switch (id) {
 			case "default.delete": {
 				Array<TreeElement> toDelete = new Array<>();
 				for (int i = 0; i != this.elementSelector.size(); i++) toDelete.add(this.elementSelector.get(i));
@@ -344,7 +344,7 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 			default: {
 				boolean closeArea = true;
 				for (int elementIndex = 0; elementIndex != this.elementSelector.size(); elementIndex++) {
-					if (!this.elementSelector.get(elementIndex).processDropdownAction(this, itemID)) {
+					if (!this.elementSelector.get(elementIndex).processDropdownAction(this, element, id)) {
 						closeArea = false;
 					}
 				}
@@ -400,10 +400,10 @@ public class SpecObjectTree implements IUDropdownAreaListener, IFocusable {
 	}
 	
 	//Fills array with displayed elements(elements in opened folders)
-	private void getDisplayStack(ElementStack stack, Array<TreeElement> elements) {
+	private void getVisibleElements(ElementStack stack, Array<TreeElement> elements) {
 		for (TreeElement element : stack.getElements()) {
 			elements.add(element);
-			if (element instanceof ITreeElementFolder && ((ITreeElementFolder)element).isFolderOpened()) this.getDisplayStack(((ITreeElementFolder)element).getFolderStack(), elements);
+			if (element instanceof ITreeElementFolder && ((ITreeElementFolder)element).isFolderOpened()) this.getVisibleElements(((ITreeElementFolder)element).getFolderStack(), elements);
 		}
 	}
 }

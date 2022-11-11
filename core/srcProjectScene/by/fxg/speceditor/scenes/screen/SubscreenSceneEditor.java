@@ -22,7 +22,7 @@ public class SubscreenSceneEditor extends BaseSubscreen {
 	public SubscreenSceneEditor(ScreenSceneProject screenProject, int x, int y, int width, int height) {
 		this.screenProject = screenProject;
 		
-		this.editorModeSelector = new UDropdownSelectSingle(12, this.EDITOR_MODES).setSelectedVariant(this.EDITOR_MODES.length - 1);
+		this.editorModeSelector = new UDropdownSelectSingle(12, this.EDITOR_MODES).setVariantSelected(this.EDITOR_MODES.length - 1);
 		this.moduleProject = new ModuleProject();
 		this.moduleViewport = new SubscreenSceneEditorModuleViewport(this.screenProject.project.renderer);
 		this.moduleObjectExplorer = new SubscreenSceneEditorModuleObjectExplorer();
@@ -30,9 +30,9 @@ public class SubscreenSceneEditor extends BaseSubscreen {
 	}
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
-		if (!this.editorModeSelector.isDropped()) {
+		if (!this.editorModeSelector.isFocused()) {
 			int ix = x + 1, iy = y + 1, iw = width - 2, ih = height - 23;
-			switch(this.editorModeSelector.getVariant()) {
+			switch(this.editorModeSelector.getVariantSelected()) {
 				case 0: this.moduleProject.update(batch, shape, foster, ix, iy, iw, ih); break;
 				case 1: this.moduleViewport.update(batch, shape, foster, ix, iy, iw, ih); break;
 				case 2: this.moduleObjectExplorer.update(batch, shape, foster, ix, iy, iw, ih); break;
@@ -55,7 +55,7 @@ public class SubscreenSceneEditor extends BaseSubscreen {
 		int ix = x + 1, iy = y + 1, iw = width - 2, ih = height - 23;
 		shape.rectangle(ix, iy, iw, ih, 1);
 		
-		switch(this.editorModeSelector.getVariant()) {
+		switch(this.editorModeSelector.getVariantSelected()) {
 			case 0: this.moduleProject.render(batch, shape, foster, ix, iy, iw, ih); break;
 			case 1: this.moduleViewport.render(batch, shape, foster, ix, iy, iw, ih); break;
 			case 2: this.moduleObjectExplorer.render(batch, shape, foster, ix, iy, iw, ih); break;

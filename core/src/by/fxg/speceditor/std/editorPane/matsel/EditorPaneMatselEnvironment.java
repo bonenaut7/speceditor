@@ -10,17 +10,17 @@ import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.std.STDManager;
+import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
+import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
-import by.fxg.speceditor.ui.UDropdownArea;
-import by.fxg.speceditor.ui.UDropdownArea.IUDropdownAreaListener;
-import by.fxg.speceditor.ui.UDropdownArea.UDAElement;
 import by.fxg.speceditor.ui.UDropdownSelectSingle;
 import by.fxg.speceditor.ui.UHoldButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUDropdownAreaListener {
+public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements ISTDDropdownAreaListener {
 	protected Environment environment;
 	protected EditorPaneMatselModule currentModule;
 	protected UDropdownSelectSingle selectedAttribute;
@@ -30,13 +30,13 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 	/** Rendering is not handled for this element! Use following code where you need! <br>
 	 * <code> if (matselObj.dropdownArea.isFocused()) matselObj.dropdownArea.render(shapeDrawerObj, fosterObj); </code><br>
 	 *  FIXME: URenderBlock should render box before rendering things inside, cache yOffset from prev. frame and use it to render box **/
-	public UDropdownArea dropdownArea;
+	public STDDropdownArea dropdownArea;
 	
 	public EditorPaneMatselEnvironment(String name, Environment environment) {
 		super(name);
 		this.environment = environment;
 		this.selectedAttribute = new UDropdownSelectSingle(15, "None") {
-			public UDropdownSelectSingle setSelectedVariant(int variant) {
+			public UDropdownSelectSingle setVariantSelected(int variant) {
 				this.selectedVariant = variant;
 				EditorPaneMatselEnvironment.this.onAttributeSelect();
 				return this;
@@ -44,7 +44,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 		};
 		this.buttonAddAttribute = new UButton("+");
 		this.buttonRemoveAttribute = new UHoldButton("Remove attribute", UHoldButton.NO_KEY, 30).setColor(UColor.redblack);
-		this.dropdownArea = new UDropdownArea(this, 15);
+		this.dropdownArea = new STDDropdownArea(15).setListener(this);
 		this.refreshAttributes();
 	}
 	
@@ -57,14 +57,14 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
 		this.buttonAddAttribute.setTransforms(this.x, yOffset -= 14, 14, 14).render(shape, foster);
 		if (this.buttonAddAttribute.isPressed()) {
-			Array<UDAElement> elements = new Array<>();
+			Array<STDDropdownAreaElement> elements = this.dropdownArea.getElementsArrayAsEmpty();
 			STDManager.INSTANCE.getEditorPaneMatselModules().forEach(editorPaneMatselModule -> editorPaneMatselModule.onAttributeCreationPress(elements));
-			this.dropdownArea.set(foster, elements).open(this.x + 1, yOffset + 3);
+			this.dropdownArea.setElements(elements, foster).open(this.x + 1, yOffset + 3);
 		}
 		
 		foster.setString("Attrib:").draw(this.x + 18, yOffset + foster.getHalfHeight(), Align.left);
 		this.selectedAttribute.setTransforms(this.x + (int)foster.getWidth() + 23, yOffset, this.width - (int)foster.getWidth() - 23, 14);
-		if (!this.selectedAttribute.isDropped()) {
+		if (!this.selectedAttribute.isFocused()) {
 			if (this.currentModule != null) {
 				shape.setColor(UColor.gray);
 				shape.line(this.x, (yOffset -= 8) + 4, this.x + this.width, yOffset + 4);
@@ -74,14 +74,14 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 					Utils.logError(e, "EditorPaneMatselEnvironment#renderInside", "Unrepeatable bug caused an error");
 				}
 				yOffset -= 4;
-			} else if (this.selectedAttribute.getVariant() > 0) {
+			} else if (this.selectedAttribute.getVariantSelected() > 0) {
 				shape.setColor(UColor.gray);
 				shape.line(this.x, (yOffset -= 3), this.x + this.width, yOffset);
 				foster.setString("Module not found for this attribute").draw(this.x + this.width / 2, yOffset -= foster.getHeight() + 2);
 				yOffset -= 4;
 			}
 			Attribute attribute = this.getSelectedAttribute();
-			if (this.selectedAttribute.getVariant() > 0 && attribute != null) {
+			if (this.selectedAttribute.getVariantSelected() > 0 && attribute != null) {
 				shape.setColor(UColor.gray);
 				shape.line(this.x, yOffset, this.x + this.width, yOffset);
 				this.buttonRemoveAttribute.setTransforms(this.x, yOffset -= 15, this.width, 12).update();
@@ -89,7 +89,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 				if (this.buttonRemoveAttribute.isPressed()) {
 					if (attribute instanceof Disposable) ((Disposable)attribute).dispose();
 					this.environment.remove(attribute.type);
-					this.selectedAttribute.setSelectedVariant(0);
+					this.selectedAttribute.setVariantSelected(0);
 					this.refreshAttributes();
 					this.onAttributeSelect();
 				}
@@ -100,9 +100,9 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 		return yOffset;
 	}
 
-	public void onDropdownClick(String id) {
+	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {
 		Array<EditorPaneMatselModule> array = STDManager.INSTANCE.getEditorPaneMatselModules();
-		for (int i = 0; i != array.size; i++) array.get(i).onDropdownClick(this, id);
+		for (int i = 0; i != array.size; i++) array.get(i).onDropdownAreaClick(this, element, id);
 		this.refreshAttributes();
 	}
 	
@@ -124,7 +124,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 			}
 		}
 		this.selectedAttribute.setVariants(attributes.toArray(String.class));
-		if (attributes.size <= this.selectedAttribute.getVariant()) this.selectedAttribute.setSelectedVariant(attributes.size - 1);
+		if (attributes.size <= this.selectedAttribute.getVariantSelected()) this.selectedAttribute.setVariantSelected(attributes.size - 1);
 	}
 
 	public Attributes getSelectedAttributes() {
@@ -136,7 +136,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IUD
 		if (this.environment != null) {
 			//FIXME bad way to search for attribute
 			int _index = 0;
-			for (Attribute attribute$ : this.environment) if (++_index == this.selectedAttribute.getVariant()) {
+			for (Attribute attribute$ : this.environment) if (++_index == this.selectedAttribute.getVariantSelected()) {
 				attribute = attribute$;
 				break;
 			}

@@ -33,23 +33,24 @@ public class UHoldButton extends UIElement {
 	}
 	
 	public void render(ShapeDrawer shape, Foster foster) {
+		prevColor = shape.getPackedColor();
 		if (this.enabled) {
 			shape.setColor(this.color);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
 			if (this.ticks > 0) {
 				if (this.isMouseOver()) SpecInterface.setCursor(AppCursor.POINTING);
-				shape.setColor(1f, 1f, 1f, 1f);
-				shape.rectangle(this.x, this.y, this.width, this.height, 2f);
-				shape.setColor(1f, 1f, 1f, 0.5f);
-				shape.filledRectangle(this.x, this.y, this.width, Interpolation.linear.apply(0, this.height, Math.min(this.targetTicks, this.ticks) / (float)this.targetTicks));
+				shape.setColor(UColor.elementBoundsClicked);
+				shape.rectangle(this.x, this.y + 1, this.width - 1, this.height - 1, 2);
+				shape.setColor(0.75f, 0.75f, 0.75f, 1.0f);
+				shape.filledRectangle(this.x + 2, this.y + 2, this.width - 4, Interpolation.linear.apply(0, this.height - 4, Math.min(this.targetTicks, this.ticks) / (float)this.targetTicks));
 			} else if (this.isMouseOver()) {
 				SpecInterface.setCursor(AppCursor.POINT);
-				shape.setColor(UColor.overlay);
+				shape.setColor(UColor.elementHover);
 				shape.filledRectangle(this.x, this.y, this.width, this.height);
 			}
 		} else {
 			if (this.isMouseOver()) SpecInterface.setCursor(AppCursor.UNAVAILABLE);
-			shape.setColor(UColor.gray);
+			shape.setColor(UColor.elementDefaultColor);
 			shape.filledRectangle(this.x, this.y, this.width, this.height);
 		}
 		shape.getBatch().flush();
@@ -58,6 +59,7 @@ public class UHoldButton extends UIElement {
 			shape.getBatch().flush();
 			PilesosScissorStack.instance.popScissors();
 		}
+		shape.setColor(prevColor);
 	}
 	
 	public Color getColor() { return this.color; }
@@ -85,6 +87,6 @@ public class UHoldButton extends UIElement {
 	}
 	
 	private boolean isKeyTouched() {
-		return this.enabled && (this.keyCode != NO_KEY && SpecEditor.get.getInput().isKeyboardDown(this.keyCode, true) || SpecEditor.get.getInput().isMouseDown(0, true) && this.isMouseOver());
+		return this.enabled && (this.keyCode != NO_KEY && SpecEditor.get.getInput().isKeyboardDown(this.keyCode, true) && SpecInterface.isFocused(this) || SpecEditor.get.getInput().isMouseDown(0, true) && this.isMouseOver());
 	}
 }

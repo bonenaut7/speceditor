@@ -79,7 +79,7 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 		
 		foster.setString("Flags:").draw(x + 5, yOffset -= foster.getHeight() + 7, Align.left);
 		this.nodesSelector.setTransforms(x + (int)foster.getWidth() + 10, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, width - (int)foster.getWidth() - 15, 14).update(foster);
-		if (this.nodesSelector.isDropped()) yOffset -= this.nodesSelector.getVariants().length * 15 + 2;
+		if (this.nodesSelector.isFocused()) yOffset -= this.nodesSelector.getVariants().length * 15 + 2;
 		
 		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
 		yOffset = this.specFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.transform.isDropped() ? yOffset - 5 : yOffset);

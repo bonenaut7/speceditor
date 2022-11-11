@@ -77,6 +77,5 @@ public class SpecEditor extends Apparat<GInputProcessor> {
 	public void resize(int width, int height) {
 		super.resize(width, height);
 		this.renderer.resize(width, height);
-		RenderManager.batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 	}
 }

@@ -45,7 +45,7 @@ public class NumberCursorInputField extends STDInputField implements IMouseContr
 	public void render(Batch batch, ShapeDrawer shape) {
 		float prevColor = shape.getPackedColor();
 		shape.setColor(UColor.gray);
-		shape.rectangle(this.x, this.y - 1, this.width + 1, this.height + 1);
+		shape.rectangle(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
 		batch.flush();
 		if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
 			if (this.backgroundColor != null) {
