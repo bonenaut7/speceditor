@@ -8,7 +8,6 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.ResourceManager;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.RenderManager;
-import by.fxg.speceditor.screen.project.ScreenCreateProject;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

@@ -58,7 +58,7 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 			project.saveConfiguration();
 			ProjectManager.INSTANCE.setRecentProject(this.projectFolder);
 			if (project.loadProject()) {
-				ProjectManager.currentProject = project;
+				ProjectManager.setCurrentProject(project);
 				project.onProjectOpened();
 			}
 		}

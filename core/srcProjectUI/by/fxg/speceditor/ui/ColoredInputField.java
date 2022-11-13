@@ -11,14 +11,14 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class ColoredInputField extends STDInputField {
-	private Color backgroundColor = null;
+	protected Color backgroundColor = null;
 	
 	public ColoredInputField() {}
 	public ColoredInputField(Batch batch, BitmapFont font) { super(batch, font); }
 	public ColoredInputField(Parameters parameters) { super(parameters); }
 	
 	public void render(Batch batch, ShapeDrawer shape) {
-		float prevColor = shape.getPackedColor();
+		prevColor = shape.getPackedColor();
 		shape.setColor(UColor.gray);
 		shape.rectangle(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
 		batch.flush();
@@ -56,6 +56,14 @@ public class ColoredInputField extends STDInputField {
 		this.y = y + 1;
 		this.width = width - 2;
 		this.height = height - 2;
+		return this;
+	}
+	
+	public STDInputField setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x + 1;
+		this.y = (int)y + 1;
+		this.width = width > 0 ? (int)width - 2 : 0;
+		this.height = height > 0 ? (int)height - 2 : 0;
 		return this;
 	}
 	

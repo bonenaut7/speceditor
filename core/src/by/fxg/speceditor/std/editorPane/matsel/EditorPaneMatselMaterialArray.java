@@ -28,8 +28,7 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 	protected UHoldButton buttonRemoveAttribute;
 	
 	/** Rendering is not handled for this element! Use following code where you need! <br>
-	 * <code> if (matselObj.dropdownArea.isFocused()) matselObj.dropdownArea.render(shapeDrawerObj, fosterObj); </code><br>
-	 *  FIXME: URenderBlock should render box before rendering things inside, cache yOffset from prev. frame and use it to render box **/
+	 * <code> if (matselObj.dropdownArea.isFocused()) matselObj.dropdownArea.render(shapeDrawerObj, fosterObj); </code> **/
 	public STDDropdownArea dropdownArea;
 	
 	public EditorPaneMatselMaterialArray(String name) {
@@ -56,9 +55,10 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 
 	//FIXME [UI] re-markup required for elements
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-		foster.setString("Material:").draw(this.x, yOffset -= foster.getHeight() + 4, Align.left);
-		this.selectedMaterial.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - (int)foster.getHalfHeight(), this.width - (int)foster.getWidth() - 5, 14);
-	
+		yOffset -= 5;
+		foster.setString("Material").draw(this.x + 5, yOffset -= foster.getHeight() + 5, Align.left);
+		this.selectedMaterial.setTransforms(this.x + foster.getWidth() + 10, yOffset - foster.getHalfHeight() + 1, this.width - foster.getWidth() - 10, 14);
+		
 		if (!this.selectedMaterial.isFocused()) {
 			Material material = this.getCurrentMaterial();
 			if (material != null) {
@@ -71,18 +71,18 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 					this.dropdownArea.setElements(elements, foster).open(this.x + 1, yOffset + 3);
 				}
 				
-				foster.setString("Attrib:").draw(this.x + 18, yOffset + foster.getHalfHeight(), Align.left);
-				this.selectedAttribute.setTransforms(this.x + (int)foster.getWidth() + 23, yOffset, this.width - (int)foster.getWidth() - 23, 14);
+				foster.setString("Attrib").draw(this.x + 18, yOffset + foster.getHalfHeight(), Align.left);
+				this.selectedAttribute.setTransforms(this.x + foster.getWidth() + 22, yOffset, this.width - foster.getWidth() - 22, 14);
 				if (!this.selectedAttribute.isFocused()) {
 					if (this.currentModule != null) {
 						shape.setColor(UColor.gray);
 						shape.line(this.x, (yOffset -= 8) + 4, this.x + this.width, yOffset + 4);
 						try {
-							yOffset = this.currentModule.renderModule(batch, shape, foster, yOffset, this.x, this.width);
+							yOffset = this.currentModule.renderModule(batch, shape, foster, yOffset, this.x + 3, this.width - 6);
 						} catch (Exception e) {
-							Utils.logError(e, "EditorPaneMatselMaterialArray#renderInside", "Unrepeatable bug caused an error");
+							Utils.logError(e, "EditorPaneMatselMaterialArray#renderInside", "Inner module caused an exception");
 						}
-						yOffset -= 4;
+						yOffset -= 5;
 					} else if (this.selectedAttribute.getVariantSelected() > 0) {
 						shape.setColor(UColor.gray);
 						shape.line(this.x, (yOffset -= 3), this.x + this.width, yOffset);
@@ -102,14 +102,14 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 							this.onAttributeSelect();
 						}
 					}
-				} else yOffset -= this.selectedAttribute.getVariants().length * 15 + 2;
+				} else yOffset -= this.selectedAttribute.getDropHeight();
 				this.selectedAttribute.update();
 				this.selectedAttribute.render(shape, foster);
 			} else yOffset -= 3;
-		} else yOffset -= this.selectedMaterial.getVariants().length * 15 + 5;
+		} else yOffset -= this.selectedMaterial.getDropHeight() + 5;
 		this.selectedMaterial.update();
 		this.selectedMaterial.render(shape, foster);
-		return yOffset;
+		return yOffset - 3;
 	}
 
 	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {

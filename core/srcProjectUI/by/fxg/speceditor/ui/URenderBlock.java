@@ -15,13 +15,11 @@ public abstract class URenderBlock {
 	protected String name;
 	protected int x, width;
 	protected boolean isDropped;
-	private int xBorder, widthBorder;
+	protected int xBorder, widthBorder;
 	
-	public URenderBlock(String name) { this(name, 0, 0); }
-	public URenderBlock(String name, int x, int width) {
+	public URenderBlock(String name, float x, float width) { this(name); this.setTransforms(x, width); }
+	public URenderBlock(String name) {
 		this.name = name;
-		this.x = x;
-		this.width = width;
 	}
 
 	public int render(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
@@ -51,7 +49,7 @@ public abstract class URenderBlock {
 		return yOffset;
 	}
 	
-	/** you need to return changed yOffset XXX**/
+	/** you need to return changed yOffset XXX docs **/
 	abstract protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset);
 	
 	public URenderBlock setDropped(boolean isDropped) {

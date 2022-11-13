@@ -18,7 +18,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule implements ISTDInputFieldListener {
 	private final String[] colors = {"R", "G", "B", "A"};
-	private final Color[] fieldColors = {UColor.redblack, UColor.greenblack, UColor.blueblack, UColor.suboverlay};
+	private final Color[] fieldColors = {UColor.redblack, UColor.greenblack, UColor.blueblack, UColor.black025alpha};
 	private STDInputField[] color = new STDInputField[4];
 	
 	public EditorPaneMatselModuleColorAttribute() {

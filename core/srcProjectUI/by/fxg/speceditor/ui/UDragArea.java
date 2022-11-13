@@ -14,9 +14,9 @@ import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public abstract class UDragArea extends UIElement implements IFocusable, IMouseController {
-	private int minValue, maxValue;
-	private boolean moveByHeight = false;
-	private int dragStart, drag;
+	protected int minValue, maxValue;
+	protected boolean moveByHeight = false;
+	protected int dragStart, drag;
 	
 	public UDragArea setParameters(int minValue, int maxValue, boolean moveByHeight) {
 		this.minValue = minValue;
@@ -47,8 +47,10 @@ public abstract class UDragArea extends UIElement implements IFocusable, IMouseC
 	}
 	
 	public void render(ShapeDrawer shape) {
-		shape.setColor(this.isMouseOver() || this.isFocused() ? UColor.select : UColor.gray);
+		prevColor = shape.getPackedColor();
+		shape.setColor(this.isMouseOver() || this.isFocused() ? UColor.elementHover : UColor.elementDefaultColor);
 		shape.filledRectangle(this.x, this.y, this.width, this.height);
+		shape.setColor(prevColor);
 	}
 
 	public UDragArea setTransforms(float x, float y, float width, float height) {

@@ -5,18 +5,19 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.screen.BaseScreen;
+import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class GuiError extends BaseScreen implements IFocusable {
-	private UButton buttonClose;
+public class GuiError extends BaseScreen {
+	private final IFocusable focusedObject;
 	private Array<String> strings = new Array<>();
+	private UButton buttonClose;
 	
 	public GuiError(String exceptionPlace, Throwable exception) {
 		this.strings.add("We've got error at: " + exceptionPlace, "");
@@ -28,34 +29,17 @@ public class GuiError extends BaseScreen implements IFocusable {
 			}
 		} else this.strings.add("No exception provided! :(");
 		
-		this.init(Utils.getWidth(), Utils.getHeight());
-		this.setFocused(true);
-	}
-	
-	public void init(int width, int height) {
-		float longestString = 0f;
-		for (String str : this.strings) {
-			if (str == null) continue;
-			RenderManager.foster.setString(str);
-			if (RenderManager.foster.getWidth() > longestString) longestString = RenderManager.foster.getWidth();
-		}
-		float boxSizeX = Math.max(longestString + 20, width / 4);
-		float boxSizeY = 80 + this.strings.size * RenderManager.foster.getHeight();
-		float x = width / 2 - boxSizeX / 2, y = height / 2 - boxSizeY / 2;
+		this.buttonClose = new UButton("Cancel");
 		
-		int buttonWidth = ((int)boxSizeX / 2 - 30) / 2;
-		
-		this.buttonClose = new UButton("Cancel", (int)(x + boxSizeX) - 5 - buttonWidth, (int)y + 5, buttonWidth, 15) {
-			public boolean isMouseOver(int x, int y, int width, int height) {
-				return GDXUtil.isMouseInArea(x, y, width, height);
-			}
-		};
+		this.resize(Utils.getWidth(), Utils.getHeight());
+		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
+		SpecInterface.INSTANCE.currentFocus = null;
 	}
-	
+
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
 			SpecEditor.get.renderer.currentGui = null;
-			this.setFocused(false);
+			SpecInterface.INSTANCE.currentFocus = this.focusedObject;
 		}
 	}
 

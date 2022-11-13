@@ -14,12 +14,12 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 	protected boolean[] variantValues;
 	
 	//Local caching
-	private String displayString = "None";
+	protected String displayString = "None";
 	
-	public UDropdownSelectMultiple(int x, int y, int width, int height, int dropHeight, String... variants) { this(dropHeight, variants); this.setTransforms(x, y, width, height); }
-	public UDropdownSelectMultiple(int dropHeight, String... variants) {
+	public UDropdownSelectMultiple(float x, float y, float width, float height, float dropHeight, String... variants) { this(dropHeight, variants); this.setTransforms(x, y, width, height); }
+	public UDropdownSelectMultiple(float dropHeight, String... variants) {
 		this.variantValues = new boolean[variants.length];
-		this.dropHeight = dropHeight;
+		this.dropHeight = dropHeight > 0 ? (int)dropHeight : 0;
 		this.variants = variants;
 	}
 	
@@ -58,7 +58,7 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 				shape.rectangle(this.x, this.y - elementsSize - 2, this.width, elementsSize + 2);
 				int localHeight = 0;
 				for (int i = 0; i != this.variants.length; i++) {
-					localHeight = this.dropHeight * i + this.height + 1;
+					localHeight = this.dropHeight * i + this.dropHeight + 1;
 					shape.setColor(this.variantValues[i] ? UColor.greenblack : UColor.elementDefaultColor);
 					shape.filledRectangle(this.x + 1, this.y - localHeight, this.width - 2, this.dropHeight);
 					if (this.isMouseOver(this.x, this.y - localHeight, this.width, this.dropHeight)) {
@@ -109,12 +109,18 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 		this.variantValues = values;
 		return this;
 	}
+	
+	public int getDropHeight() {
+		return this.variants.length * this.dropHeight + 2;
+	}
 
-	public UDropdownSelectMultiple setTransforms(float x, float y, float width, float height) {
+	public UDropdownSelectMultiple setTransforms(float x, float y, float width, float height) { return this.setTransforms(x, y, width, height, this.dropHeight); }
+	public UDropdownSelectMultiple setTransforms(float x, float y, float width, float height, float dropHeight) {
 		this.x = (int)x;
 		this.y = (int)y;
 		this.width = width > 0 ? (int)width : 0;
 		this.height = height > 0 ? (int)height : 0;
+		this.dropHeight = dropHeight > 0 ? (int)dropHeight : 0;
 		return this;
 	}
 	

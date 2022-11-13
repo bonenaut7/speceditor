@@ -12,7 +12,7 @@ public abstract class ProjectSolver {
 	/** Unique type name, used in project headers **/
 	protected String solverType;
 	
-	/** XXX **/
+	/** XXX docs **/
 	public ProjectSolver(String displayName, String solverType) {
 		this.displayName = displayName;
 		this.solverType = solverType;

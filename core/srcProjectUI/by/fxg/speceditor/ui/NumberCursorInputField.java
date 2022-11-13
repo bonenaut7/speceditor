@@ -24,9 +24,9 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 /** Number-based input field **/
 public class NumberCursorInputField extends STDInputField implements IMouseController {
-	private Color backgroundColor = null;
-	private float lastValidNumber = 0.0F;
-	private float dragStartNumber, dragX, dragY;
+	protected Color backgroundColor = null;
+	protected float lastValidNumber = 0.0F;
+	protected float dragStartNumber, dragX, dragY;
 	
 	public NumberCursorInputField() {
 		this.allowedCharacters = "0123456789-.";
@@ -43,7 +43,7 @@ public class NumberCursorInputField extends STDInputField implements IMouseContr
 	}
 	
 	public void render(Batch batch, ShapeDrawer shape) {
-		float prevColor = shape.getPackedColor();
+		prevColor = shape.getPackedColor();
 		shape.setColor(UColor.gray);
 		shape.rectangle(this.x - 1, this.y - 1, this.width + 2, this.height + 2);
 		batch.flush();
@@ -85,11 +85,11 @@ public class NumberCursorInputField extends STDInputField implements IMouseContr
 		return this;
 	}
 	
-	public STDInputField setTransforms(int x, int y, int width, int height) {
-		this.x = x + 1;
-		this.y = y + 1;
-		this.width = width - 2;
-		this.height = height - 2;
+	public STDInputField setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x + 1;
+		this.y = (int)y + 1;
+		this.width = width > 0 ? (int)width - 2 : 0;
+		this.height = height > 0 ? (int)height - 2 : 0;
 		return this;
 	}
 	

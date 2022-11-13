@@ -33,7 +33,7 @@ public class Utils {
 	 * 	Target Handle: coreFolder/ <br>
 	 *  Absolute Path: C:/projects/coreFolder/images/file9.png <br>
 	 *  Returns: coreFolder/images/file9.png as Target Handle's child (or null if not possible) **/
-	@Deprecated //FIXME
+	@Deprecated //FIXME implement Utils#intersectCombinePaths(FileHandle, String)
 	public static FileHandle intersectCombinePaths(FileHandle targetHandle, String absolutePath) {
 		String targetPath = targetHandle.path(); 
 		if (absolutePath.contains(targetPath)) {

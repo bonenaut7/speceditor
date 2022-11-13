@@ -14,12 +14,12 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UHoldButton extends UIElement {
 	public static final int NO_KEY = -65536;
-	private int keyCode, targetTicks, ticks;
-	private String name;
-	private boolean enabled = true;
-	private Color color;
+	protected int keyCode, targetTicks, ticks;
+	protected String name;
+	protected boolean enabled = true;
+	protected Color color;
 	
-	public UHoldButton(String name, int keyCode, int targetTicks, int x, int y, int width, int height) { this(name, keyCode, targetTicks); this.setTransforms(x, y, width, height); }
+	public UHoldButton(String name, int keyCode, int targetTicks, float x, float y, float width, float height) { this(name, keyCode, targetTicks); this.setTransforms(x, y, width, height); }
 	public UHoldButton(String name, int keyCode, int targetTicks) {
 		this.name = name;
 		this.keyCode = keyCode;

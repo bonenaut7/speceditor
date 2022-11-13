@@ -14,12 +14,12 @@ public class UDropdownSelectSingle extends UIElement implements IFocusable {
 	protected int dropHeight, selectedVariant;
 	protected String[] variants;
 	
-	public UDropdownSelectSingle(int x, int y, int width, int height, int dropHeight, String... variants) { this(0, dropHeight, variants); this.setTransforms(x, y, width, height); }
-	public UDropdownSelectSingle(int selectedVariant, int x, int y, int width, int height, int dropHeight, String... variants) { this(selectedVariant, dropHeight, variants); this.setTransforms(x, y, width, height); }
+	public UDropdownSelectSingle(float x, float y, float width, float height, int dropHeight, String... variants) { this(0, dropHeight, variants); this.setTransforms(x, y, width, height); }
+	public UDropdownSelectSingle(int selectedVariant, float x, float y, float width, float height, float dropHeight, String... variants) { this(selectedVariant, dropHeight, variants); this.setTransforms(x, y, width, height); }
 	public UDropdownSelectSingle(int dropHeight, String... variants) { this(0, dropHeight, variants); }
-	public UDropdownSelectSingle(int selectedVariant, int dropHeight, String... variants) {
+	public UDropdownSelectSingle(int selectedVariant, float dropHeight, String... variants) {
 		this.selectedVariant = Math.max(0, Math.min(selectedVariant, variants.length));
-		this.dropHeight = dropHeight;
+		this.dropHeight = dropHeight > 0 ? (int)dropHeight : 0;
 		this.variants = variants;
 	}
 	
@@ -67,7 +67,7 @@ public class UDropdownSelectSingle extends UIElement implements IFocusable {
 				
 				int localHeight = 0;
 				for (int i = 0; i != this.variants.length; i++) {
-					localHeight = this.dropHeight * i + this.height + 1;
+					localHeight = this.dropHeight * i + this.dropHeight + 1;
 					if (this.isMouseOver(this.x, this.y - localHeight, this.width, this.dropHeight)) {
 						SpecInterface.setCursor(this.getInput().isMouseDown(0, true) ? AppCursor.POINTING : AppCursor.POINT);
 						shape.setColor(UColor.elementHover);
@@ -107,11 +107,17 @@ public class UDropdownSelectSingle extends UIElement implements IFocusable {
 		return this;
 	}
 	
-	public UDropdownSelectSingle setTransforms(float x, float y, float width, float height) {
+	public int getDropHeight() {
+		return this.variants.length * this.dropHeight + 2;
+	}
+	
+	public UDropdownSelectSingle setTransforms(float x, float y, float width, float height) { return this.setTransforms(x, y, width, height, this.dropHeight); }
+	public UDropdownSelectSingle setTransforms(float x, float y, float width, float height, float dropHeight) {
 		this.x = (int)x;
 		this.y = (int)y;
 		this.width = width > 0 ? (int)width : 0;
 		this.height = height > 0 ? (int)height : 0;
+		this.dropHeight = dropHeight > 0 ? (int)dropHeight : 0;
 		return this;
 	}
 }

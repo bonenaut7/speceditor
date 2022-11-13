@@ -15,11 +15,11 @@ public class UDropdownClick extends UIElement implements IFocusable {
 	protected String name;
 	protected String[] variants;
 	
-	public UDropdownClick(String name, int x, int y, int width, int height, int dsy, String... variants) { this(name, dsy, variants); this.setTransforms(x, y, width, height); }
-	public UDropdownClick(String name, int dsy, String... variants) {
+	public UDropdownClick(String name, float x, float y, float width, float height, float dropHeight, String... variants) { this(name, dropHeight, variants); this.setTransforms(x, y, width, height); }
+	public UDropdownClick(String name, float dropHeight, String... variants) {
 		this.selectedVariant = -1;
 		this.name = name;
-		this.dropHeight = dsy;
+		this.dropHeight = dropHeight > 0 ? (int)dropHeight : 0;
 		this.variants = variants;
 	}
 	
@@ -62,7 +62,7 @@ public class UDropdownClick extends UIElement implements IFocusable {
 				
 				int localHeight = 0;
 				for (int i = 0; i != this.variants.length; i++) {
-					localHeight = this.dropHeight * i + this.height + 1;
+					localHeight = this.dropHeight * i + this.dropHeight + 1;
 					if (this.isMouseOver(this.x, this.y - localHeight, this.width, this.dropHeight)) {
 						SpecInterface.setCursor(this.getInput().isMouseDown(0, true) ? AppCursor.POINTING : AppCursor.POINT);
 						shape.setColor(UColor.elementHover);
@@ -102,11 +102,17 @@ public class UDropdownClick extends UIElement implements IFocusable {
 		return this;
 	}
 	
-	public UDropdownClick setTransforms(float x, float y, float width, float height) {
+	public int getDropHeight() {
+		return this.variants.length * this.dropHeight + 2;
+	}
+	
+	public UDropdownClick setTransforms(float x, float y, float width, float height) { return this.setTransforms(x, y, width, height, this.dropHeight); }
+	public UDropdownClick setTransforms(float x, float y, float width, float height, float dropHeight) {
 		this.x = (int)x;
 		this.y = (int)y;
 		this.width = width > 0 ? (int)width : 0;
 		this.height = height > 0 ? (int)height : 0;
+		this.dropHeight = dropHeight > 0 ? (int)dropHeight : 0;
 		return this;
 	}
 	

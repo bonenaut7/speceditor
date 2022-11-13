@@ -28,8 +28,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 	protected UHoldButton buttonRemoveAttribute;
 	
 	/** Rendering is not handled for this element! Use following code where you need! <br>
-	 * <code> if (matselObj.dropdownArea.isFocused()) matselObj.dropdownArea.render(shapeDrawerObj, fosterObj); </code><br>
-	 *  FIXME: URenderBlock should render box before rendering things inside, cache yOffset from prev. frame and use it to render box **/
+	 * <code> if (matselObj.dropdownArea.isFocused()) matselObj.dropdownArea.render(shapeDrawerObj, fosterObj); </code> **/
 	public STDDropdownArea dropdownArea;
 	
 	public EditorPaneMatselEnvironment(String name, Environment environment) {
@@ -52,9 +51,9 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		this.environment = environment;
 		this.refreshAttributes();
 	}
-
-	//FIXME [UI] re-markup required for elements
+	
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
+		yOffset -= 5;
 		this.buttonAddAttribute.setTransforms(this.x, yOffset -= 14, 14, 14).render(shape, foster);
 		if (this.buttonAddAttribute.isPressed()) {
 			Array<STDDropdownAreaElement> elements = this.dropdownArea.getElementsArrayAsEmpty();
@@ -62,18 +61,18 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 			this.dropdownArea.setElements(elements, foster).open(this.x + 1, yOffset + 3);
 		}
 		
-		foster.setString("Attrib:").draw(this.x + 18, yOffset + foster.getHalfHeight(), Align.left);
-		this.selectedAttribute.setTransforms(this.x + (int)foster.getWidth() + 23, yOffset, this.width - (int)foster.getWidth() - 23, 14);
+		foster.setString("Attrib").draw(this.x + 18, yOffset + foster.getHalfHeight(), Align.left);
+		this.selectedAttribute.setTransforms(this.x + foster.getWidth() + 22, yOffset, this.width - foster.getWidth() - 22, 14);
 		if (!this.selectedAttribute.isFocused()) {
 			if (this.currentModule != null) {
 				shape.setColor(UColor.gray);
 				shape.line(this.x, (yOffset -= 8) + 4, this.x + this.width, yOffset + 4);
 				try {
-					yOffset = this.currentModule.renderModule(batch, shape, foster, yOffset, this.x, this.width);
+					yOffset = this.currentModule.renderModule(batch, shape, foster, yOffset, this.x + 3, this.width - 6);
 				} catch (Exception e) {
-					Utils.logError(e, "EditorPaneMatselEnvironment#renderInside", "Unrepeatable bug caused an error");
+					Utils.logError(e, "EditorPaneMatselEnvironment#renderInside", "Inner module caused an exception");
 				}
-				yOffset -= 4;
+				yOffset -= 5;
 			} else if (this.selectedAttribute.getVariantSelected() > 0) {
 				shape.setColor(UColor.gray);
 				shape.line(this.x, (yOffset -= 3), this.x + this.width, yOffset);
@@ -97,7 +96,7 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		} else yOffset -= this.selectedAttribute.getVariants().length * 15 + 2;
 		this.selectedAttribute.update();
 		this.selectedAttribute.render(shape, foster);
-		return yOffset;
+		return yOffset - 3;
 	}
 
 	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {

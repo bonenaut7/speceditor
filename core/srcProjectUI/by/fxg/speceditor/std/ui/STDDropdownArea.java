@@ -68,6 +68,11 @@ public class STDDropdownArea extends UIElement implements IFocusable {
 		return this;
 	}
 	
+	public STDDropdownArea setTransforms(float dropHeight) {
+		this.dropHeight = dropHeight > 0 ? (int)dropHeight : 0;
+		return this;
+	}
+	
 	public Array<STDDropdownAreaElement> getElementsArrayAsEmpty() {
 		this.elements.size = 0;
 		return this.getElements();

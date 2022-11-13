@@ -5,7 +5,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.MathUtils;
@@ -93,10 +92,7 @@ public class STDInputField extends UIElement implements IFocusable {
 	}
 	
 	public void render(Batch batch, ShapeDrawer shape) {
-		float color = shape.getPackedColor();
-		shape.setColor(Color.RED);
-		shape.rectangle(this.x, this.y, this.width, this.height);
-		shape.setColor(color);
+		prevColor = shape.getPackedColor();
 		batch.flush();
 		if (PilesosScissorStack.instance.peekScissors(this.x, this.y, this.width, this.height)) {
 			float prevColor = shape.getPackedColor();
@@ -116,6 +112,7 @@ public class STDInputField extends UIElement implements IFocusable {
 			batch.flush();
 			PilesosScissorStack.instance.popScissors();
 		}
+		shape.setColor(prevColor);
 	}
 	
 	/** Allows full-focusing on the object. To leave focus needs at least 1 click outside of the box or pressing any key that forces focus to leave **/
@@ -196,11 +193,11 @@ public class STDInputField extends UIElement implements IFocusable {
 	}
 	
 	/** Sets transformation of the text field **/
-	public STDInputField setTransforms(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public STDInputField setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x;
+		this.y = (int)y;
+		this.width = width > 0 ? (int)width : 0;
+		this.height = height > 0 ? (int)height : 0;
 		return this;
 	}
 	

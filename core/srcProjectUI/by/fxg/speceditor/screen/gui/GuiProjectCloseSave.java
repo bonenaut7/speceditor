@@ -13,6 +13,7 @@ import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UHoldButton;
+import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class GuiProjectCloseSave extends BaseScreen {
@@ -25,6 +26,7 @@ public class GuiProjectCloseSave extends BaseScreen {
 		this.buttonSaveExit = new UHoldButton("Save", UHoldButton.NO_KEY, 30).setColor(UColor.yellowblack);
 		this.buttonExit = new UHoldButton("Don't save", UHoldButton.NO_KEY, 60).setColor(UColor.redblack);
 		
+		this.resize(Utils.getWidth(), Utils.getHeight());
 		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
 		SpecInterface.INSTANCE.currentFocus = null;
 	}
@@ -39,11 +41,13 @@ public class GuiProjectCloseSave extends BaseScreen {
 			if (ProjectManager.currentProject.saveProject()) {
 				SpecEditor.get.renderer.currentScreen = new ScreenMainMenu();
 				SpecEditor.get.renderer.currentGui = null;
+				ProjectManager.setCurrentProject(null);
 			}
 		}
 		if (this.buttonExit.isPressed()) {
 			SpecEditor.get.renderer.currentScreen = new ScreenMainMenu();
 			SpecEditor.get.renderer.currentGui = null;
+			ProjectManager.setCurrentProject(null);
 		}
 		
 		this.buttonSaveExit.update();
@@ -55,19 +59,25 @@ public class GuiProjectCloseSave extends BaseScreen {
 		shape.setColor(0, 0, 0, 0.5f);
 		shape.filledRectangle(0, 0, width, height);
 		
-		int x = width / 2 - 200, y = height / 2 - 35, boxWidth = 300, boxHeight = 40;
+		
+		int x = width / 2 - 210, y = height / 2 - 35, boxWidth = 320, boxHeight = 60;
 		shape.setColor(0.12f, 0.12f, 0.12f, 1);
 		shape.filledRectangle(x, y, boxWidth, boxHeight);
 		shape.setColor(1, 1, 1, 1);
 		shape.rectangle(x, y, boxWidth, boxHeight, 2f);
 
-		foster.setString("Do you want to save your project before leaving?").draw(x + boxWidth / 2, y + boxHeight - 15);
+		foster.setString("Do you want to save your project before leaving?").draw(x + boxWidth / 2, y + boxHeight - 20);
 		
-		this.buttonClose.setTransforms(x + boxWidth - 55, y + 5, 50, 13).render(shape, foster);
-		this.buttonSaveExit.setTransforms(x + boxWidth - 110, y + 5, 50, 13).render(shape, foster);
-		this.buttonExit.setTransforms(x + boxWidth - 185, y + 5, 70, 13).render(shape, foster);
+		this.buttonClose.render(shape, foster);
+		this.buttonSaveExit.render(shape, foster);
+		this.buttonExit.render(shape, foster);
 		batch.end();
 	}
 	
-	public void resize(int width, int height) {}
+	public void resize(int width, int height) {
+		int x = width / 2 - 210, y = height / 2 - 35, boxWidth = 320;
+		this.buttonClose.setTransforms(x + boxWidth - 60, y + 10, 50, 13);
+		this.buttonSaveExit.setTransforms(x + boxWidth - 120, y + 10, 50, 13);
+		this.buttonExit.setTransforms(x + boxWidth - 200, y + 10, 70, 13);
+	}
 }

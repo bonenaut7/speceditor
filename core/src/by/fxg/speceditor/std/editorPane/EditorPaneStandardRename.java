@@ -21,8 +21,8 @@ public class EditorPaneStandardRename extends EditorPane implements ISTDInputFie
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
 		yOffset -= 8;
-		foster.setString("Name:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
-		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
+		foster.setString("Name").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
+		this.elementName.setTransforms(x + foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - foster.getWidth() - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
 		return yOffset;
 	}

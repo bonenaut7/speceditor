@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import by.fxg.pilesos.graphics.PilesosScissorStack;
@@ -17,7 +17,7 @@ import by.fxg.speceditor.screen.ScreenLoading;
 public class RenderManager {
 	private static TextureRegion shapeDrawerRegion;
 	public static Foster foster;
-	public static SpriteBatch batch;
+	public static PolygonSpriteBatch batch;
 	public static ExtShapeDrawer shape;
 	
 	public BaseScreen currentScreen, currentGui;
@@ -30,7 +30,7 @@ public class RenderManager {
 			shapeDrawerRegion = new TextureRegion(new Texture(pixmap), 0, 0, 1, 1);
 			pixmap.dispose();
 		}
-		batch = new SpriteBatch();
+		batch = new PolygonSpriteBatch();
 		shape = new ExtShapeDrawer(batch, shapeDrawerRegion);
 		foster = new Foster().setBatch(batch);
 		new PilesosScissorStack(10);

@@ -16,6 +16,7 @@ import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.BaseSubscreen;
@@ -41,7 +42,7 @@ public class ScreenCreateProject extends BaseScreen implements ISTDInputFieldLis
 		
 		for (ProjectSolver solver : ProjectManager.INSTANCE.getSolvers()) {
 			if (solver.isAbleToCreateProject()) {
-				this.solversAvailable.add(solver);
+				this.solversAvailable.addAll(solver);
 			}
 		}
 		this.displaySolvers.addAll(this.solversAvailable);
@@ -96,17 +97,17 @@ public class ScreenCreateProject extends BaseScreen implements ISTDInputFieldLis
 			int scrollableHeight = height - 59;
 			if (PilesosScissorStack.instance.peekScissors(4, 23, sbWidth - 12, scrollableHeight)) {
 				for (int i = 0; i != this.displaySolvers.size; i++) {
-					int y = scrollableHeight - 20 * i + (int)this.scroll;
+					int y = scrollableHeight - 20 * i + (int)this.scroll - 1;
 					foster.setString(this.displaySolvers.get(i).getDisplayName()).draw(7, y + 7, Align.left);
 					shape.line(5, y, sbWidth - 7, y);
 					if (this.selectedSolverIndex == i) {
-						shape.setColor(UColor.overlay);
-						shape.filledRectangle(5, y + 1, sbWidth - 7, 19);
+						shape.setColor(UColor.elementHover);
+						shape.filledRectangle(6, y + 1, sbWidth - 14, 19);
 						shape.setColor(UColor.gray);
 					}
-					if (GDXUtil.isMouseInArea(4, 23, sbWidth - 12, scrollableHeight) && GDXUtil.isMouseInArea(5, y, sbWidth - 7, 19)) {
-						shape.setColor(UColor.overlay);
-						shape.filledRectangle(5, y + 1, sbWidth - 7, 19);
+					if (GDXUtil.isMouseInArea(4, 23, sbWidth - 12, scrollableHeight) && UIElement.isMouseInArea(5, y + 1, (int)(sbWidth - 12), 19)) {
+						shape.setColor(UColor.elementHover);
+						shape.filledRectangle(6, y + 1, sbWidth - 14, 19);
 						shape.setColor(UColor.gray);
 					}
 				}

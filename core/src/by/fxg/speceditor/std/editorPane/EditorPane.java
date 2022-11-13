@@ -17,6 +17,16 @@ public abstract class EditorPane {
 	abstract public void updatePane(ITreeElementSelector<?> selector);
 	abstract public boolean acceptElement(ITreeElementSelector<?> selector);
 	
+	public float getLongestStringWidth(Foster foster, String... strings) {
+		float width = 0;
+		for (String str : strings) {
+			if (foster.setString(str).getWidth() > width) {
+				width = foster.getWidth();
+			}
+		}
+		return width;
+	}
+	
 	protected void _convertColorToText(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA, boolean withPointer) {
 		if (withPointer) {
 			fieldR.setTextWithPointer(String.valueOf(color.r)).dropOffset();

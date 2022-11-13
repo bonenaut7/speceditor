@@ -73,7 +73,7 @@ public class ElementHitboxStack extends TreeElementHitbox implements ITreeElemen
 		tmpMatrix.setToTranslation(this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.TRANSLATE).add(this.position));
 		this.getOffsetTransform(tmpVector.setZero(), GizmoTransformType.ROTATE).add(this.rotation);
 		tmpMatrix.rotate(1, 0, 0, tmpVector.x).rotate(0, 1, 0, tmpVector.y).rotate(0, 1, 1, tmpVector.z);
-		this.getOffsetTransform(tmpVector.set(1, 1, 1), GizmoTransformType.SCALE).scl(this.scale); //XXX Hitbox, not sure what to use, scl or add
+		this.getOffsetTransform(tmpVector.set(1, 1, 1), GizmoTransformType.SCALE).scl(this.scale);
 		tmpMatrix.scale(tmpVector.x, tmpVector.y, tmpVector.z);
 		draw.drawer.drawTransform(tmpMatrix, 0.5f);
 	}

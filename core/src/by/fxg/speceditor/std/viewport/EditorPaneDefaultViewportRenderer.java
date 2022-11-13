@@ -15,14 +15,14 @@ import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.ui.ColoredInputField;
+import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.URenderBlock;
-import by.fxg.speceditor.ui.ColoredInputField.Builder;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneDefaultViewportRenderer extends EditorPane implements ISTDInputFieldListener {
 	private final String[] cameraParams = {"FOV", "Far", "Near"}, colors = {"R", "G", "B", "A"};
-	private final Color[] fieldColors = {UColor.redblack, UColor.greenblack, UColor.blueblack, UColor.suboverlay};
+	private final Color[] fieldColors = {UColor.redblack, UColor.greenblack, UColor.blueblack, UColor.black025alpha};
 	private DefaultRenderer renderer;
 	
 	protected STDInputField[] cameraSettings = new STDInputField[3];
@@ -47,10 +47,12 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
 		foster.setString("Camera settings:").draw(x + 5, yOffset -= foster.getHeight() + 5, Align.left);
+		
+		float inputX = this.getLongestStringWidth(foster, cameraParams);
 		yOffset -= 20;
 		for (int i = 0; i != 3; i++) {
 			foster.setString(this.cameraParams[i]).draw(x + 10, yOffset + foster.getHalfHeight(), Align.left);
-			this.cameraSettings[i].setTransforms(x + (int)foster.getWidth() + 15, yOffset, width - (int)foster.getWidth() - 20, 15).setFoster(foster).update();
+			this.cameraSettings[i].setTransforms(x + inputX + 15, yOffset, width - inputX - 20, 15).setFoster(foster).update();
 			this.cameraSettings[i].render(batch, shape);
 			yOffset -= 18;
 		}
@@ -59,19 +61,19 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 		foster.setString("Buffer(screen) color:").draw(x + 5, yOffset, Align.left);
 		yOffset -= 20;
 		for (int i = 0; i != 2; i++) {
-			foster.setString(this.colors[i]).draw(x + 15 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
-			this.bufferColor[i].setTransforms(x + 15 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
+			foster.setString(this.colors[i]).draw(x + 15 + (foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+			this.bufferColor[i].setTransforms(x + 15 + foster.getWidth() + (foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 			this.bufferColor[i].render(batch, shape);
 		}
 		yOffset -= 16;
 		for (int i = 0, k = 2; i != 2; i++, k++) {
-			foster.setString(this.colors[k]).draw(x + 15 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
-			this.bufferColor[k].setTransforms(x + 15 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
+			foster.setString(this.colors[k]).draw(x + 15 + (foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+			this.bufferColor[k].setTransforms(x + 15 + foster.getWidth() + (foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 			this.bufferColor[k].render(batch, shape);
 		}
 		
-		yOffset = this.viewportFeatures.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 10);
-		yOffset = this.environmentMatsel.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.viewportFeatures.isDropped() ? yOffset - 5 : yOffset);
+		yOffset = this.viewportFeatures.setTransforms(x + 5, width - 10).render(batch, shape, foster, yOffset - 5);
+		yOffset = this.environmentMatsel.setTransforms(x + 5, width - 10).render(batch, shape, foster, yOffset - 5);
 		if (this.environmentMatsel.dropdownArea.isFocused()) this.environmentMatsel.dropdownArea.render(shape, foster);
 		return yOffset;
 	}
@@ -107,18 +109,21 @@ public class EditorPaneDefaultViewportRenderer extends EditorPane implements IST
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-			foster.setString("Hitbox depth:").draw(this.x, yOffset -= foster.getHeight(), Align.left);
-			this.featureHitboxDepth.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - 2, 12, 12).update();
+			yOffset -= 8; //8-5, idk
+			int x = this.x + 5;
+			float longestText = this.parent.getLongestStringWidth(foster, "Hitbox depth", "Hitbox line width", "Draw grid");		
+			foster.setString("Hitbox depth").draw(x, yOffset -= foster.getHeight(), Align.left);
+			this.featureHitboxDepth.setTransforms(x + longestText + 5, yOffset - 2, 12, 12).update();
 			this.featureHitboxDepth.render(shape);
 			this.parent.renderer.featureHitboxDepth = this.featureHitboxDepth.getValue();
-			foster.setString("Hitbox line width:").draw(this.x, yOffset -= foster.getHeight() + 8, Align.left);
-			this.featureHitboxWidth.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - (int)foster.getHalfHeight() - 1, this.width - (int)foster.getWidth() - 5, 15).setFoster(foster).update();
+			foster.setString("Hitbox line width").draw(x, (yOffset -= foster.getHeight() + 9) - 1, Align.left);
+			this.featureHitboxWidth.setTransforms(x + longestText + 5, yOffset - foster.getHalfHeight(), this.width - longestText - 15, 15).setFoster(foster).update();
 			this.featureHitboxWidth.render(batch, shape);
-			foster.setString("Draw grid:").draw(this.x, yOffset -= foster.getHeight() + 8, Align.left);
-			this.featureRenderGrid.setTransforms(this.x + (int)foster.getWidth() + 5, yOffset - 2, 12, 12).update();
+			foster.setString("Draw grid").draw(x, yOffset -= foster.getHeight() + 10, Align.left);
+			this.featureRenderGrid.setTransforms(x + longestText + 5, yOffset - 2, 12, 12).update();
 			this.featureRenderGrid.render(shape);
 			this.parent.renderer.featureRenderGrid = this.featureRenderGrid.getValue();
-			return yOffset - 2;
+			return yOffset - 5;
 		}
 		
 		public void whileInputFieldFocused(STDInputField inputField, String id) {

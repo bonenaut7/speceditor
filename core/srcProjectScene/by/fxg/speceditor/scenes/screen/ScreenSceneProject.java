@@ -21,6 +21,7 @@ import by.fxg.speceditor.screen.project.SubscreenViewport;
 import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDragArea;
 import by.fxg.speceditor.utils.Utils;
@@ -88,6 +89,7 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 	}
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
+		this.resize(width, height); //FIXME TODO XXX REMOVE
 		if (this.dropdownButtonApp.isPressed()) {
 			this.dropdownArea.open(1, height - 18);
 		}
@@ -115,6 +117,8 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		batch.begin();
 		shape.update(true);
+		shape.setColor(UColor.white);
+		shape.filledRectangle(0, 0, width, height);
 		shape.setColor(0.075f, 0.075f, 0.075f, 1f);
 		shape.filledRectangle(0, height - 17, width, 17);
 		this.dropdownButtonApp.render(shape, foster);
@@ -165,36 +169,38 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 	}
 	
 	public void resize(int width, int height) {
-		this.dropdownButtonApp.setTransforms(1, height - 16, 90, 15);
+		int topLine = 17, dragWidth = 4;
+		this.dropdownButtonApp.setTransforms(1, height - topLine + 1, 90, 15);
 		this.updateDimensions(width, height);
 		this.subObjectTree.resize(this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
 		this.unnamedUselessModule.resize(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
 		this.subEditorPane.resize(this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
 		this.subViewport.resize(this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
-		this.viewObjectTreeExplorer.setTransforms(this.sObjectTreeX + this.sObjectTreeW - 1, 2, 3, height - 20).setParameters(50, this.sEditorX - 50, false);
-		this.viewAssetSelector.setTransforms(this.sUUMX, this.sUUMY + this.sUUMH, this.sUUMW, 2).setParameters(20, height - 75, true);
-		this.viewEditorPaneExplorer.setTransforms(this.sEditorX - 3, 2, 3, height - 20).setParameters(this.sObjectTreeW + 100, width - 50, false);
+		this.viewObjectTreeExplorer.setTransforms(this.sObjectTreeX + this.sObjectTreeW, 0, dragWidth, height - topLine).setParameters(50, this.sEditorX - 50, false);
+		this.viewAssetSelector.setTransforms(this.sUUMX, this.sUUMY + this.sUUMH, this.sUUMW, dragWidth).setParameters(20, height - 75, true);
+		this.viewEditorPaneExplorer.setTransforms(this.sEditorX - dragWidth, 0, dragWidth, height - topLine).setParameters(this.sObjectTreeW + 100, width - 50, false);
 	}
 
 	private void updateDimensions(int width, int height) {
-		int blockObjectTreeExplorer = (int)(width * this.project.getPreference("screen.view.objectTreeExplorer.width", float.class, 0.15F));
-		int blockAssetSelector = (int)(height * this.project.getPreference("screen.view.assetSelector.height", float.class, 0.025F));
-		int blockEditorPanesEditor = (int)(width * this.project.getPreference("screen.view.editorPanesEditor.width", float.class, 0.8F));
-		this.sObjectTreeX = 1;
-		this.sObjectTreeY = 1;
-		this.sObjectTreeW = blockObjectTreeExplorer - 2;
-		this.sObjectTreeH = height - 19;
-		this.sUUMX = blockObjectTreeExplorer + 1;
-		this.sUUMY = 1;
-		this.sUUMW = width - blockObjectTreeExplorer - (width - blockEditorPanesEditor) - 2;
-		this.sUUMH = blockAssetSelector - 2;
-		this.sEditorX = blockEditorPanesEditor + 1;
-		this.sEditorY = 1;
-		this.sEditorW = width - blockEditorPanesEditor - 3;
-		this.sEditorH = height - 19;
-		this.sViewportX = blockObjectTreeExplorer + 1;
-		this.sViewportY = this.sUUMH + 2;
-		this.sViewportW = width - blockObjectTreeExplorer - (width - blockEditorPanesEditor) - 2;
-		this.sViewportH = height - 20 - this.sUUMH;
+		int topLine = 17, dragWidth = 4, halfDragWidth = dragWidth / 2;
+		int DragObjectTree = (int)(width * this.project.getPreference("screen.view.objectTreeExplorer.width", float.class, 0.15F));
+		int DragAssetSelector = (int)(height * this.project.getPreference("screen.view.assetSelector.height", float.class, 0.025F));
+		int DragEditorPanes = (int)(width * this.project.getPreference("screen.view.editorPanesEditor.width", float.class, 0.8F));
+		this.sObjectTreeX = 0;
+		this.sObjectTreeY = 0;
+		this.sObjectTreeW = DragObjectTree - halfDragWidth;
+		this.sObjectTreeH = height - topLine;
+		this.sUUMX = DragObjectTree + halfDragWidth;
+		this.sUUMY = 0;
+		this.sUUMW = DragEditorPanes - DragObjectTree - dragWidth;
+		this.sUUMH = DragAssetSelector - halfDragWidth;
+		this.sEditorX = DragEditorPanes + halfDragWidth;
+		this.sEditorY = 0;
+		this.sEditorW = width - DragEditorPanes - halfDragWidth;
+		this.sEditorH = height - topLine;
+		this.sViewportX = DragObjectTree + halfDragWidth;
+		this.sViewportY = DragAssetSelector + halfDragWidth;
+		this.sViewportW = DragEditorPanes - DragObjectTree - dragWidth;
+		this.sViewportH = height - topLine - DragAssetSelector - halfDragWidth;
 	}
 }

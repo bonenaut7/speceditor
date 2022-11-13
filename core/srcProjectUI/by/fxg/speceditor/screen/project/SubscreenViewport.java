@@ -21,7 +21,6 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.BaseSubscreen;
-import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class SubscreenViewport extends BaseSubscreen implements IMouseController {
@@ -118,7 +117,7 @@ public class SubscreenViewport extends BaseSubscreen implements IMouseController
 		for (int i = this.toolButtons.length, j = 0; i != 0; i--, j++) {
 			this.toolButtons[i - 1].setTransforms(x + width - 64 - 62 * j, y + height - 16, 60, 12).render(shape, foster);
 		}
-		shape.setColor(UColor.overlay);
+		shape.setColor(UColor.elementHover);
 		int offset = this.gizmosModule.selectedTool == null ? -1 : this.gizmosModule.selectedTool.ordinal();
 		shape.filledRectangle(x + width - 186 - 2 + 62 * offset, y + height - 16, 60, 12);
 		batch.end();

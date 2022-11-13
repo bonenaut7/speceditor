@@ -18,6 +18,7 @@ import by.fxg.speceditor.project.ProjectManager;
 import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.screen.project.ScreenCreateProject;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -35,7 +36,7 @@ public class ScreenMainMenu extends BaseScreen {
 		this.buttonImportProject = new UButton("Import project").setEnabled(false); //TODO [UI] Add Import project gui
 		this.buttonOpenRecentProject = new UButton("Open recent project");
 		this.buttonAddonsList = new UButton("Manage addons").setEnabled(false); //TODO Manage addons screen
-		this.buttonSettings = new UButton("Settings").setEnabled(false); //TODO Settings
+		this.buttonSettings = new UButton("Settings").setEnabled(false); //TODO [UI] Add Settings gui
 		this.buttonExit = new UButton("Exit");
 		this.resize(Utils.getWidth(), Utils.getHeight());
 		
@@ -43,7 +44,7 @@ public class ScreenMainMenu extends BaseScreen {
 		for (FileHandle folder : ProjectManager.INSTANCE.getSpecifiedProjects()) {
 			ProjectSolver solver = ProjectManager.INSTANCE.discoverProject(folder);
 			BasicProject project = solver != null && solver.canLoadProject(folder) ? solver.preLoadProject(folder) : null;
-			if (project != null) this.recentProjects.add(project);
+			if (project != null) this.recentProjects.addAll(project, project, project, project, project, project, project);
 		}
 	}
 
@@ -68,7 +69,7 @@ public class ScreenMainMenu extends BaseScreen {
 		if (this.buttonImportProject.isPressed()); //todo
 		if (this.buttonOpenRecentProject.isPressed() && this.selectedRecentProject > -1 && this.selectedRecentProject < this.recentProjects.size) {
 			BasicProject project = this.recentProjects.get(this.selectedRecentProject);
-			ProjectManager.currentProject = project;
+			ProjectManager.setCurrentProject(project);
 			if (project.loadProject()) {
 				project.onProjectOpened();
 				if (this.selectedRecentProject > 0) ProjectManager.INSTANCE.setRecentProject(project.getProjectFolder());
@@ -97,22 +98,22 @@ public class ScreenMainMenu extends BaseScreen {
 			float totalSize = this.recentProjects.size * 16f;
 			float scrollSize = Interpolation.linear.apply(10, 214, MathUtils.clamp(214f / totalSize, 0.0F, 1.0F));
 			float scrollPosition = Interpolation.linear.apply(214 - scrollSize, 0, 1.0F - MathUtils.clamp((totalSize - 214 - this.scroll) / (totalSize - 214), 0, 1.0F));
-			shape.filledRectangle(rbX + rbW + 1, rbY + scrollPosition - 1, 3, scrollSize + 2);
+			shape.filledRectangle(rbX + rbW + 1, rbY + scrollPosition - 1, 3, scrollSize + 1);
 		}
 		batch.flush();
 		if (PilesosScissorStack.instance.peekScissors(rbX - 1, rbY, rbW, rbH)) {
 			for (int i = 0; i != this.recentProjects.size; i++) {
-				int y = rbY + rbH - 17 - i*16 + (int)this.scroll;
+				int y = rbY + rbH - 17 - i*16 + (int)this.scroll - 1;
 				foster.setString(this.recentProjects.get(i).getProjectName()).draw(rbX + 4, y + 4, Align.left);
 				shape.line(rbX, y - 1, rbX + rbW, y);
 				if (i == this.selectedRecentProject) {
-					shape.setColor(UColor.overlay);
-					shape.filledRectangle(rbX, y, rbW, 15);
+					shape.setColor(UColor.elementHover);
+					shape.filledRectangle(rbX + 1, y, rbW - 2, 15);
 					shape.setColor(UColor.gray);
 				}
-				if (GDXUtil.isMouseInArea(rbX - 1, rbY, rbW, rbH) && GDXUtil.isMouseInArea(rbX, y, rbW - 1, 15)) {
-					shape.setColor(UColor.overlay);
-					shape.filledRectangle(rbX, y, rbW, 15);
+				if (GDXUtil.isMouseInArea(rbX - 1, rbY, rbW, rbH) && UIElement.isMouseInArea(rbX + 1, y, rbW - 1, 15)) {
+					shape.setColor(UColor.elementHover);
+					shape.filledRectangle(rbX + 1, y, rbW - 2, 15);
 					shape.setColor(UColor.gray);
 				}
 			}

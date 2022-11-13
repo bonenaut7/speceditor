@@ -12,18 +12,20 @@ import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UHoldButton;
+import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class GuiProjectExitSave extends BaseScreen {
+	private final IFocusable focusedObject;
 	private UButton buttonClose;
 	private UHoldButton buttonSaveExit, buttonExit;
-	private IFocusable focusedObject;
 	
 	public GuiProjectExitSave() {
 		this.buttonClose = new UButton("Cancel").setColor(UColor.greenblack);
 		this.buttonSaveExit = new UHoldButton("Save", UHoldButton.NO_KEY, 30).setColor(UColor.yellowblack);
 		this.buttonExit = new UHoldButton("Don't save", UHoldButton.NO_KEY, 60).setColor(UColor.redblack);
 		
+		this.resize(Utils.getWidth(), Utils.getHeight());
 		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
 		SpecInterface.INSTANCE.currentFocus = null;
 	}
@@ -58,11 +60,16 @@ public class GuiProjectExitSave extends BaseScreen {
 		foster.setString("Are you sure you want to exit?").draw(x + boxWidth / 2, y + boxHeight - 20);
 		foster.setString("Do you want to save your project before exiting?").draw(x + boxWidth / 2, y + boxHeight - 32);
 		
-		this.buttonClose.setTransforms(x + boxWidth - 60, y + 10, 50, 13).render(shape, foster);
-		this.buttonSaveExit.setTransforms(x + boxWidth - 120, y + 10, 50, 13).render(shape, foster);
-		this.buttonExit.setTransforms(x + boxWidth - 200, y + 10, 70, 13).render(shape, foster);
+		this.buttonClose.render(shape, foster);
+		this.buttonSaveExit.render(shape, foster);
+		this.buttonExit.render(shape, foster);
 		batch.end();
 	}
 	
-	public void resize(int width, int height) {}
+	public void resize(int width, int height) {
+		int x = width / 2 - 210, y = height / 2 - 35, boxWidth = 320;
+		this.buttonClose.setTransforms(x + boxWidth - 60, y + 10, 50, 13);
+		this.buttonSaveExit.setTransforms(x + boxWidth - 120, y + 10, 50, 13);
+		this.buttonExit.setTransforms(x + boxWidth - 200, y + 10, 70, 13);
+	}
 }

@@ -10,35 +10,32 @@ import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.screen.BaseScreen;
+import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.ui.UButton;
+import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class GuiAbout extends BaseScreen implements IFocusable {
+public class GuiAbout extends BaseScreen {
+	private final IFocusable focusedObject;
 	private UButton buttonGit, buttonClose;
 	
 	public GuiAbout() {
-		this.buttonGit = new UButton("Github") {
-			public boolean isMouseOver(int x, int y, int width, int height) {
-				return GDXUtil.isMouseInArea(x, y, width, height);
-			}
-		};
-		this.buttonClose = new UButton("Cancel") {
-			public boolean isMouseOver(int x, int y, int width, int height) {
-				return GDXUtil.isMouseInArea(x, y, width, height);
-			}
-		};
-		this.setFocused(true);
+		this.buttonGit = new UButton("Github");
+		this.buttonClose = new UButton("Cancel");
+		
+		this.resize(Utils.getWidth(), Utils.getHeight());
+		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
+		SpecInterface.INSTANCE.currentFocus = null;
 	}
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		if (this.buttonGit.isPressed()) try { Desktop.getDesktop().browse(new URI("https://github.com/fxgaming/")); } catch (Exception e) {}
 		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
 			SpecEditor.get.renderer.currentGui = null;
-			this.setFocused(false);
+			SpecInterface.INSTANCE.currentFocus = this.focusedObject;
 		}
 	}
 
@@ -71,10 +68,14 @@ public class GuiAbout extends BaseScreen implements IFocusable {
 			PilesosScissorStack.instance.popScissors();
 		}
 		foster.draw(x + 6, y + 7, Align.left);
-		this.buttonGit.setTransforms(x + boxWidth / 2 - 25, y + 5, 50, 13).render(shape, foster);
-		this.buttonClose.setTransforms(x + boxWidth - 55, y + 5, 50, 13).render(shape, foster);
+		this.buttonGit.render(shape, foster);
+		this.buttonClose.render(shape, foster);
 		batch.end();
 	}
 	
-	public void resize(int width, int height) {}
+	public void resize(int width, int height) {
+		int x = width / 2 - 200, y = height / 2 - 35, boxWidth = 400;
+		this.buttonGit.setTransforms(x + boxWidth / 2 - 25, y + 5, 50, 13);
+		this.buttonClose.setTransforms(x + boxWidth - 55, y + 5, 50, 13);
+	}
 }

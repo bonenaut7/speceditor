@@ -20,6 +20,16 @@ public class ProjectManager {
 	/** Paths to project folders that specified in Project {@link com.badlogic.gdx.Preferences} List **/
 	private Array<FileHandle> specifiedProjects = new Array<>();
 	
+	public static void setCurrentProject(BasicProject project) {
+		if (project != null) {
+			currentProject = project;
+			Gdx.graphics.setTitle(Utils.format("SpecEditor - ", project.getProjectName()));
+		} else {
+			currentProject = null;
+			Gdx.graphics.setTitle("SpecEditor");
+		}
+	}
+	
 	public void postInit() {
 		Utils.logDebug("[ProjectManager] Loaded ", this.registeredSolvers.size, " project solvers.");
 	

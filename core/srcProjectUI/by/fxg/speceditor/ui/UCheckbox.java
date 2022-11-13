@@ -12,8 +12,8 @@ public class UCheckbox extends UIElement {
 	protected boolean value = false;
 
 	public UCheckbox() { this(false); }
-	public UCheckbox(int x, int y, int width, int height) { this(false); this.setTransforms(x, y, width, height); }
-	public UCheckbox(boolean value, int x, int y, int width, int height) { this(value); this.setTransforms(x, y, width, height); }
+	public UCheckbox(float x, float y, float width, float height) { this(false); this.setTransforms(x, y, width, height); }
+	public UCheckbox(boolean value, float x, float y, float width, float height) { this(value); this.setTransforms(x, y, width, height); }
 	public UCheckbox(boolean value) {
 		this.value = value;
 		this.setTransforms(x, y, width, height);

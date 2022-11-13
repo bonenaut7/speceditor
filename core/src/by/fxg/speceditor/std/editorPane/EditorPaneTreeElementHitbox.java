@@ -24,6 +24,7 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 		return selector.get(0) instanceof TreeElementHitbox;
 	}
 	
+	//TODO Add custom properties
 	/** XXX SpecFlagsBlock contains 3 extra reserved flags until custom properties will be added **/
 	protected class SpecFlagsBlock extends URenderBlock {
 		private long[] physObjectMasks = { 
@@ -54,16 +55,18 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-			foster.setString("Link flags to parent:").draw(this.x, yOffset -= foster.getHeight() + 2, Align.left);
-			this.linkToParent.setTransforms(this.x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
+			yOffset -= 8;
+			int x = this.x + 5;
+			foster.setString("Link flags to parent").draw(x, yOffset -= foster.getHeight(), Align.left);
+			this.linkToParent.setTransforms(x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
 			this.linkToParent.render(shape);
 			if (!this.linkToParent.getValue()) {
-				foster.setString("Flags:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-				this.maskSelector.setTransforms(this.x + (int)foster.getWidth() + 5, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, this.width - (int)foster.getWidth() - 5, 14).update(foster);
+				foster.setString("Flags").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+				this.maskSelector.setTransforms(x + foster.getWidth() + 5, (yOffset -= 2) - foster.getHalfHeight() + 2, this.width - foster.getWidth() - 15, 14).update(foster);
 				this.maskSelector.render(shape, foster);
-				if (this.maskSelector.isFocused()) yOffset -= this.physObjectMasksNames.length * 15 + 2;
-			} else foster.setString("Flags are linked to the parent").draw(this.x + 5, (yOffset -= 12) + 1, Align.left);
-			return yOffset;
+				if (this.maskSelector.isFocused()) yOffset -= this.maskSelector.getDropHeight();
+			} else foster.setString("Flags are linked to the parent").draw(x + 5, (yOffset -= 16) + 2, Align.left);
+			return yOffset - 5;
 		}
 		
 		protected void updateBlock(TreeElementHitbox hitbox) {
@@ -141,51 +144,55 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 		}
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
-			foster.setString("Link flags to parent:").draw(this.x, yOffset -= foster.getHeight() + 2, Align.left);
-			this.linkToParentMasks.setTransforms(this.x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
+			yOffset -= 8;
+			int x = this.x + 5;
+			foster.setString("Link to parent").draw(x, yOffset -= foster.getHeight(), Align.left);
+			this.linkToParentMasks.setTransforms(x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
 			this.linkToParentMasks.render(shape);
 			if (!this.linkToParentMasks.getValue()) {
-				foster.setString("Flags:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-				this.flagsSelector.setTransforms(this.x + (int)foster.getWidth() + 5, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, this.width - (int)foster.getWidth() - 5, 14).update(foster);
-				if (this.flagsSelector.isFocused()) yOffset -= this.collisionFlagsNames.length * 15 + 2;
-			} else foster.setString("Flags are linked to the parent").draw(this.x + 5, (yOffset -= 12) + 1, Align.left);
+				foster.setString("Flags").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+				this.flagsSelector.setTransforms(x + foster.getWidth() + 5, (yOffset -= 3) - foster.getHalfHeight() + 3, this.width - foster.getWidth() - 15, 14).update(foster);
+				if (this.flagsSelector.isFocused()) yOffset -= this.flagsSelector.getDropHeight();
+			} else foster.setString("Flags are linked to the parent").draw(x + 5, (yOffset -= 12), Align.left);
 
 			shape.line(this.x, yOffset -= 5, this.x + this.width, yOffset);
 			
-			foster.setString("Link filter masks to parent:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-			this.linkToParentFilterMasks.setTransforms(this.x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
+			float longestString = this.parent.getLongestStringWidth(foster, "Link to parent", "All masks");
+			foster.setString("Link to parent").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+			this.linkToParentFilterMasks.setTransforms(x + longestString + 5, yOffset -= 2, 12, 12).update();
 			this.linkToParentFilterMasks.render(shape);
 			if (!this.linkToParentFilterMasks.getValue()) {
-				foster.setString("All masks:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-				this.allFilterMasks.setTransforms(this.x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
+				foster.setString("All masks").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+				this.allFilterMasks.setTransforms(x + longestString + 5, yOffset -= 2, 12, 12).update();
 				this.allFilterMasks.render(shape);
 				if (!this.allFilterMasks.getValue()) {
-					foster.setString("Masks:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-					this.filterMasksSelector.setTransforms(this.x + (int)foster.getWidth() + 5, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, this.width - (int)foster.getWidth() - 5, 14).update(foster);
-					if (this.filterMasksSelector.isFocused()) yOffset -= this.collisionFilterGroupsNames.length * 15 + 2;
-				} else foster.setString("All masks selected").draw(this.x + 5, (yOffset -= 12) + 1, Align.left);
-			} else foster.setString("Masks are linked to the parent").draw(this.x + 5, (yOffset -= 12) + 1, Align.left);
+					foster.setString("Masks").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+					this.filterMasksSelector.setTransforms(x + foster.getWidth() + 5, (yOffset -= 3) - foster.getHalfHeight() + 3, this.width - foster.getWidth() - 15, 14).update(foster);
+					if (this.filterMasksSelector.isFocused()) yOffset -= this.filterMasksSelector.getDropHeight();
+				} else foster.setString("All masks selected").draw(x + 5, (yOffset -= 17) + 3, Align.left);
+			} else foster.setString("Masks are linked to the parent").draw(x + 5, (yOffset -= 12), Align.left);
 			
 			shape.line(this.x, yOffset -= 5, this.x + this.width, yOffset);
 			
-			foster.setString("Link filter groups to parent:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-			this.linkToParentFilterGroups.setTransforms(this.x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
+			longestString = this.parent.getLongestStringWidth(foster, "Link to parent", "All groups");
+			foster.setString("Link to parent").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+			this.linkToParentFilterGroups.setTransforms(x + longestString + 5, yOffset -= 2, 12, 12).update();
 			this.linkToParentFilterGroups.render(shape);
 			if (!this.linkToParentFilterGroups.getValue()) {
-				foster.setString("All groups:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-				this.allFilterGroups.setTransforms(this.x + foster.getWidth() + 5, yOffset -= 2, 12, 12).update();
+				foster.setString("All groups").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+				this.allFilterGroups.setTransforms(x + longestString + 5, yOffset -= 2, 12, 12).update();
 				this.allFilterGroups.render(shape);
 				if (!this.allFilterGroups.getValue()) {
-					foster.setString("Groups:").draw(this.x, yOffset -= foster.getHeight() + 7, Align.left);
-					this.filterGroupsSelector.setTransforms(this.x + (int)foster.getWidth() + 5, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, this.width - (int)foster.getWidth() - 5, 14).update(foster);
-					if (this.filterGroupsSelector.isFocused()) yOffset -= this.collisionFilterGroupsNames.length * 15 + 2;
-				} else foster.setString("All groups selected").draw(this.x + 5, (yOffset -= 12) + 1, Align.left);
-			} else foster.setString("Groups are linked to the parent").draw(this.x + 5, (yOffset -= 12) + 1, Align.left);
+					foster.setString("Groups").draw(x, yOffset -= foster.getHeight() + 7, Align.left);
+					this.filterGroupsSelector.setTransforms(x + foster.getWidth() + 5, (yOffset -= 3) - foster.getHalfHeight() + 3, this.width - foster.getWidth() - 15, 14).update(foster);
+					if (this.filterGroupsSelector.isFocused()) yOffset -= this.filterGroupsSelector.getDropHeight();
+				} else foster.setString("All groups selected").draw(x + 5, (yOffset -= 14) + 2, Align.left);
+			} else foster.setString("Groups are linked to the parent").draw(x + 5, (yOffset -= 12), Align.left);
 			
 			if (!this.linkToParentFilterGroups.getValue() && !this.allFilterGroups.getValue()) this.filterGroupsSelector.render(shape, foster);
 			if (!this.linkToParentFilterMasks.getValue() && !this.allFilterMasks.getValue()) this.filterMasksSelector.render(shape, foster);
 			if (!this.linkToParentMasks.getValue()) this.flagsSelector.render(shape, foster);
-			return yOffset;
+			return yOffset - 4;
 		}
 		
 		protected void updateBlock(TreeElementHitbox hitbox) {

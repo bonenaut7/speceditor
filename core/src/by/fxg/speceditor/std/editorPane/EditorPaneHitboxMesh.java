@@ -54,12 +54,13 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
 		yOffset -= 8;
-		foster.setString("Name:").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
-		this.elementName.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).setFoster(foster).update();
+		float longestString = this.getLongestStringWidth(foster, "Name", "Mesh", "Flags");
+		foster.setString("Name").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
+		this.elementName.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
 		
-		foster.setString("Select model:").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
-		this.buttonSelectModel.setTransforms(x + (int)foster.getWidth() + 10, yOffset -= foster.getHalfHeight(), width - (int)foster.getWidth() - 15, 15).render(shape, foster);
+		foster.setString("Mesh").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
+		this.buttonSelectModel.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
 			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).file();
 			if (handle != null) {
@@ -77,13 +78,13 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 			}
 		}
 		
-		foster.setString("Flags:").draw(x + 5, yOffset -= foster.getHeight() + 7, Align.left);
-		this.nodesSelector.setTransforms(x + (int)foster.getWidth() + 10, (yOffset -= 4) - (int)foster.getHalfHeight() + 3, width - (int)foster.getWidth() - 15, 14).update(foster);
-		if (this.nodesSelector.isFocused()) yOffset -= this.nodesSelector.getVariants().length * 15 + 2;
+		foster.setString("Flags").draw(x + 5, yOffset -= foster.getHeight() + 6, Align.left);
+		this.nodesSelector.setTransforms(x + longestString + 10, (yOffset -= 4) - foster.getHalfHeight() + 3, width - longestString - 15, 14).update(foster);
+		if (this.nodesSelector.isFocused()) yOffset -= this.nodesSelector.getDropHeight();
 		
-		yOffset = this.transform.setTransforms(x + 8, width - 16).render(batch, shape, foster, yOffset - 5);
-		yOffset = this.specFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.transform.isDropped() ? yOffset - 5 : yOffset);
-		yOffset = this.bulletFlags.setTransforms(x + 8, width - 16).render(batch, shape, foster, this.specFlags.isDropped() ? yOffset - 5 : yOffset);
+		yOffset = this.transform.setTransforms(x + 5, width - 10).render(batch, shape, foster, yOffset - 5);
+		yOffset = this.specFlags.setTransforms(x + 5, width - 10).render(batch, shape, foster, yOffset - 5);
+		yOffset = this.bulletFlags.setTransforms(x + 5, width - 10).render(batch, shape, foster, yOffset - 5);
 		this.nodesSelector.render(shape, foster);
 		return yOffset;
 	}
@@ -131,32 +132,34 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 
 		protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
 			if (SpecInterface.INSTANCE.currentFocus instanceof GizmosModule) this.updateGizmoValues();
-			int sizePerPart = (this.width - 30 - (int)foster.setString(this.coords[0]).getWidth() * 3) / 3;
+			int sizePerPart = (this.width - 40 - (int)foster.setString(this.coords[0]).getWidth() * 3) / 3;
+			int x = this.x + 5;
+			yOffset -= 8;
 			
-			foster.setString("Position:").draw(this.x, yOffset -= foster.getHeight(), Align.left);
+			foster.setString("Position:").draw(x, yOffset -= foster.getHeight(), Align.left);
 			yOffset -= 19; //16 size of box + 3 offset
 			for (int i = 0; i != 3; i++) {
-				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
-				this.position[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
+				foster.setString(this.coords[i]).draw(x + 10 + (foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+				this.position[i].setTransforms(x + 10 + foster.getWidth() + (foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 				this.position[i].render(batch, shape);
 			}
 
-			foster.setString("Rotation:").draw(this.x, yOffset -= foster.getHeight() + 5, Align.left);
+			foster.setString("Rotation:").draw(x, yOffset -= foster.getHeight() + 5, Align.left);
 			yOffset -= 19;
 			for (int i = 0; i != 3; i++) {
-				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
-				this.rotation[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
+				foster.setString(this.coords[i]).draw(x + 10 + (foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+				this.rotation[i].setTransforms(x + 10 + foster.getWidth() + (foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 				this.rotation[i].render(batch, shape);
 			}
 
-			foster.setString("Scale:").draw(this.x, yOffset -= foster.getHeight() + 5, Align.left);
+			foster.setString("Scale:").draw(x, yOffset -= foster.getHeight() + 5, Align.left);
 			yOffset -= 19;
 			for (int i = 0; i != 3; i++) {
-				foster.setString(this.coords[i]).draw(this.x + 10 + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
-				this.scale[i].setTransforms(this.x + 10 + (int)foster.getWidth() + ((int)foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
+				foster.setString(this.coords[i]).draw(x + 10 + (foster.getWidth() + sizePerPart + 10) * i, yOffset + foster.getHalfHeight());
+				this.scale[i].setTransforms(x + 10 + foster.getWidth() + (foster.getWidth() + sizePerPart + 10) * i, yOffset, sizePerPart, 15).setFoster(foster).update();
 				this.scale[i].render(batch, shape);
 			}
-			return yOffset;
+			return yOffset - 5;
 		}
 		
 		public void whileInputFieldFocused(STDInputField inputField, String id) {

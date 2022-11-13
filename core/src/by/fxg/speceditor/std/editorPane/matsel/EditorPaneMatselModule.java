@@ -10,7 +10,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public abstract class EditorPaneMatselModule {
 	protected EditorPaneMatsel matsel;
-	/** Please, return decreased yOffset. XXX **/
+	/** Please, return decreased yOffset. XXX docs **/
 	abstract public int renderModule(Batch batch, ShapeDrawer shape, Foster foster, int yOffset, int x, int width);
 	
 	abstract public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements);

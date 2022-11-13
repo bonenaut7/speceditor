@@ -12,11 +12,11 @@ import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UButton extends UIElement {
-	private String name;
-	private boolean enabled = true;
-	private Color color;
+	protected String name;
+	protected boolean enabled = true;
+	protected Color color;
 	
-	public UButton(String name, int x, int y, int width, int height) { this(name); this.setTransforms(x, y, width, height); }
+	public UButton(String name, float x, float y, float width, float height) { this(name); this.setTransforms(x, y, width, height); }
 	public UButton(String name) { 
 		this.name = name;
 		this.color = UColor.elementDefaultColor;

@@ -90,10 +90,8 @@ public class SpecInterface {
 			aquagray = new Color(0.25f, 0.55f, 0.55f, 1f),
 			
 			background = new Color(0.12f, 0.12f, 0.12f, 1f),
-			overlay = new Color(1f, 1f, 1f, 0.2f),
-			suboverlay = new Color(0f, 0f, 0f, 0.25f),
-			select = new Color(1f, 1f, 1f, 1f),
-			
+			black025alpha = new Color(0f, 0f, 0f, 0.25f),
+
 			elementDefaultColor = new Color(0.25f, 0.25f, 0.25f, 1.0f),
 			elementIntensiveColor = new Color(1.0f, 1.0f, 1.0f, 1.0f),
 			elementHover = new Color(1.0f, 1.0f, 1.0f, 0.2f),
