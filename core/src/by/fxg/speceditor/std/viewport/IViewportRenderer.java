@@ -20,6 +20,7 @@ public interface IViewportRenderer {
 	void render();
 	/** Color buffer from framebuffer, returns rendered info **/
 	TextureRegion getTexture();
+	
 	/** Renderer's camera**/
 	PerspectiveCamera getCamera();
 	/** Editor pane of the renderer **/

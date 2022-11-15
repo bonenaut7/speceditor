@@ -49,8 +49,7 @@ public abstract class UIElement {
 		if (GEOMETRICALLY_ACCURATE_CALCULATIONS) return GDXUtil.isMouseInArea(x, y, width - 1, height - 1);
 		else return GDXUtil.isMouseInArea(x, y, width, height);
 	}
-	
-	@Deprecated
+
 	public static void _convertColorToText(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA, boolean withPointer) {
 		if (withPointer) {
 			fieldR.setTextWithPointer(String.valueOf(color.r)).dropOffset();
@@ -65,7 +64,6 @@ public abstract class UIElement {
 		}
 	}
 	
-	@Deprecated
 	public static void _convertVector3ToText(Vector3 vec, STDInputField fieldX, STDInputField fieldY, STDInputField fieldZ, boolean withPointer) {
 		if (withPointer) {
 			fieldX.setText(String.valueOf(vec.x)).dropOffset();
@@ -78,7 +76,6 @@ public abstract class UIElement {
 		}
 	}
 
-	@Deprecated
 	public static void _convertVector2ToText(Vector2 vec, STDInputField fieldX, STDInputField fieldY, boolean withPointer) {
 		if (withPointer) {
 			fieldX.setText(String.valueOf(vec.x)).dropOffset();
@@ -89,18 +86,24 @@ public abstract class UIElement {
 		}
 	}
 	
-	@Deprecated
 	public static void _convertTextToColor(Color color, STDInputField fieldR, STDInputField fieldG, STDInputField fieldB, STDInputField fieldA) {
 		color.set(fieldR.getTextAsNumber(color.r), fieldG.getTextAsNumber(color.g), fieldB.getTextAsNumber(color.b), fieldA.getTextAsNumber(color.a));
 	}
 	
-	@Deprecated
 	public static void _convertTextToVector3(Vector3 vec, STDInputField fieldX, STDInputField fieldY, STDInputField fieldZ) {
 		vec.set(fieldX.getTextAsNumber(vec.x), fieldY.getTextAsNumber(vec.y), fieldZ.getTextAsNumber(vec.z));
 	}
 
-	@Deprecated
 	public static void _convertTextToVector2(Vector2 vec, STDInputField fieldX, STDInputField fieldY) {
 		vec.set(fieldX.getTextAsNumber(vec.x), fieldY.getTextAsNumber(vec.y));
+	}
+	
+	public static float _convertTextToFloat(STDInputField field, float failValue) {
+		try {
+			return Float.valueOf(field.getText());
+		} catch (NullPointerException | NumberFormatException e) {
+			if (!field.isFocused()) field.setText(String.valueOf(failValue));
+			return failValue;
+		}
 	}
 }

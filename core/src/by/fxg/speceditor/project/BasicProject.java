@@ -69,7 +69,7 @@ public abstract class BasicProject {
 	public void saveConfiguration() {
 		try {
 			if (this.config == null) this.config = new Ini();
-			Section header = this.config.get("PROJECT-HEADER");
+			Section header = this.config.containsKey("PROJECT-HEADER") ? this.config.get("PROJECT-HEADER") : this.config.add("PROJECT-HEADER");
 			header.clear();
 			header.add("project-type", this.solver.solverType);
 			header.add("project-name", this.name);

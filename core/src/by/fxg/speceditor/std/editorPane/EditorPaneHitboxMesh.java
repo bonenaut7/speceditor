@@ -17,6 +17,7 @@ import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UButton;
@@ -54,7 +55,7 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
 		yOffset -= 8;
-		float longestString = this.getLongestStringWidth(foster, "Name", "Mesh", "Flags");
+		float longestString = this.getLongestStringWidth(foster, "Name", "Mesh", "Nodes");
 		foster.setString("Name").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
 		this.elementName.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
@@ -78,7 +79,7 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 			}
 		}
 		
-		foster.setString("Flags").draw(x + 5, yOffset -= foster.getHeight() + 6, Align.left);
+		foster.setString("Nodes").draw(x + 5, yOffset -= foster.getHeight() + 6, Align.left);
 		this.nodesSelector.setTransforms(x + longestString + 10, (yOffset -= 4) - foster.getHalfHeight() + 3, width - longestString - 15, 14).update(foster);
 		if (this.nodesSelector.isFocused()) yOffset -= this.nodesSelector.getDropHeight();
 		
@@ -164,9 +165,9 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 		
 		public void whileInputFieldFocused(STDInputField inputField, String id) {
 			switch (id) {
-				case "position": this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]); break;
-				case "rotation": this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]); break;
-				case "scale": this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]); break;
+				case "position": UIElement._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]); break;
+				case "rotation": UIElement._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]); break;
+				case "scale": UIElement._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2]); break;
 			}
 		}
 		
@@ -175,16 +176,16 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 		}
 		
 		private void updateBlock(ElementHitboxMesh model) {
-			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
-			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);
-			this.parent._convertVector3ToText(model.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], true);
+			UIElement._convertVector3ToText(model.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
+			UIElement._convertVector3ToText(model.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);
+			UIElement._convertVector3ToText(model.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], true);
 		}
 		
 		private void updateGizmoValues() {
 			if (this.parent != null && this.parent.element != null) {
-				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], false);
-				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], false);
-				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], false);
+				UIElement._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], false);
+				UIElement._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], false);
+				UIElement._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.SCALE), this.scale[0], this.scale[1], this.scale[2], false);
 			}
 		}
 	}

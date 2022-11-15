@@ -15,6 +15,7 @@ import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UButton;
@@ -132,9 +133,9 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		
 		public void whileInputFieldFocused(STDInputField inputField, String id) {
 			switch (id) {
-				case "position": this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]); break;
-				case "rotation": this.parent._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]); break;
-				case "scale": this.parent._convertTextToVector2(this.parent.element.decal.scale, this.scale[0], this.scale[1]); break;
+				case "position": UIElement._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2]); break;
+				case "rotation": UIElement._convertTextToVector3(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2]); break;
+				case "scale": UIElement._convertTextToVector2(this.parent.element.decal.scale, this.scale[0], this.scale[1]); break;
 			}
 		}
 		
@@ -143,15 +144,15 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		}
 		
 		private void updateBlock(ElementDecal decal) {
-			this.parent._convertVector3ToText(decal.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
-			this.parent._convertVector3ToText(decal.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);
-			this.parent._convertVector2ToText(decal.decal.scale, this.scale[0], this.scale[1], true);
+			UIElement._convertVector3ToText(decal.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], true);
+			UIElement._convertVector3ToText(decal.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], true);
+			UIElement._convertVector2ToText(decal.decal.scale, this.scale[0], this.scale[1], true);
 		}
 		
 		private void updateGizmoValues() {
 			if (this.parent != null && this.parent.element != null) {
-				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], false);
-				this.parent._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], false);
+				UIElement._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.TRANSLATE), this.position[0], this.position[1], this.position[2], false);
+				UIElement._convertVector3ToText(this.parent.element.getTransform(GizmoTransformType.ROTATE), this.rotation[0], this.rotation[1], this.rotation[2], false);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package by.fxg.speceditor.scenes.screen;
 import java.awt.Desktop;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 
@@ -10,8 +11,10 @@ import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.scenes.ScenesProject;
+import by.fxg.speceditor.scenes.format.ScenesSerializer;
 import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.screen.gui.GuiAbout;
+import by.fxg.speceditor.screen.gui.GuiConfirmation;
 import by.fxg.speceditor.screen.gui.GuiError;
 import by.fxg.speceditor.screen.gui.GuiProjectCloseSave;
 import by.fxg.speceditor.screen.gui.GuiProjectExitSave;
@@ -22,8 +25,10 @@ import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.viewport.DefaultRenderer;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDragArea;
+import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -146,7 +151,26 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 					Utils.logError(this.project.io.getLastException(), "ScreenSceneProject", "Error happened in saving project process");
 				}
 			} break;
-			
+			case "project.export.specformat": {
+				FileHandle handle = SpecFileChooser.get().fileAndFolder();
+				if (handle != null) {
+					if (!handle.isDirectory() && handle.exists()) {
+						SpecEditor.get.renderer.currentGui = new GuiConfirmation("Are you sure you want to overwrite selected file?") {
+							public void onConfirm() {
+								DefaultRenderer renderer = (DefaultRenderer)project.renderer;
+								ScenesSerializer serializer = new ScenesSerializer().setBufferClearColor(renderer.bufferColor).setCameraParameters(renderer.cameraSettings);
+								Exception exception = serializer.setEnvironment(renderer.viewportEnvironment).addElementStack(project.objectTree.getStack()).setFile(handle).pack();
+								if (exception != null) SpecEditor.get.renderer.currentGui = new GuiError("Error while exporting project", exception);
+							}
+						};
+					} else {
+						DefaultRenderer renderer = (DefaultRenderer)this.project.renderer;
+						ScenesSerializer serializer = new ScenesSerializer().setBufferClearColor(renderer.bufferColor).setCameraParameters(renderer.cameraSettings);
+						Exception exception = serializer.setEnvironment(renderer.viewportEnvironment).addElementStack(this.project.objectTree.getStack()).setFile(handle).pack();
+						if (exception != null) SpecEditor.get.renderer.currentGui = new GuiError("Error while exporting project", exception);
+					}
+				}
+			} break;
 //			FileHandle inputFolder = null;
 //				JFrame frame = new JFrame();
 //				frame.setAlwaysOnTop(true);

@@ -29,7 +29,6 @@ import com.esotericsoftware.kryo.io.Output;
 import by.fxg.pilesos.decals.CameraAlphaGroupStrategy;
 import by.fxg.pilesos.decals.DecalDrawer;
 import by.fxg.pilesos.graphics.TextureFrameBuffer;
-import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.editorPane.EditorPane;
@@ -38,7 +37,6 @@ import by.fxg.speceditor.std.objectTree.ITreeElementModelProvider;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.elements.ElementDecal;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight;
-import by.fxg.speceditor.utils.Utils;
 
 public class DefaultRenderer implements IViewportRenderer {
 	private final EditorPaneDefaultViewportRenderer editorPaneDefaultViewportRenderer;
@@ -47,9 +45,9 @@ public class DefaultRenderer implements IViewportRenderer {
 	private TextureFrameBuffer frameBuffer;
 	
 	//Preferences
-	protected Vector3 cameraSettings = new Vector3(67F, 50.0f, 0.1f); //FOV, Far, Near
-	protected Color bufferColor = new Color(0.12F, 0.12F, 0.12F, 1.0F);
-	protected Environment viewportEnvironment = new Environment() {{
+	public Vector3 cameraSettings = new Vector3(67F, 50.0f, 0.1f); //FOV, Far, Near
+	public Color bufferColor = new Color(0.12F, 0.12F, 0.12F, 1.0F);
+	public Environment viewportEnvironment = new Environment() {{
 		set(new BlendingAttribute(1f), FloatAttribute.createAlphaTest(0.5f), ColorAttribute.createAmbientLight(0.4f, 0.4f, 0.4f, 1F));
 	}};
 	
@@ -96,10 +94,9 @@ public class DefaultRenderer implements IViewportRenderer {
 		if (object instanceof ITreeElementModelProvider) this.modelProviders.add((ITreeElementModelProvider)object);
 		if (object instanceof ElementLight) {
 			ElementLight element = (ElementLight)object;
-			this.editorDecalDrawer.decalsToProduce.add(element._viewportDecal);
-			element._viewportDecal.setDecal(DefaultResources.INSTANCE.decals.get(Utils.format("viewport/light.", objectTree.elementSelector.isElementSelected(element))));
 			element._viewportDecal.getDecal().setScale(0.0015f, 0.0015f);
 			element._viewportDecal.getDecal().setPosition(element.getTransform(GizmoTransformType.TRANSLATE));
+			this.editorDecalDrawer.decalsToProduce.add(element._viewportDecal);
 			this.viewportEnvironment.add(element.getLight(BaseLight.class));
 		} else if (object instanceof ElementDecal) {
 			 this.sceneDecalDrawer.decalsToProduce.add(((ElementDecal)object).decal); 

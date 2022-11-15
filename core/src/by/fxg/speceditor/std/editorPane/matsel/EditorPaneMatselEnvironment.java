@@ -4,6 +4,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.attributes.CubemapAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.DirectionalLightsAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.PointLightsAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.SpotLightsAttribute;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -21,6 +25,12 @@ import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements ISTDDropdownAreaListener {
+	private static final Array<Class<?>> bannedAttributes = new Array<>();
+	static {
+		bannedAttributes.add(PointLightsAttribute.class, DirectionalLightsAttribute.class, SpotLightsAttribute.class);
+		bannedAttributes.add(CubemapAttribute.class);
+	}
+	
 	protected Environment environment;
 	protected EditorPaneMatselModule currentModule;
 	protected UDropdownSelectSingle selectedAttribute;
@@ -119,6 +129,8 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		attributes.add("None");
 		if (this.environment != null) {
 			for (Attribute attribute : this.environment) {
+				//FIXME removing lights attribute because of visual bugs, not used anyway. (Same thing done in the #getSelectedAttribute)
+				if (bannedAttributes.contains(attribute.getClass(), true)) continue;
 				attributes.add(Utils.format(attribute.getClass().getSimpleName().replace("Attribute", ""), " - ", Attribute.getAttributeAlias(attribute.type)));
 			}
 		}
@@ -135,9 +147,12 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		if (this.environment != null) {
 			//FIXME bad way to search for attribute
 			int _index = 0;
-			for (Attribute attribute$ : this.environment) if (++_index == this.selectedAttribute.getVariantSelected()) {
-				attribute = attribute$;
-				break;
+			for (Attribute attribute$ : this.environment) {
+				if (bannedAttributes.contains(attribute$.getClass(), true)) continue;
+				if (++_index == this.selectedAttribute.getVariantSelected()) {
+					attribute = attribute$;
+					break;
+				}
 			}
 		}
 		return attribute;

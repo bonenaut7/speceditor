@@ -19,8 +19,10 @@ allprojects {
         gdxVersion = '1.11.0'
         roboVMVersion = '2.3.12'
 		gltfVersion = '2.0.0-rc.1'
-		kryoVersion = '4.0.1'
 		shapedrawerVersion = '2.6.0'
+		
+		kryoVersion = '4.0.1'
+		jsonioVersion = '4.14.0'
     }
 
     repositories {
@@ -46,6 +48,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
 		api "com.esotericsoftware:kryo:$kryoVersion"
+		api "com.cedarsoftware:json-io:$jsonioVersion"
     }
 }
 
@@ -58,6 +61,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
 		api "com.esotericsoftware:kryo:$kryoVersion"
+		api "com.cedarsoftware:json-io:$jsonioVersion"
 		implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
 		implementation files("libs/ini4j-0.5.4.jar")
     }

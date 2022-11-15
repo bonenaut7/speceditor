@@ -37,12 +37,15 @@ public class GdxAttributeSerializers {
 				}
 			} else {
 				tmpAttributeArray.size = 0;
-				while (iterator.hasNext()) tmpAttributeArray.add(iterator.next());
+				while (iterator.hasNext()) {
+					tmpAttributeArray.add(iterator.next());
+					if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(tmpAttributeArray.size - 1).getClass()) == null) {
+						tmpAttributeArray.removeIndex(tmpAttributeArray.size - 1);
+					}
+				}
 				output.writeInt(tmpAttributeArray.size);
 				for (int i = 0; i != tmpAttributeArray.size; i++) {
-					if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(i).getClass()) != null) {
-						kryo.writeClassAndObject(output, tmpAttributeArray.get(i));
-					}
+					kryo.writeClassAndObject(output, tmpAttributeArray.get(i));
 				}
 			}
 		}
@@ -64,15 +67,21 @@ public class GdxAttributeSerializers {
 	public static class EnvironmentSerializer extends Serializer<Environment> {
 		public void write(Kryo kryo, Output output, Environment object) {
 			Iterator<Attribute> iterator = object.iterator();
-//			output.writeInt(object.size());
-//			while (iterator.hasNext()) {
-//				kryo.writeClassAndObject(output, iterator.next());
-//			}
-			tmpAttributeArray.size = 0;
-			while (iterator.hasNext()) tmpAttributeArray.add(iterator.next());
-			output.writeInt(tmpAttributeArray.size);
-			for (int i = 0; i != tmpAttributeArray.size; i++) {
-				if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(i).getClass()) != null) {
+			if (SERIALIZE_NOT_REGISTERED_ATTRIBUTES) {
+				output.writeInt(object.size());
+				while (iterator.hasNext()) {
+					kryo.writeClassAndObject(output, iterator.next());
+				}
+			} else {
+				tmpAttributeArray.size = 0;
+				while (iterator.hasNext()) {
+					tmpAttributeArray.add(iterator.next());
+					if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(tmpAttributeArray.size - 1).getClass()) == null) {
+						tmpAttributeArray.removeIndex(tmpAttributeArray.size - 1);
+					}
+				}
+				output.writeInt(tmpAttributeArray.size);
+				for (int i = 0; i != tmpAttributeArray.size; i++) {
 					kryo.writeClassAndObject(output, tmpAttributeArray.get(i));
 				}
 			}
@@ -93,17 +102,23 @@ public class GdxAttributeSerializers {
 	
 	public static class MaterialSerializer extends Serializer<Material> {
 		public void write(Kryo kryo, Output output, Material object) {
-			Iterator<Attribute> iterator = object.iterator();
 			output.writeString(object.id);
-//			output.writeInt(object.size());
-//			while (iterator.hasNext()) {
-//				kryo.writeClassAndObject(output, iterator.next());
-//			}
-			tmpAttributeArray.size = 0;
-			while (iterator.hasNext()) tmpAttributeArray.add(iterator.next());
-			output.writeInt(tmpAttributeArray.size);
-			for (int i = 0; i != tmpAttributeArray.size; i++) {
-				if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(i).getClass()) != null) {
+			Iterator<Attribute> iterator = object.iterator();
+			if (SERIALIZE_NOT_REGISTERED_ATTRIBUTES) {
+				output.writeInt(object.size());
+				while (iterator.hasNext()) {
+					kryo.writeClassAndObject(output, iterator.next());
+				}
+			} else {
+				tmpAttributeArray.size = 0;
+				while (iterator.hasNext()) {
+					tmpAttributeArray.add(iterator.next());
+					if (kryo.getClassResolver().getRegistration(tmpAttributeArray.get(tmpAttributeArray.size - 1).getClass()) == null) {
+						tmpAttributeArray.removeIndex(tmpAttributeArray.size - 1);
+					}
+				}
+				output.writeInt(tmpAttributeArray.size);
+				for (int i = 0; i != tmpAttributeArray.size; i++) {
 					kryo.writeClassAndObject(output, tmpAttributeArray.get(i));
 				}
 			}

@@ -31,7 +31,6 @@ public class DefaultResources {
 	public Decal standardDecal = null;
 	public Model standardModel = null;
 	public Map<String, Sprite> sprites = new HashMap<>();
-	public Map<String, Decal> decals = new HashMap<>();
 	private Map<AppCursor, Cursor> cursors = new HashMap<>();
 	private Cursor defaultCursor;
 	
@@ -58,8 +57,6 @@ public class DefaultResources {
 		
 		SpriteStack.getTextureRegion("defaults/lightdecal_false.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		SpriteStack.getTextureRegion("defaults/lightdecal_true.png").getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		this.decals.put("viewport/light.false", Decal.newDecal(SpriteStack.getTextureRegion("defaults/lightdecal_false.png")));
-		this.decals.put("viewport/light.true", Decal.newDecal(SpriteStack.getTextureRegion("defaults/lightdecal_true.png")));
 		
 		this.defaultCursor = this.createCursor(AppCursor.ARROW, "assets/defaults/cursor/arrow.png", 4, 4);
 		this.createCursor(AppCursor.CROSS, "assets/defaults/cursor/cross.png", 16, 16);

@@ -44,6 +44,7 @@ public class ResourceManager {
 		this.assetMarkers.put("glb", SceneAsset.class);
 		this.assetMarkers.put("gltf", SceneAsset.class);
 		this.assetMarkers.put("png", Texture.class);
+	
 		SpriteStack.DEFAULT_PATH = Gdx.files.local("assets/");
 		Foster.defaultFont = smallFont = this.generateFont(Gdx.files.local("assets/font/monogram.ttf"), 16);
 		mediumFont = this.generateFont(Gdx.files.local("assets/font/monogram.ttf"), 24);

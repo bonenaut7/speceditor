@@ -26,44 +26,52 @@ public class SpecEditorSerialization {
 	}
 	
 	public void init() {
-		//GdxSerializers
-		this.kryo.register(Vector2.class, new Vector2Serializer());
-		this.kryo.register(Vector3.class, new Vector3Serializer());
-		this.kryo.register(Quaternion.class, new QuaternionSerializer());
-		this.kryo.register(Matrix4.class, new Matrix4Serializer());
-		this.kryo.register(Color.class, new ColorSerializer());
-		
-		//GdxAttributeSerializers
-		this.kryo.register(Attributes.class, new AttributesSerializer());
-		this.kryo.register(Environment.class, new EnvironmentSerializer());
-		this.kryo.register(Material.class, new MaterialSerializer());
-		this.kryo.register(BlendingAttribute.class, new BlendingAttributeSerializer());
-		this.kryo.register(ColorAttribute.class, new ColorAttributeSerializer());
-		this.kryo.register(DepthTestAttribute.class, new DepthTestAttributeSerializer());
-		this.kryo.register(FloatAttribute.class, new FloatAttributeSerializer());
-		this.kryo.register(IntAttribute.class, new IntAttributeSerializer());
-		
-		//GltfAttributeSerializers
-		this.kryo.register(FogAttribute.class, new PBRFogAttributeSerializer());
-		this.kryo.register(PBRColorAttribute.class, new PBRColorAttributeSerializer());
-		this.kryo.register(PBRFlagAttribute.class, new PBRFlagAttributeSerializer());
-		this.kryo.register(PBRFloatAttribute.class, new PBRFloatAttributeSerializer());
-		
-		//SpecEditorAttributeSerializers
-		this.kryo.register(SpecTextureAttribute.class, new SpecTextureAttributeSerializer());
-		this.kryo.register(SpecPBRTextureAttribute.class, new SpecPBRTextureAttributeSerializer());
-		
-		//SpecEditorSerializers
-		
-		
-		//ObjectTreeSerializers
-		this.kryo.register(ElementStack.class, new ElementStackSerializer());
-		this.kryo.register(ElementFolder.class, new ElementFolderSerializer());
-		this.kryo.register(ElementLight.class, new ElementLightSerializer());
-		this.kryo.register(ElementDecal.class, new ElementDecalSerializer());
-		this.kryo.register(ElementModel.class, new ElementModelSerializer());
-		this.kryo.register(ElementHitboxStack.class, new ElementHitboxStackSerializer());
-		this.kryo.register(ElementHitbox.class, new ElementHitboxSerializer());
-		this.kryo.register(ElementHitboxMesh.class, new ElementHitboxMeshSerializer());
+		this.registerGdxSerializers(this.kryo);
+		this.registerGdxAttributesSerializers(this.kryo);
+		this.registerGltfAttributesSerializers(this.kryo);
+		this.registerSpecEditorAttributesSerializers(this.kryo);
+		this.registerObjectTreeSerializers(this.kryo);
+	}
+	
+	public void registerGdxSerializers(Kryo kryo) {
+		kryo.register(Vector2.class, new Vector2Serializer());
+		kryo.register(Vector3.class, new Vector3Serializer());
+		kryo.register(Quaternion.class, new QuaternionSerializer());
+		kryo.register(Matrix4.class, new Matrix4Serializer());
+		kryo.register(Color.class, new ColorSerializer());
+	}
+	
+	public void registerGdxAttributesSerializers(Kryo kryo) {
+		kryo.register(Attributes.class, new AttributesSerializer());
+		kryo.register(Environment.class, new EnvironmentSerializer());
+		kryo.register(Material.class, new MaterialSerializer());
+		kryo.register(BlendingAttribute.class, new BlendingAttributeSerializer());
+		kryo.register(ColorAttribute.class, new ColorAttributeSerializer());
+		kryo.register(DepthTestAttribute.class, new DepthTestAttributeSerializer());
+		kryo.register(FloatAttribute.class, new FloatAttributeSerializer());
+		kryo.register(IntAttribute.class, new IntAttributeSerializer());
+	}
+	
+	public void registerGltfAttributesSerializers(Kryo kryo) {
+		kryo.register(FogAttribute.class, new PBRFogAttributeSerializer());
+		kryo.register(PBRColorAttribute.class, new PBRColorAttributeSerializer());
+		kryo.register(PBRFlagAttribute.class, new PBRFlagAttributeSerializer());
+		kryo.register(PBRFloatAttribute.class, new PBRFloatAttributeSerializer());
+	}
+	
+	public void registerSpecEditorAttributesSerializers(Kryo kryo) {
+		kryo.register(SpecTextureAttribute.class, new SpecTextureAttributeSerializer());
+		kryo.register(SpecPBRTextureAttribute.class, new SpecPBRTextureAttributeSerializer());
+	}
+	
+	public void registerObjectTreeSerializers(Kryo kryo) {
+		kryo.register(ElementStack.class, new ElementStackSerializer());
+		kryo.register(ElementFolder.class, new ElementFolderSerializer());
+		kryo.register(ElementLight.class, new ElementLightSerializer());
+		kryo.register(ElementDecal.class, new ElementDecalSerializer());
+		kryo.register(ElementModel.class, new ElementModelSerializer());
+		kryo.register(ElementHitboxStack.class, new ElementHitboxStackSerializer());
+		kryo.register(ElementHitbox.class, new ElementHitboxSerializer());
+		kryo.register(ElementHitboxMesh.class, new ElementHitboxMeshSerializer());
 	}
 }

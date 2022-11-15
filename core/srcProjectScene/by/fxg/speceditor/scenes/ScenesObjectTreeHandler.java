@@ -15,10 +15,6 @@ public class ScenesObjectTreeHandler implements ITreeElementHandler {
 		this.prefabProject = prefabProject;
 	}
 	
-	public boolean onDropdownClick(SpecObjectTree objectTree, String id) {
-		return false;
-	}
-	
 	public void onRefresh(SpecObjectTree objectTree) {
 		this.prefabProject.projectScreen.subEditorPane.updateSelectableEditorPane(objectTree.elementSelector);
 		this.prefabProject.projectScreen.subViewport.gizmosModule.updateSelectorMode(objectTree.elementSelector);

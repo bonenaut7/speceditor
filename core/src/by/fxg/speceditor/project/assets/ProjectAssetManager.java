@@ -109,6 +109,10 @@ public class ProjectAssetManager implements Disposable {
 			}
 		}
 	}
+	
+	public Map<UUID, ProjectAsset<?>> getAssetMap() {
+		return this.projectAssets;
+	}
 
 	public void dispose() {
 		for (ProjectAsset<?> projectAsset : this.projectAssets.values()) {
