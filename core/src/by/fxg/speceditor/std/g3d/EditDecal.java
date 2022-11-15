@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import by.fxg.pilesos.decals.BaseDecal;
+import by.fxg.pilesos.decals.SmartDecal;
 import by.fxg.speceditor.DefaultResources;
 
-public class EditDecal extends BaseDecal {
+public class EditDecal extends SmartDecal {
 	public Vector3 position;
 	public Vector3 rotation;
 	public Vector2 scale;

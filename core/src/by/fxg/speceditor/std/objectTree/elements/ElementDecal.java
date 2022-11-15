@@ -26,7 +26,6 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 		this.visible = copy.visible;
 		if (copy.decalAsset != null) copy.decalAsset.addHandler(this);
 		this.decal.setBillboard(copy.decal.isBillboard());
-		this.decal.setVisible(copy.decal.isVisible());
 		this.decal.position.set(copy.decal.position);
 		this.decal.rotation.set(copy.decal.rotation);
 		this.decal.scale.set(copy.decal.scale);

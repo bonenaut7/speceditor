@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector3;
 
-import by.fxg.pilesos.decals.BaseDecal;
+import by.fxg.pilesos.decals.SmartDecal;
 import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
@@ -18,7 +18,7 @@ import by.fxg.speceditor.utils.Utils;
 public class ElementLight extends TreeElement implements ITreeElementGizmos {
 	public ElementLightType type;
 	private BaseLight<?> light;
-	public BaseDecal _viewportDecal;
+	public SmartDecal _viewportDecal;
 	
 	public ElementLight() { this("New light"); }
 	public ElementLight(String name) {
@@ -26,7 +26,7 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos {
 		this.light = new PointLight().setColor(1, 1, 1, 1).setIntensity(5.0F);
 		this.type = ElementLightType.POINT;
 		
-		this._viewportDecal = new BaseDecal().setBillboard(true);
+		this._viewportDecal = new SmartDecal().setBillboard(true);
 		this.setVisible(true);
 	}
 	
@@ -38,7 +38,7 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos {
 			case POINT: this.light = new PointLight().set(copy.getLight(PointLight.class)); break;
 			case SPOT: this.light = new SpotLight().set(copy.getLight(SpotLight.class)); break;
 		}
-		this._viewportDecal = new BaseDecal().setBillboard(true);
+		this._viewportDecal = new SmartDecal().setBillboard(true);
 		this.setVisible(true);
 	}
 	

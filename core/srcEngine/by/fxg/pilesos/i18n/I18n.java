@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class I18n {
-	public static String language = "en";
+	private static String language = "en";
 	public static Map<String, I18nPool> map = new HashMap<>();
 	
 	public static void init() {
@@ -19,11 +19,26 @@ public class I18n {
 		}
 	}
 	
-	public static String get(String code) { return map.get(language).getString(code); }
-	public static void setLanguage(String key) { language = map.containsKey(key) ? key : "en"; }
-	public static I18nPool getPool(String language) { return map.get(language); }
-	public static void addPool(I18nPool pool) { if (pool != null) map.put(pool.language, pool); }
+	public static String get(String code) {
+		return map.get(language).getString(code);
+	}
 	
+	public static void setLanguage(String key) {
+		language = map.containsKey(key) ? key : "en";
+	}
+	
+	public static String getLanguage() {
+		return language;
+	}
+
+	public static void addPool(I18nPool pool) {
+		if (pool != null) map.put(pool.language, pool);
+	}
+	
+	public static I18nPool getPool(String language) {
+		return map.get(language);
+	}
+
 	public static class I18nPool {
 		public String language;
 		public Map<String, String> map = new HashMap<>();

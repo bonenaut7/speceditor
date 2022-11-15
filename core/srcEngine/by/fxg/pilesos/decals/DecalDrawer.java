@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g3d.decals.GroupStrategy;
 import com.badlogic.gdx.utils.Array;
 
 public class DecalDrawer {
-	public Array<BaseDecal> decalsToProduce;
+	public Array<SmartDecal> decalsToProduce;
 	public GroupStrategy groupStrategy;
 	public DecalBatch batch;
 	
@@ -16,7 +16,7 @@ public class DecalDrawer {
 	}
 	
 	public void draw(Camera camera) {
-		for (BaseDecal decal : this.decalsToProduce) {
+		for (SmartDecal decal : this.decalsToProduce) {
 			if (decal.getDecal() != null) {
 				this.batch.add(decal.getDecal(camera));
 			}
