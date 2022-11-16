@@ -26,10 +26,10 @@ public class ElementHitbox extends TreeElementHitbox implements ITreeElementGizm
 		this.displayName = copy.displayName;
 		this.visible = copy.visible;
 		this.specFlags = copy.specFlags;
-		this.bulletFlags = copy.bulletFlags;
-		this.bulletFilterMask = copy.bulletFilterMask;
-		this.bulletFilterGroup = copy.bulletFilterGroup;
-		this.linkFlagsToParent = Arrays.copyOf(copy.linkFlagsToParent, copy.linkFlagsToParent.length);
+		this.btCollisionFlags = copy.btCollisionFlags;
+		this.btFilterMask = copy.btFilterMask;
+		this.btFilterGroup = copy.btFilterGroup;
+		this.linkToParent = Arrays.copyOf(copy.linkToParent, copy.linkToParent.length);
 		this.position.set(copy.position);
 		this.rotation.set(copy.rotation);
 		this.scale.set(copy.scale);

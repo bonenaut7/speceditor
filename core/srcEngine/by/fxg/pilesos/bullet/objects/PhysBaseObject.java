@@ -2,13 +2,11 @@ package by.fxg.pilesos.bullet.objects;
 
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 
-import by.fxg.pilesos.bullet.PhysMotionState;
-
 public abstract class PhysBaseObject implements IPhysObject {
 	protected String name;
 	protected long flags;
+	protected int filterMask, filterGroup;
 	protected btCollisionShape shape;
-	protected PhysMotionState state;
 	
 	public String getName() {
 		return this.name;
@@ -18,30 +16,25 @@ public abstract class PhysBaseObject implements IPhysObject {
 		return this.shape;
 	}
 
-	public PhysMotionState getState() {
-		return this.state;
-	}
-
-	public long getFlags() {
-		return this.flags;
-	}
-
-	public boolean hasFlag(long flag) {
-		return (this.flags & flag) == flag;
-	}
-
-	public IPhysObject addFlag(long flag) {
-		if (!this.hasFlag(flag)) this.flags |= flag;
+	public long getFlags() { return this.flags; }
+	public PhysBaseObject setFlags(long flags) {
+		this.flags = flags;
 		return this;
 	}
-
-	public IPhysObject removeFlag(long flag) {
-		if (this.hasFlag(flag)) this.flags = this.flags & ~flag;
+	
+	public int getFilterMask() { return this.filterMask; }
+	public PhysBaseObject setFilterMask(int filterMask) {
+		this.filterMask = filterMask;
+		return this;
+	}
+	
+	public int getFilterGroup() { return this.filterGroup; }
+	public PhysBaseObject setFilterGroup(int filterGroup) {
+		this.filterGroup = filterGroup;
 		return this;
 	}
 	
 	public void dispose() {
-		if (this.shape != null) this.shape.dispose();
-		if (this.state != null) this.state.dispose();
+		if (this.shape != null) this.shape.release();
 	}
 }

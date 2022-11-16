@@ -34,10 +34,10 @@ public class ElementHitboxStack extends TreeElementHitbox implements ITreeElemen
 		this.displayName = copy.displayName;
 		this.visible = copy.visible;
 		this.specFlags = copy.specFlags;
-		this.bulletFlags = copy.bulletFlags;
-		this.bulletFilterMask = copy.bulletFilterMask;
-		this.bulletFilterGroup = copy.bulletFilterGroup;
-		this.linkFlagsToParent = Arrays.copyOf(copy.linkFlagsToParent, copy.linkFlagsToParent.length);
+		this.btCollisionFlags = copy.btCollisionFlags;
+		this.btFilterMask = copy.btFilterMask;
+		this.btFilterGroup = copy.btFilterGroup;
+		this.linkToParent = Arrays.copyOf(copy.linkToParent, copy.linkToParent.length);
 		this.isFolderOpened = copy.isFolderOpened;
 		this.elementStack = copy.elementStack.clone(this);
 		this.isArrayStack = copy.isArrayStack;

@@ -61,12 +61,16 @@ public class ScenesGraph {
 		public String name;
 		/** Flags of features implemented by Pilesos for bullet physics **/
 		public long specFlags;
+		
 		/** Bullet physics collision flags **/
-		public long bulletFlags;
+		public int bulletFlags;
+		/** Bullet physics activation state **/
+		public int bulletActivationState;
 		/** Bullet physics filter mask **/
-		public long bulletFilterMask;
+		public int bulletFilterMask;
 		/** Bullet physics filter group **/
-		public long bulletFilterGroup;
+		public int bulletFilterGroup;
+		
 		/** Transforms **/
 		public Vector3 position, rotation, scale;
 	}

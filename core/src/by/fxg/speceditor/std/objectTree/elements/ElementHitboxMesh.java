@@ -44,10 +44,10 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 		this.displayName = copy.displayName;
 		this.visible = copy.visible;
 		this.specFlags = copy.specFlags;
-		this.bulletFlags = copy.bulletFlags;
-		this.bulletFilterMask = copy.bulletFilterMask;
-		this.bulletFilterGroup = copy.bulletFilterGroup;
-		this.linkFlagsToParent = Arrays.copyOf(copy.linkFlagsToParent, copy.linkFlagsToParent.length);
+		this.btCollisionFlags = copy.btCollisionFlags;
+		this.btFilterMask = copy.btFilterMask;
+		this.btFilterGroup = copy.btFilterGroup;
+		this.linkToParent = Arrays.copyOf(copy.linkToParent, copy.linkToParent.length);
 		if (copy.modelAsset != null) {
 			copy.modelAsset.addHandler(this);
 			this.nodes = Arrays.copyOf(copy.nodes, copy.nodes.length);

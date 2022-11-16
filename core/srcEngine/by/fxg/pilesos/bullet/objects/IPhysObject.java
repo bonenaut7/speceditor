@@ -3,35 +3,32 @@ package by.fxg.pilesos.bullet.objects;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 
-import by.fxg.pilesos.bullet.PhysMotionState;
-
 public interface IPhysObject {
 	String getName();
 	btCollisionObject getObject();
 	btCollisionShape getShape();
-	PhysMotionState getState();
-	
-	default void onRaycast() {}
 	
 	long getFlags();
-	boolean hasFlag(long flag);
-	IPhysObject addFlag(long flag);
-	IPhysObject removeFlag(long flag);
+	IPhysObject setFlags(long flags);
+	int getFilterMask();
+	IPhysObject setFilterMask(int filterMask);
+	int getFilterGroup();
+	IPhysObject setFilterGroup(int filterGroup);
 	
 	void dispose();
 	
 	/*=== Flags next here, implemented here because lower code amount may be used inside classes ===*/
 	public static final long 
-		ACT_ACTIVE 			= (long)Math.pow(2, 1),  /*2        *//* Bullet activation state flag. Makes object active. */
-		ACT_INACTIVE	 	= (long)Math.pow(2, 2),  /*4        *//* Bullet activation state flag. Makes object inactive. */
-		ACT_WANT_DEACTIVATE = (long)Math.pow(2, 3),  /*8        *//* Bullet activation state flag. Sets flag that object needs to be deactivated. */
-		ACT_ALWAYS_ACTIVE   = (long)Math.pow(2, 4),  /*16       *//* Bullet activation state flag. Makes object active for ever. */
-		ACT_ALWAYS_INACTIVE = (long)Math.pow(2, 5),  /*32       *//* Bullet activation state flag. Makes object inactive for ever. */
-		RESERVED6	 		= (long)Math.pow(2, 6),  /*64       *//*  */
-		RESERVED7	 		= (long)Math.pow(2, 7),  /*128      *//*  */
+		DISABLE_LISTEN 		= (long)Math.pow(2, 1),  /*2        *//* Disables object for listen in listener */
+		RAYCASTABLE			= (long)Math.pow(2, 2),  /*4        *//* Allows object to be raycasted (64, mask & group) */
+		RESERVED03 			= (long)Math.pow(2, 3),  /*8        *//*  */
+		RESERVED04  		= (long)Math.pow(2, 4),  /*16       *//*  */
+		RESERVED05 			= (long)Math.pow(2, 5),  /*32       *//*  */
+		RESERVED06	 		= (long)Math.pow(2, 6),  /*64       *//*  */
+		RESERVED07	 		= (long)Math.pow(2, 7),  /*128      *//*  */
 		
-		DISABLE_LISTEN		= (long)Math.pow(2, 8),  /*256      *//* Disables object for listen in listener */
-		RAYCASTABLE			= (long)Math.pow(2, 9),  /*512      *//* Allows object to be raycasted (64, mask & group) */
+		RESERVED08			= (long)Math.pow(2, 8),  /*256      *//*  */
+		RESERVED09			= (long)Math.pow(2, 9),  /*512      *//*  */
 		RESERVED10			= (long)Math.pow(2, 10), /*1024     *//*  */
 		RESERVED11			= (long)Math.pow(2, 11), /*2048     *//*  */
 		RESERVED12			= (long)Math.pow(2, 12), /*4096     *//*  */
@@ -57,6 +54,26 @@ public interface IPhysObject {
 		RESERVED30			= (long)Math.pow(2, 30), /*536870914*//*  */
 		RESERVED31			= (long)Math.pow(2, 31); /*107374824*//*  */
 	
+	public static final int
+		FILTER_ALL				= -1,					/*-1       *//* Default bullet filter, used as all filterGroups */
+		FILTER_btDEFAULT		= 1,					/*1        *//* Default bullet filter for default objects */
+		FILTER_btSTATIC			= (int)Math.pow(2, 1),  /*2        *//* Default bullet filter for static objects */
+		FILTER_btKINEMATIC		= (int)Math.pow(2, 2),  /*4        *//* Default bullet filter for kinematic objects */
+		FILTER_btDEBRIS			= (int)Math.pow(2, 3),  /*8        *//* Default bullet filter for debris objects */
+		FILTER_btSENSOR			= (int)Math.pow(2, 4),  /*16       *//* Default bullet filter for sensor objects */
+		FILTER_btCHARACTER		= (int)Math.pow(2, 5),  /*32       *//* Default bullet filter for character objects */
+		FILTER_btRESERVED06		= (int)Math.pow(2, 6),  /*64       *//*  */
+		FILTER_btRESERVED07		= (int)Math.pow(2, 7),  /*128      *//*  */
+		
+		FILTER_RAYCASTABLE		= (int)Math.pow(2, 8),  /*256      *//* Filter for raycastable objects  */
+		FILTER_RESERVED09		= (int)Math.pow(2, 9),  /*512      *//*  */
+		FILTER_RESERVED10		= (int)Math.pow(2, 10), /*1024     *//*  */
+		FILTER_RESERVED11		= (int)Math.pow(2, 11), /*2048     *//*  */
+		FILTER_RESERVED12		= (int)Math.pow(2, 12), /*4096     *//*  */
+		FILTER_RESERVED13		= (int)Math.pow(2, 13), /*8192     *//*  */
+		FILTER_RESERVED14		= (int)Math.pow(2, 14), /*16384    *//*  */
+		FILTER_RESERVED15		= (int)Math.pow(2, 15); /*32768    *//*  */
+
 	public static long addFlag(long flags, long flag) {
 		if (!hasFlag(flags, flag)) {
 			flags |= flag;

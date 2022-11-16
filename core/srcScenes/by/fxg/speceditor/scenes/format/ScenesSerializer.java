@@ -58,7 +58,7 @@ public class ScenesSerializer {
 	}
 	
 	public ScenesSerializer setFile(FileHandle fileHandle) {
-		this.outFile = fileHandle;
+		this.outFile = fileHandle.extension().equalsIgnoreCase("ssf") ? fileHandle : fileHandle.parent().child(Utils.format(fileHandle.nameWithoutExtension(), ".ssf"));
 		return this;
 	}
 	
@@ -160,57 +160,63 @@ public class ScenesSerializer {
 			model.scale = elementModel.getTransform(GizmoTransformType.SCALE);
 			return model;
 		} else if (element instanceof TreeElementHitbox) {
-			return this.convertHitboxElements(element, 0, 0, 0, 0);
+			return this.convertHitboxElements(element, 0, 0, 0, 0, 0);
 		}
 		return null;
 	}
 	
-	private Object convertHitboxElements(TreeElement element, long parentSpecFlags, long parentBulletFlags, long parentBulletFilterMasks, long parentBulletFilterGroups) {
-		if (element instanceof ElementHitbox) {
-			ElementHitbox elementHitbox = (ElementHitbox)element;
+	private Object convertHitboxElements(TreeElement treeElement, long parentSpecFlags, int parentCollisionFlags, int parentActivationState, int parentFilterMask, int parentFilterGroup) {
+		if (treeElement instanceof ElementHitbox) {
+			ElementHitbox element = (ElementHitbox)treeElement;
 			ScenesGraph.Hitbox hitbox = new ScenesGraph.Hitbox();
-			hitbox.name = elementHitbox.getName();
-			hitbox.specFlags = elementHitbox.linkFlagsToParent[0] ? parentSpecFlags : elementHitbox.specFlags;
-			hitbox.bulletFlags = elementHitbox.linkFlagsToParent[1] ? parentBulletFlags : elementHitbox.bulletFlags;
-			hitbox.bulletFilterMask = elementHitbox.linkFlagsToParent[2] ? parentBulletFilterMasks : elementHitbox.bulletFilterMask;
-			hitbox.bulletFilterGroup = elementHitbox.linkFlagsToParent[3] ? parentBulletFilterGroups : elementHitbox.bulletFilterGroup;
-			hitbox.position = elementHitbox.getTransform(GizmoTransformType.TRANSLATE);
-			hitbox.rotation = elementHitbox.getTransform(GizmoTransformType.ROTATE);
-			hitbox.scale = elementHitbox.getTransform(GizmoTransformType.SCALE);
+			hitbox.name = element.getName();
+			hitbox.specFlags = element.linkToParent[0] ? parentSpecFlags : element.specFlags;
+			hitbox.bulletFlags = element.linkToParent[1] ? parentCollisionFlags : element.btCollisionFlags;
+			hitbox.bulletActivationState = element.linkToParent[2] ? parentActivationState : element.btActivationState;
+			hitbox.bulletFilterMask = element.linkToParent[3] ? parentFilterMask : element.btFilterMask;
+			hitbox.bulletFilterGroup = element.linkToParent[4] ? parentFilterGroup : element.btFilterGroup;
+			
+			hitbox.position = element.getTransform(GizmoTransformType.TRANSLATE);
+			hitbox.rotation = element.getTransform(GizmoTransformType.ROTATE);
+			hitbox.scale = element.getTransform(GizmoTransformType.SCALE);
 			return hitbox;
-		} else if (element instanceof ElementHitboxMesh) {
-			ElementHitboxMesh elementHitboxMesh = (ElementHitboxMesh)element;
-			if (elementHitboxMesh.modelAsset == null) return null;
+		} else if (treeElement instanceof ElementHitboxMesh) {
+			ElementHitboxMesh element = (ElementHitboxMesh)treeElement;
+			if (element.modelAsset == null) return null;
 			ScenesGraph.HitboxMesh hitboxMesh = new ScenesGraph.HitboxMesh();
-			hitboxMesh.name = elementHitboxMesh.getName();
-			hitboxMesh.specFlags = elementHitboxMesh.linkFlagsToParent[0] ? parentSpecFlags : elementHitboxMesh.specFlags;
-			hitboxMesh.bulletFlags = elementHitboxMesh.linkFlagsToParent[1] ? parentBulletFlags : elementHitboxMesh.bulletFlags;
-			hitboxMesh.bulletFilterMask = elementHitboxMesh.linkFlagsToParent[2] ? parentBulletFilterMasks : elementHitboxMesh.bulletFilterMask;
-			hitboxMesh.bulletFilterGroup = elementHitboxMesh.linkFlagsToParent[3] ? parentBulletFilterGroups : elementHitboxMesh.bulletFilterGroup;
-			hitboxMesh.position = elementHitboxMesh.getTransform(GizmoTransformType.TRANSLATE);
-			hitboxMesh.rotation = elementHitboxMesh.getTransform(GizmoTransformType.ROTATE);
-			hitboxMesh.scale = elementHitboxMesh.getTransform(GizmoTransformType.SCALE);
-			hitboxMesh.assetIndex = elementHitboxMesh.modelAsset.getUUID();
-			hitboxMesh.nodes = elementHitboxMesh.nodes;
+			hitboxMesh.name = element.getName();
+			hitboxMesh.specFlags = element.linkToParent[0] ? parentSpecFlags : element.specFlags;
+			hitboxMesh.bulletFlags = element.linkToParent[1] ? parentCollisionFlags : element.btCollisionFlags;
+			hitboxMesh.bulletActivationState = element.linkToParent[2] ? parentActivationState : element.btActivationState;
+			hitboxMesh.bulletFilterMask = element.linkToParent[3] ? parentFilterMask : element.btFilterMask;
+			hitboxMesh.bulletFilterGroup = element.linkToParent[4] ? parentFilterGroup : element.btFilterGroup;
+			
+			hitboxMesh.position = element.getTransform(GizmoTransformType.TRANSLATE);
+			hitboxMesh.rotation = element.getTransform(GizmoTransformType.ROTATE);
+			hitboxMesh.scale = element.getTransform(GizmoTransformType.SCALE);
+			hitboxMesh.assetIndex = element.modelAsset.getUUID();
+			hitboxMesh.nodes = element.nodes;
 			return hitboxMesh;
-		} else if (element instanceof ElementHitboxStack) {
-			ElementHitboxStack elementHitboxStack = (ElementHitboxStack)element;
-			Array<TreeElement> elements = elementHitboxStack.getFolderStack().getElements();
+		} else if (treeElement instanceof ElementHitboxStack) {
+			ElementHitboxStack element = (ElementHitboxStack)treeElement;
+			Array<TreeElement> elements = element.getFolderStack().getElements();
 			ScenesGraph.HitboxStack hitboxStack = new ScenesGraph.HitboxStack();
-			hitboxStack.name = elementHitboxStack.getName();
-			hitboxStack.specFlags = elementHitboxStack.linkFlagsToParent[0] ? parentSpecFlags : elementHitboxStack.specFlags;
-			hitboxStack.bulletFlags = elementHitboxStack.linkFlagsToParent[1] ? parentBulletFlags : elementHitboxStack.bulletFlags;
-			hitboxStack.bulletFilterMask = elementHitboxStack.linkFlagsToParent[2] ? parentBulletFilterMasks : elementHitboxStack.bulletFilterMask;
-			hitboxStack.bulletFilterGroup = elementHitboxStack.linkFlagsToParent[3] ? parentBulletFilterGroups : elementHitboxStack.bulletFilterGroup;
-			hitboxStack.position = elementHitboxStack.getTransform(GizmoTransformType.TRANSLATE);
-			hitboxStack.rotation = elementHitboxStack.getTransform(GizmoTransformType.ROTATE);
-			hitboxStack.scale = elementHitboxStack.getTransform(GizmoTransformType.SCALE);
-			hitboxStack.isArrayHitbox = elementHitboxStack.isArrayStack;
+			hitboxStack.name = element.getName();
+			hitboxStack.specFlags = element.linkToParent[0] ? parentSpecFlags : element.specFlags;
+			hitboxStack.bulletFlags = element.linkToParent[1] ? parentCollisionFlags : element.btCollisionFlags;
+			hitboxStack.bulletActivationState = element.linkToParent[2] ? parentActivationState : element.btActivationState;
+			hitboxStack.bulletFilterMask = element.linkToParent[3] ? parentFilterMask : element.btFilterMask;
+			hitboxStack.bulletFilterGroup = element.linkToParent[4] ? parentFilterGroup : element.btFilterGroup;
+			
+			hitboxStack.position = element.getTransform(GizmoTransformType.TRANSLATE);
+			hitboxStack.rotation = element.getTransform(GizmoTransformType.ROTATE);
+			hitboxStack.scale = element.getTransform(GizmoTransformType.SCALE);
+			hitboxStack.isArrayHitbox = element.isArrayStack;
 			
 			Array<ScenesGraph.Hitbox> hitboxes = new Array<>();
 			Object object;
 			for (int i = 0; i != elements.size; i++) {
-				object = this.convertHitboxElements(elements.get(i), hitboxStack.specFlags, hitboxStack.bulletFlags, hitboxStack.bulletFilterMask, hitboxStack.bulletFilterGroup);
+				object = this.convertHitboxElements(elements.get(i), hitboxStack.specFlags, hitboxStack.bulletFlags, hitboxStack.bulletActivationState, hitboxStack.bulletFilterMask, hitboxStack.bulletFilterGroup);
 				if (object != null) hitboxes.add((ScenesGraph.Hitbox)object);
 			}
 			hitboxStack.children = hitboxes.toArray(ScenesGraph.Hitbox.class);

@@ -26,8 +26,6 @@ public class BasePhysics {
 	public btBroadphaseInterface broadphase;
 	public btConstraintSolver solver;
 	public btDiscreteDynamicsWorld world;
-	
-	protected Array<IPhysObject> raycastable = new Array<>();
 	public Array<btCollisionObject> objects = new Array<>();
 
 	public BasePhysics(int maxSubSteps, float fixedTimeSteps, Vector3 gravity) {
@@ -53,19 +51,18 @@ public class BasePhysics {
 	
 	public boolean addObject(IPhysObject object) {
 		if (object != null && object.getObject() != null) {
-			if (object.hasFlag(IPhysObject.RAYCASTABLE) && !this.raycastable.contains(object, true)) {
-				this.raycastable.add(object);
-			}
-			return this.addObject(object.getObject());
+			int filterGroup = object.getFilterGroup();
+			if (IPhysObject.hasFlag(object.getFlags(), IPhysObject.RAYCASTABLE)) IPhysObject.addFlag(filterGroup, IPhysObject.FILTER_RAYCASTABLE);
+			return this.addObject(object.getObject(), object.getFilterMask(), filterGroup);
 		}
 		return false;
 	}
 	
-	public boolean addObject(btCollisionObject object) {
+	public boolean addObject(btCollisionObject object, int filterGroup, int filterMask) {
 		if (object != null && !this.objects.contains(object, true)) {
 			this.objects.add(object);
-			if (object instanceof btRigidBody) this.world.addRigidBody((btRigidBody)object);
-			else this.world.addCollisionObject(object);
+			if (object instanceof btRigidBody) this.world.addRigidBody((btRigidBody)object, filterGroup, filterMask);
+			else this.world.addCollisionObject(object, filterGroup, filterMask);
 			return true;
 		}
 		return false;
@@ -73,7 +70,6 @@ public class BasePhysics {
 	
 	public boolean removeObject(IPhysObject object) {
 		if (object != null && object.getObject() != null) {
-			this.raycastable.removeValue(object, true);
 			return this.removeObject(object.getObject());
 		}
 		return false;
@@ -89,12 +85,19 @@ public class BasePhysics {
 		return false;
 	}
 	
+	public Vector3 getGravity() { return this.gravity; }
+	public BasePhysics setGravity(Vector3 vec) { return this.setGravity(vec.x, vec.y, vec.z); }
+	public BasePhysics setGravity(float x, float y, float z) {
+		this.world.setGravity(this.gravity.set(x, y, z));
+		return this;
+	}
+	
 	public void dispose() {
-		for (btCollisionObject object : this.objects) this.removeObject(object);
-		if (this.world != null && !this.world.isDisposed()) this.world.dispose();
-		if (this.solver != null && !this.solver.isDisposed()) this.solver.dispose();
-		if (this.broadphase != null && !this.broadphase.isDisposed()) this.broadphase.dispose();
-		if (this.dispatcher != null && !this.dispatcher.isDisposed()) this.dispatcher.dispose();
-		if (this.config != null && !this.config.isDisposed()) this.config.dispose();
+		this.objects.forEach(this::removeObject);
+		if (this.world != null) this.world.release();
+		if (this.solver != null) this.solver.release();
+		if (this.broadphase != null) this.broadphase.release();
+		if (this.dispatcher != null) this.dispatcher.release();
+		if (this.config != null) this.config.release();
 	}
 }

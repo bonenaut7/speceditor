@@ -8,158 +8,149 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
 public class PhysObject extends PhysBaseObject {
 	protected btCollisionObject object;
 	
+	//private constructor, currently available to create PhysObject only with Builder
 	private PhysObject() {}
-	
-	/** Creates PhysObject, applies own userData to object **/
-	public PhysObject(String name, btCollisionObject object) {
-		this.name = name;
-		this.object = object;
-		this.object.userData = this;
-		this.shape = object.getCollisionShape();
-	}
-	
-	/** Creates static PhysObject with provided shape**/
-	public PhysObject(String name, btCollisionShape shape) { this(name, shape, CollisionFlags.CF_STATIC_OBJECT, 0); }
-	/** Creates static PhysObject with provided shape and flags **/
-	public PhysObject(String name, btCollisionShape shape, long flags) { this(name, shape, CollisionFlags.CF_STATIC_OBJECT, flags); }
-	/** Creates PhysObject with provided shape and flags **/
-	public PhysObject(String name, btCollisionShape shape, int bulletFlags, long flags) {
-		this.name = name;
-		this.object = new btCollisionObject();
-		this.object.setCollisionShape(shape);
-		this.object.setCollisionFlags(bulletFlags);
-		this.object.userData = this;
-		this.shape = shape;
-		this.flags = flags;
-	}
 	
 	public btCollisionObject getObject() {
 		return this.object;
 	}
 	
 	public void dispose() {
-		if (this.object != null) this.object.dispose();
+		if (this.object != null) this.object.release();
 		super.dispose();
 	}
-
 	
 	public static class Builder {
-		private PhysObject physObject;
+		private String name;
+		private btCollisionShape shape;
+		
+		private Vector3 position = new Vector3(), scale = new Vector3(1, 1, 1);
+		private Quaternion rotation = new Quaternion();
+		
+		private long specFlags;
+		private int activationState, collisionFlags, filterMask, filterGroup;
+		
+		public Builder() {
+			this(UUID.randomUUID().toString());
+		}
 		
 		public Builder(String name) {
-			this.physObject = new PhysObject();
-			this.physObject.name = (name == null ? UUID.randomUUID().toString() : name);
-			this.physObject.object = new btCollisionObject();
-			this.physObject.object.userData = this.physObject;
+			this.name = name == null ? UUID.randomUUID().toString() : name;
 		}
 		
+		//Shape
+		/** Sets AABB shape if construction info is not set **/
 		public Builder setShapeAABB(Vector3 size) {
-			this.setShape(new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)));
-			if (size != null) this.physObject.shape.setLocalScaling(size);
-			return this;
+			return this.setShape(new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)));
 		}
 		
-		public Builder setShapeSphere(Vector3 size) {
-			this.setShape(new btSphereShape(0.5f));
-			if (size != null) this.physObject.shape.setLocalScaling(size);
-			return this;
+		/** Sets sphere shape if construction info is not set **/
+		public Builder setShapeSphere() {
+			return this.setShape(new btSphereShape(0.5f));
 		}
 		
-		public Builder setShapeCapsule(Vector3 scale) {
-			this.setShape(new btCapsuleShape(0.5f, 1f));
-			if (scale != null) this.physObject.shape.setLocalScaling(scale);
-			return this;
+		/** Sets capsule shape if construction info is not set **/
+		public Builder setShapeCapsule() {
+			return this.setShape(new btCapsuleShape(0.5f, 1f));
 		}
 		
+		/** Sets shape if construction info is not set **/
 		public Builder setShape(btCollisionShape shape) {
-			if (shape != null) {
-				if (this.physObject.shape != null && !this.physObject.shape.isDisposed()) {
-					this.physObject.shape.dispose();
-				}
-				this.physObject.shape = shape;
-				this.physObject.object.setCollisionShape(shape);
-			}
+			if (this.shape != null) this.shape.release();
+			this.shape = shape;
 			return this;
 		}
 		
-		public Builder setShapeSize(Vector3 size) {
-			if (size != null && this.physObject.shape != null) {
-				this.physObject.shape.setLocalScaling(size);
-			}
+		//Flags
+		/** Returns {@link IPhysObject} flags **/
+		public long getSpecFlags() { return this.specFlags; }
+		/** Sets {@link IPhysObject} flags **/
+		public Builder setSpecFlags(long flags) {
+			this.specFlags = flags;
 			return this;
 		}
 		
-		public Builder setCollisionFlags(int bulletFlags) {
-			this.physObject.object.setCollisionFlags(bulletFlags);
+		/** Returns activation state **/
+		public int getActivationState() { return this.activationState; }
+		/** Sets activation state **/
+		public Builder setActivationState(int activationFlag) {
+			this.activationState = activationFlag;
 			return this;
 		}
 		
-		public Builder setObjectFlags(long flags) {
-			this.physObject.flags = flags;
+		/** Returns collision flags **/
+		public int getCollisionFlags() { return this.collisionFlags; }
+		/** Sets collision flags **/
+		public Builder setCollisionFlags(int collisionFlags) {
+			this.collisionFlags = collisionFlags;
 			return this;
 		}
 		
-		public Builder addFlag(long flag) {
-			this.physObject.addFlag(flag);
+		/** Returns collision filter mask **/
+		public int getCollisionFilterMask() { return this.filterMask; }
+		/** Sets collision filter mask **/
+		public Builder setCollisionFilterMask(int filterMask) {
+			this.filterMask = filterMask;
 			return this;
 		}
 		
-		public Builder removeFlag(long flag) {
-			this.physObject.removeFlag(flag);
+		/** Returns collision filter group **/
+		public int getCollisionFilterGroup() { return this.filterGroup; }
+		/** Sets collision filter group **/
+		public Builder setCollisionFilterGroup(int filterGroups) {
+			this.filterGroup = filterGroups;
 			return this;
 		}
 		
+		//Transforms
+		/** Sets position of object **/
 		public Builder setPosition(Vector3 position) {
-			if (position != null) {
-				Matrix4 transform = this.physObject.object.getWorldTransform();
-				transform.setTranslation(position);
-				this.physObject.object.setWorldTransform(transform);
-			}
+			this.position.set(position);
 			return this;
 		}
 		
+		/** Sets scale of object **/
 		public Builder setScale(Vector3 scale) {
-			if (scale != null) {
-				Vector3 tmpPosition = new Vector3();
-				Quaternion tmpRotation = new Quaternion();
-				Matrix4 transform = this.physObject.object.getWorldTransform();
-				tmpPosition = transform.getTranslation(tmpPosition);
-				tmpRotation = transform.getRotation(tmpRotation);
-				transform.setTranslation(tmpPosition);
-				transform.rotate(tmpRotation);
-				transform.scale(scale.x, scale.y, scale.z);
-				this.physObject.object.setWorldTransform(transform);
-			}
+			this.scale.set(scale);
 			return this;
 		}
 		
+		/** Sets rotation of object **/
 		public Builder setRotation(Quaternion rotation) {
-			if (rotation != null) {
-				Vector3 tmpPosition = new Vector3(), tmpScale = new Vector3();
-				Matrix4 transform = this.physObject.object.getWorldTransform();
-				tmpPosition = transform.getTranslation(tmpPosition);
-				tmpScale = transform.getScale(tmpScale);
-				transform.setTranslation(tmpPosition);
-				transform.rotate(rotation);
-				transform.scale(tmpScale.x, tmpScale.y, tmpScale.z);
-				this.physObject.object.setWorldTransform(transform);
-			}
+			this.rotation.set(rotation);
 			return this;
 		}
 		
-		public btCollisionObject getBody() {
-			return this.physObject.object;
-		}
-		
+		/** Builds PhysObject(btCollisionObject with parameters) **/
 		public PhysObject build() {
-			return this.physObject;
+			if (this.shape == null) this.shape = new btBoxShape(new Vector3(0.5F, 0.5F, 0.5F));
+			
+			PhysObject physObject = new PhysObject();
+			physObject.name = this.name;
+			physObject.setFlags(this.specFlags);
+			physObject.setFilterMask(this.filterMask);
+			physObject.setFilterGroup(this.filterGroup);
+			physObject.shape = this.shape;
+
+			physObject.object = new btCollisionObject();
+			physObject.object.setCollisionShape(this.shape);
+			physObject.object.setCollisionFlags(this.collisionFlags);
+			physObject.object.setActivationState(this.activationState);
+			physObject.object.userData = physObject;
+
+			//Transforms
+			Matrix4 transform = physObject.object.getWorldTransform();
+			transform.setToTranslation(this.position);
+			transform.rotate(this.rotation);
+			transform.scale(this.scale.x, this.scale.x, this.scale.x);
+			physObject.object.setWorldTransform(transform);
+			return physObject;
 		}
 	}
 }

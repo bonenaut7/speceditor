@@ -1,11 +1,8 @@
 package by.fxg.speceditor.scenes;
 
-import com.esotericsoftware.kryo.Kryo;
-
 import by.fxg.speceditor.api.addon.AddonInfo;
 import by.fxg.speceditor.api.addon.ISpecAddon;
 import by.fxg.speceditor.project.ProjectManager;
-import by.fxg.speceditor.serialization.SpecEditorSerialization;
 
 public class ScenesAddon implements ISpecAddon {
 	private AddonInfo info;

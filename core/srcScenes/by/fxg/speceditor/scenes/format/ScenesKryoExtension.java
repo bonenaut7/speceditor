@@ -163,9 +163,10 @@ public class ScenesKryoExtension {
 		public void write(Kryo kryo, Output output, ScenesGraph.Hitbox object) {
 			output.writeString(object.name);
 			output.writeLong(object.specFlags);
-			output.writeLong(object.bulletFlags);
-			output.writeLong(object.bulletFilterMask);
-			output.writeLong(object.bulletFilterGroup);
+			output.writeInt(object.bulletFlags);
+			output.writeInt(object.bulletActivationState);
+			output.writeInt(object.bulletFilterMask);
+			output.writeInt(object.bulletFilterGroup);
 			kryo.writeObject(output, object.position);
 			kryo.writeObject(output, object.rotation);
 			kryo.writeObject(output, object.scale);
@@ -175,9 +176,10 @@ public class ScenesKryoExtension {
 			ScenesGraph.Hitbox hitbox = new ScenesGraph.Hitbox();
 			hitbox.name = input.readString();
 			hitbox.specFlags = input.readLong();
-			hitbox.bulletFlags = input.readLong();
-			hitbox.bulletFilterMask = input.readLong();
-			hitbox.bulletFilterGroup = input.readLong();
+			hitbox.bulletFlags = input.readInt();
+			hitbox.bulletActivationState = input.readInt();
+			hitbox.bulletFilterMask = input.readInt();
+			hitbox.bulletFilterGroup = input.readInt();
 			hitbox.position = kryo.readObject(input, Vector3.class);
 			hitbox.rotation = kryo.readObject(input, Vector3.class);
 			hitbox.scale = kryo.readObject(input, Vector3.class);
@@ -189,9 +191,10 @@ public class ScenesKryoExtension {
 		public void write(Kryo kryo, Output output, ScenesGraph.HitboxMesh object) {
 			output.writeString(object.name);
 			output.writeLong(object.specFlags);
-			output.writeLong(object.bulletFlags);
-			output.writeLong(object.bulletFilterMask);
-			output.writeLong(object.bulletFilterGroup);
+			output.writeInt(object.bulletFlags);
+			output.writeInt(object.bulletActivationState);
+			output.writeInt(object.bulletFilterMask);
+			output.writeInt(object.bulletFilterGroup);
 			kryo.writeObject(output, object.position);
 			kryo.writeObject(output, object.rotation);
 			kryo.writeObject(output, object.scale);
@@ -206,9 +209,10 @@ public class ScenesKryoExtension {
 			ScenesGraph.HitboxMesh hitboxMesh = new ScenesGraph.HitboxMesh();
 			hitboxMesh.name = input.readString();
 			hitboxMesh.specFlags = input.readLong();
-			hitboxMesh.bulletFlags = input.readLong();
-			hitboxMesh.bulletFilterMask = input.readLong();
-			hitboxMesh.bulletFilterGroup = input.readLong();
+			hitboxMesh.bulletFlags = input.readInt();
+			hitboxMesh.bulletActivationState = input.readInt();
+			hitboxMesh.bulletFilterMask = input.readInt();
+			hitboxMesh.bulletFilterGroup = input.readInt();
 			hitboxMesh.position = kryo.readObject(input, Vector3.class);
 			hitboxMesh.rotation = kryo.readObject(input, Vector3.class);
 			hitboxMesh.scale = kryo.readObject(input, Vector3.class);
@@ -225,9 +229,10 @@ public class ScenesKryoExtension {
 		public void write(Kryo kryo, Output output, ScenesGraph.HitboxStack object) {
 			output.writeString(object.name);
 			output.writeLong(object.specFlags);
-			output.writeLong(object.bulletFlags);
-			output.writeLong(object.bulletFilterMask);
-			output.writeLong(object.bulletFilterGroup);
+			output.writeInt(object.bulletFlags);
+			output.writeInt(object.bulletActivationState);
+			output.writeInt(object.bulletFilterMask);
+			output.writeInt(object.bulletFilterGroup);
 			kryo.writeObject(output, object.position);
 			kryo.writeObject(output, object.rotation);
 			kryo.writeObject(output, object.scale);
@@ -242,9 +247,10 @@ public class ScenesKryoExtension {
 			ScenesGraph.HitboxStack hitboxStack = new ScenesGraph.HitboxStack();
 			hitboxStack.name = input.readString();
 			hitboxStack.specFlags = input.readLong();
-			hitboxStack.bulletFlags = input.readLong();
-			hitboxStack.bulletFilterMask = input.readLong();
-			hitboxStack.bulletFilterGroup = input.readLong();
+			hitboxStack.bulletFlags = input.readInt();
+			hitboxStack.bulletActivationState = input.readInt();
+			hitboxStack.bulletFilterMask = input.readInt();
+			hitboxStack.bulletFilterGroup = input.readInt();
 			hitboxStack.position = kryo.readObject(input, Vector3.class);
 			hitboxStack.rotation = kryo.readObject(input, Vector3.class);
 			hitboxStack.scale = kryo.readObject(input, Vector3.class);

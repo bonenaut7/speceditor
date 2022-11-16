@@ -28,12 +28,10 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 	/** XXX SpecFlagsBlock contains 3 extra reserved flags until custom properties will be added **/
 	protected class SpecFlagsBlock extends URenderBlock {
 		private long[] physObjectMasks = { 
-			IPhysObject.ACT_ACTIVE, IPhysObject.ACT_INACTIVE, IPhysObject.ACT_WANT_DEACTIVATE, IPhysObject.ACT_ALWAYS_ACTIVE, IPhysObject.ACT_ALWAYS_INACTIVE, IPhysObject.RESERVED6, IPhysObject.RESERVED7,
-			IPhysObject.DISABLE_LISTEN, IPhysObject.RAYCASTABLE, IPhysObject.RESERVED10
+			IPhysObject.DISABLE_LISTEN, IPhysObject.RAYCASTABLE, IPhysObject.RESERVED03, IPhysObject.RESERVED04, IPhysObject.RESERVED05
 		};
 		private String[] physObjectMasksNames = {
-			"[ACT Flag] Active", "[ACT Flag] Inactive", "[ACT Flag] Wants deactivation", "[ACT Flag] Always active", "[ACT Flag] Always inactive", "Reserved (64)", "Reserved (128)",
-			"Disable listen", "[Mask] Raycastable", "Reserved (1024)"
+			"Disable listen", "[Group] Raycastable", "Reserved (8)", "Reserved (16)", "Reserved (32)"
 		};
 		private UDropdownSelectMultiple maskSelector;
 		private UCheckbox linkToParent;
@@ -43,12 +41,12 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 			this.maskSelector = new UDropdownSelectMultiple(15, this.physObjectMasksNames) {
 				public void invertSelected(int variant) {
 					this.variantValues[variant] = !this.variantValues[variant];
-					parent._element.bulletFlags = IPhysObject.invertFlag(parent._element.bulletFlags, physObjectMasks[variant]);
+					parent._element.specFlags = IPhysObject.invertFlag(parent._element.specFlags, physObjectMasks[variant]);
 				}
 			};
 			this.linkToParent = new UCheckbox() {
 				public UCheckbox setValue(boolean value) {
-					parent._element.linkFlagsToParent[0] = this.value = value;
+					parent._element.linkToParent[0] = this.value = value;
 					return this;
 				}
 			};
@@ -71,7 +69,7 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 		
 		protected void updateBlock(TreeElementHitbox hitbox) {
 			for (int i = 0; i != this.physObjectMasks.length; i++) this.maskSelector.setVariantSelected(i, IPhysObject.hasFlag(hitbox.specFlags, this.physObjectMasks[i]));
-			this.linkToParent.setValue(hitbox.linkFlagsToParent[0]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
+			this.linkToParent.setValue(hitbox.linkToParent[0]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
 		}
 	}
 	
@@ -83,7 +81,7 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 		private String[]
 			collisionFlagsNames = { "Static object", "Kinematic object", "Character object", "No contact response", "Custom material callback", "Disable debug rendering", 
 				"Disable SPU processing", "Contact stiffness damping", "Has custom debug color", "Has friction anchor", "Has collision sound trigger" },
-			collisionFilterGroupsNames = { "Default filter", "Static filter", "Kinematic filter", "Debris filter", "Sensor trigger", "Character filter", "Custom (128)", "Custom (256)" };
+			collisionFilterGroupsNames = { "Default filter", "Static filter", "Kinematic filter", "Debris filter", "Sensor trigger", "Character filter", "Reserved (128)", "Reserved (256)" };
 		private UDropdownSelectMultiple flagsSelector, filterMasksSelector, filterGroupsSelector;
 		private UCheckbox linkToParentMasks, linkToParentFilterMasks, allFilterMasks, linkToParentFilterGroups, allFilterGroups;
 		
@@ -93,51 +91,51 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 			this.flagsSelector = new UDropdownSelectMultiple(15, this.collisionFlagsNames) {
 				public void invertSelected(int variant) {
 					this.variantValues[variant] = !this.variantValues[variant];
-					parent._element.bulletFlags = IPhysObject.invertFlag(parent._element.bulletFlags, collisionFlags[variant]);
+					parent._element.btCollisionFlags = (int)IPhysObject.invertFlag(parent._element.btCollisionFlags, collisionFlags[variant]);
 				}
 			};
 			this.filterMasksSelector = new UDropdownSelectMultiple(15, this.collisionFilterGroupsNames) {
 				public void invertSelected(int variant) {
 					this.variantValues[variant] = !this.variantValues[variant];
-					parent._element.bulletFilterMask = IPhysObject.invertFlag(parent._element.bulletFilterMask, collisionFilterGroups[variant]);
+					parent._element.btFilterMask = (int)IPhysObject.invertFlag(parent._element.btFilterMask, collisionFilterGroups[variant]);
 				}
 			};
 			this.filterGroupsSelector = new UDropdownSelectMultiple(15, this.collisionFilterGroupsNames) {
 				public void invertSelected(int variant) {
 					this.variantValues[variant] = !this.variantValues[variant];
-					parent._element.bulletFilterGroup = IPhysObject.invertFlag(parent._element.bulletFilterGroup, collisionFilterGroups[variant]);
+					parent._element.btFilterGroup = (int)IPhysObject.invertFlag(parent._element.btFilterGroup, collisionFilterGroups[variant]);
 				}
 			};
 			
 			this.linkToParentMasks = new UCheckbox() { 
 				public UCheckbox setValue(boolean value) {
-					parent._element.linkFlagsToParent[1] = this.value = value;
+					parent._element.linkToParent[1] = this.value = value;
 					return this;
 				}
 			};
 			this.linkToParentFilterMasks = new UCheckbox() { 
 				public UCheckbox setValue(boolean value) {
-					parent._element.linkFlagsToParent[2] = this.value = value;
+					parent._element.linkToParent[2] = this.value = value;
 					return this;
 				}
 			};
 			this.allFilterMasks = new UCheckbox() { 
 				public UCheckbox setValue(boolean value) {
 					this.value = value;
-					parent._element.bulletFilterMask = -parent._element.bulletFilterMask;
+					parent._element.btFilterMask = -parent._element.btFilterMask;
 					return this;
 				}
 			};
 			this.linkToParentFilterGroups = new UCheckbox() { 
 				public UCheckbox setValue(boolean value) {
-					parent._element.linkFlagsToParent[3] = this.value = value;
+					parent._element.linkToParent[3] = this.value = value;
 					return this;
 				}
 			};
 			this.allFilterGroups = new UCheckbox() { 
 				public UCheckbox setValue(boolean value) {
 					this.value = value;
-					parent._element.bulletFilterGroup = -parent._element.bulletFilterGroup;
+					parent._element.btFilterGroup = -parent._element.btFilterGroup;
 					return this;
 				}
 			};
@@ -196,14 +194,14 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 		}
 		
 		protected void updateBlock(TreeElementHitbox hitbox) {
-			for (int i = 0; i != this.collisionFlags.length; i++) this.flagsSelector.setVariantSelected(i, IPhysObject.hasFlag(hitbox.bulletFlags, this.collisionFlags[i]));
-			for (int i = 0; i != this.collisionFilterGroups.length; i++) this.filterMasksSelector.setVariantSelected(i, IPhysObject.hasFlag(hitbox.bulletFilterMask, this.collisionFilterGroups[i]));
-			for (int i = 0; i != this.collisionFilterGroups.length; i++) this.filterGroupsSelector.setVariantSelected(i, IPhysObject.hasFlag(hitbox.bulletFilterGroup, this.collisionFilterGroups[i]));
-			this.linkToParentMasks.setValue(hitbox.linkFlagsToParent[1]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
-			this.linkToParentFilterMasks.setValue(hitbox.linkFlagsToParent[2]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
-			this.allFilterMasks.setValue(this.parent._element.bulletFilterMask < 0).setEnabled(!this.linkToParentFilterMasks.getValue());
-			this.linkToParentFilterGroups.setValue(hitbox.linkFlagsToParent[3]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
-			this.allFilterGroups.setValue(this.parent._element.bulletFilterGroup < 0).setEnabled(!this.linkToParentFilterGroups.getValue());
+			for (int i = 0; i != this.collisionFlags.length; i++) this.flagsSelector.setVariantSelected(i, IPhysObject.hasFlag(hitbox.btCollisionFlags, this.collisionFlags[i]));
+			for (int i = 0; i != this.collisionFilterGroups.length; i++) this.filterMasksSelector.setVariantSelected(i, IPhysObject.hasFlag(hitbox.btFilterMask, this.collisionFilterGroups[i]));
+			for (int i = 0; i != this.collisionFilterGroups.length; i++) this.filterGroupsSelector.setVariantSelected(i, IPhysObject.hasFlag(hitbox.btFilterGroup, this.collisionFilterGroups[i]));
+			this.linkToParentMasks.setValue(hitbox.linkToParent[1]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
+			this.linkToParentFilterMasks.setValue(hitbox.linkToParent[2]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
+			this.allFilterMasks.setValue(this.parent._element.btFilterMask < 0).setEnabled(!this.linkToParentFilterMasks.getValue());
+			this.linkToParentFilterGroups.setValue(hitbox.linkToParent[3]).setEnabled(hitbox.getParent() instanceof ElementHitboxStack);
+			this.allFilterGroups.setValue(this.parent._element.btFilterGroup < 0).setEnabled(!this.linkToParentFilterGroups.getValue());
 		}
 	}
 }
