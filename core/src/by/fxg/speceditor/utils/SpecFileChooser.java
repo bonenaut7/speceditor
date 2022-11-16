@@ -1,7 +1,5 @@
 package by.fxg.speceditor.utils;
 
-import java.io.File;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
@@ -14,31 +12,34 @@ import by.fxg.speceditor.project.ProjectManager;
 
 /** Builder-like frame to use {@link javax.swing.JFileChooser} **/
 public class SpecFileChooser {
+	public static final int
+		TITLE_SAVE = 0,
+		TITLE_OPEN = 1,
+		TITLE_FILE = 2,
+		TITLE_FOLDER = 3;
+	
 	private static final SpecFileChooser instance = new SpecFileChooser();
 	private static JFrame frame;
 	private static JFileChooser fileChooser;
-	private static File userDirectory;
-
+	
 	private SpecFileChooser() {
 		frame = new JFrame();
 		fileChooser = new JFileChooser();
-		userDirectory = new File(System.getProperty("user.home"));
 		frame.setAlwaysOnTop(true);
 	}
 	
 	public static SpecFileChooser get() {
 		fileChooser.setSelectedFile(null);
 		fileChooser.setSelectedFiles(null);
-		fileChooser.setFileFilter(null);
-		fileChooser.setCurrentDirectory(userDirectory);
+		fileChooser.resetChoosableFileFilters();
 		return instance;
 	}
 	
 	public static SpecFileChooser getInProjectDirectory() {
 		fileChooser.setSelectedFile(null);
 		fileChooser.setSelectedFiles(null);
-		fileChooser.setFileFilter(null);
-		fileChooser.setCurrentDirectory(ProjectManager.currentProject == null ? userDirectory : ProjectManager.currentProject.getProjectFolder().file());
+		fileChooser.resetChoosableFileFilters();
+		fileChooser.setCurrentDirectory(ProjectManager.currentProject == null ? null : ProjectManager.currentProject.getProjectFolder().file());
 		return instance;
 	}
 	
@@ -52,44 +53,20 @@ public class SpecFileChooser {
 		return this;
 	}
 	
-	public FileHandle folder() {
-		return this.single(JFileChooser.DIRECTORIES_ONLY, I18n.get("speceditor.utils.SpecFileChooser.folder"));
-	}
-	
-	public FileHandle[] folders() {
-		return this.multiple(JFileChooser.DIRECTORIES_ONLY, I18n.get("speceditor.utils.SpecFileChooser.folder"));
-	}
-	
-	public FileHandle file() {
-		return this.single(JFileChooser.FILES_ONLY, I18n.get("speceditor.utils.SpecFileChooser.file"));
-	}
-	
-	public FileHandle[] files() {
-		return this.multiple(JFileChooser.FILES_ONLY, I18n.get("speceditor.utils.SpecFileChooser.file"));
-	}
-	
-	public FileHandle fileAndFolder() {
-		return this.single(JFileChooser.FILES_AND_DIRECTORIES, I18n.get("speceditor.utils.SpecFileChooser.file"));
-	}
-	
-	public FileHandle[] filesAndFolders() {
-		return this.multiple(JFileChooser.FILES_AND_DIRECTORIES, I18n.get("speceditor.utils.SpecFileChooser.file"));
-	}
-	
-	private FileHandle single(int mode, String title) {
-		fileChooser.setFileSelectionMode(mode);
+	public FileHandle openSingle(boolean allowFiles, boolean allowFolders) {
+		fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_OPEN), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
+		fileChooser.setFileSelectionMode(allowFiles && allowFolders ? JFileChooser.FILES_AND_DIRECTORIES : allowFolders ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.setDialogTitle(title);
 		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
 			return Gdx.files.absolute(fileChooser.getSelectedFile().getAbsolutePath());
 		}
 		return null;
 	}
 	
-	private FileHandle[] multiple(int mode, String title) {
-		fileChooser.setFileSelectionMode(mode);
+	public FileHandle[] openMultiple(boolean allowFiles, boolean allowFolders) {
+		fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_OPEN), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
+		fileChooser.setFileSelectionMode(allowFiles && allowFolders ? JFileChooser.FILES_AND_DIRECTORIES : allowFolders ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(true);
-		fileChooser.setDialogTitle(title);
 		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null) {
 			FileHandle[] array = new FileHandle[fileChooser.getSelectedFiles().length];
 			for (int i = 0; i != array.length; i++) {
@@ -98,5 +75,25 @@ public class SpecFileChooser {
 			return array;
 		}
 		return null;
+	}
+	
+	public FileHandle saveSingle(boolean allowFiles, boolean allowFolders) {
+		fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_SAVE), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
+		fileChooser.setFileSelectionMode(allowFiles && allowFolders ? JFileChooser.FILES_AND_DIRECTORIES : allowFolders ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
+		fileChooser.setMultiSelectionEnabled(false);
+		if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
+			return Gdx.files.absolute(fileChooser.getSelectedFile().getAbsolutePath());
+		}
+		return null;
+	}
+	
+	private String getString(int code) {
+		switch (code) {
+			case TITLE_SAVE: return I18n.get("speceditor.utils.SpecFileChooser.save");
+			case TITLE_OPEN: return I18n.get("speceditor.utils.SpecFileChooser.open");
+			case TITLE_FILE: return I18n.get("speceditor.utils.SpecFileChooser.file");
+			case TITLE_FOLDER: return I18n.get("speceditor.utils.SpecFileChooser.folder");
+		}
+		return "-";
 	}
 }

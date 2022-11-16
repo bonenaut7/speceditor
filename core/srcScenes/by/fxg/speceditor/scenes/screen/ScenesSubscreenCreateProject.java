@@ -47,7 +47,7 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 		if (this.enableBackups.getValue()) this.backupInterval.update();
 		
 		if (this.buttonSelectFolder.isPressed()) {
-			this.projectFolder = SpecFileChooser.get().folder();
+			this.projectFolder = SpecFileChooser.get().openSingle(false, true);
 			this.isProjectFolderValid = this.projectFolder != null && this.projectFolder.exists() && !this.projectFolder.child("project.ini").exists();
 		}
 		

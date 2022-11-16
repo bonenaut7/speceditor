@@ -51,7 +51,7 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Decal").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectDecal.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).render(shape, foster);
 		if (this.buttonSelectDecal.isPressed()) {
-			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).file();
+			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).openSingle(true, false);
 			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(this.element);
 		}
 		

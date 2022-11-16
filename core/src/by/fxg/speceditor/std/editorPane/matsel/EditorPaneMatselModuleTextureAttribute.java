@@ -33,7 +33,7 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 10, 12);
 		this.buttonSelectTexture.render(shape, foster);
 		if (this.buttonSelectTexture.isPressed()) {
-			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).file();
+			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).openSingle(true, false);
 			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(attribute);
 		}
 		

@@ -63,7 +63,7 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 		foster.setString("Mesh").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectModel.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
-			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).file();
+			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).openSingle(true, false);
 			if (handle != null) {
 				ProjectAsset projectAsset = null;
 				if (handle.extension().equalsIgnoreCase("gltf") || handle.extension().equalsIgnoreCase("glb")) {

@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.scenes.ScenesFormatFileFilter;
 import by.fxg.speceditor.scenes.ScenesProject;
 import by.fxg.speceditor.scenes.format.ScenesSerializer;
 import by.fxg.speceditor.screen.BaseScreen;
@@ -152,9 +153,9 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 				}
 			} break;
 			case "project.export.specformat": {
-				FileHandle handle = SpecFileChooser.get().fileAndFolder();
+				FileHandle handle = SpecFileChooser.get().setFilter(new ScenesFormatFileFilter()).saveSingle(true, false);
 				if (handle != null) {
-					if (!handle.isDirectory() && handle.exists()) {
+					if (handle.exists()) {
 						SpecEditor.get.renderer.currentGui = new GuiConfirmation("Are you sure you want to overwrite selected file?") {
 							public void onConfirm() {
 								DefaultRenderer renderer = (DefaultRenderer)project.renderer;
@@ -171,19 +172,6 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 					}
 				}
 			} break;
-//			FileHandle inputFolder = null;
-//				JFrame frame = new JFrame();
-//				frame.setAlwaysOnTop(true);
-//				JFileChooser fileChooser = new JFileChooser();
-//				fileChooser.setMultiSelectionEnabled(false);
-//				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//				fileChooser.setDialogTitle("Select directory to export scene");
-//				fileChooser.setCurrentDirectory(__$$Project.instance.projectFolder.parent().parent().file());
-//				if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
-//					inputFolder = Gdx.files.absolute(fileChooser.getSelectedFile().getAbsolutePath());
-//					SpecFormatExporter exporter = new SpecFormatExporter();
-//					exporter.export(this.project, inputFolder.child("scene.sfs"), SpecFormatConverter.convertToGraph(this.project, this.subObjectExplorer.objectExplorer, true));
-			
 			case "editor.open.projectFolder": try { Desktop.getDesktop().open(this.project.getProjectFolder().file()); } catch (Exception e) {} break;
 			case "editor.open.specEditorFolder": try { Desktop.getDesktop().open(DefaultResources.appFolder.file()); } catch (Exception e) {} break;
 			case "editor.closeProject": SpecEditor.get.renderer.currentGui = new GuiProjectCloseSave(); break;
