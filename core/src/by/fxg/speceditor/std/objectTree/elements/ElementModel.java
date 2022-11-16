@@ -37,7 +37,7 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	private ElementModel(ElementModel copy) {
 		this.displayName = copy.displayName;
 		this.visible = copy.visible;
-		if (this.modelAsset != null) { 
+		if (copy.modelAsset != null) {
 			if (copy.modelInstance != null) {
 				for (Material material : copy.modelInstance.materials) {
 					this._modelInstanceMaterialsCache.add(material.copy());

@@ -17,6 +17,7 @@ import by.fxg.speceditor.render.RenderManager;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
+import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UButton;
@@ -102,8 +103,9 @@ public class ScreenTestUI extends BaseScreen {
 	}
 
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
-		boolean a = false;
-		if (a) this.tfb.capture();
+		boolean framebuffer = true;
+		if (framebuffer) this.tfb.capture();
+		
 		batch.begin();
 		shape.setColor(0.12f, 0.12f, 0.12f, 1f);
 		shape.filledRectangle(0, 0, width, height);
@@ -120,6 +122,13 @@ public class ScreenTestUI extends BaseScreen {
 			}
 		}
 		
+		boolean snap = framebuffer;
+		shape.setColor(UColor.aquagray);
+		shape.line(width - 350, height - 50, width - 300, height - 50, 1, snap);
+		shape.line(width - 350, height - 100, width - 350, height - 50, 1, snap);
+		shape.line(width - 350, height - 100, width - 300, height - 100, 1, snap);
+		shape.line(width - 300, height - 100, width - 300, height - 50, 1, snap);
+		
 		this.renderBlock.render(batch, shape, foster, height - 5);
 		this.stdField.render(batch, shape);
 		this.coloredField.render(batch, shape);
@@ -127,7 +136,8 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownArea.render(shape, foster);
 		batch.flush();
 		batch.end();
-		if (a) {
+		
+		if (framebuffer) {
 			this.tfb.endCapture();
 			batch.begin();
 			batch.draw(this.tfb.getTexture(), 0, 0);

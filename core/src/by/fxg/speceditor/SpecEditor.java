@@ -1,5 +1,6 @@
 package by.fxg.speceditor;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -33,6 +34,7 @@ public class SpecEditor extends Apparat<GInputProcessor> {
 	
 	public void create() {
 		this.onCreate(get = this);
+		Gdx.app.setLogLevel(DEBUG ? Application.LOG_DEBUG : Application.LOG_ERROR);
 		Gdx.input.setInputProcessor(super.input = new GInputProcessor());
 		this.resourceManager = new ResourceManager();
 		this.renderer = new RenderManager(this);

@@ -1,7 +1,10 @@
 package by.fxg.speceditor.std.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+
+import by.fxg.speceditor.DefaultResources;
 
 public class SpecInterface {
 	public static SpecInterface INSTANCE;
@@ -10,7 +13,7 @@ public class SpecInterface {
 	
 	public void onUpdate() {
 		if (this._cursor != this._prevCursor) {
-			//Gdx.graphics.setCursor(DefaultResources.INSTANCE.getCursor(this._cursor));
+			Gdx.graphics.setCursor(DefaultResources.INSTANCE.getCursor(this._cursor));
 			this._prevCursor = this._cursor;
 		}
 		this._cursor = AppCursor.ARROW;

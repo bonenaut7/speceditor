@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -24,8 +25,8 @@ public class Utils {
 	public static FileNameExtensionFilter FILENAMEFILTER_MODELS, FILENAMEFILTER_IMAGES;
 	
 	public static void init() {
-		FILENAMEFILTER_MODELS = new FileNameExtensionFilter(format(I18n.get("speceditor.utils.fileNameFilter.models"), " (*.obj; *.g3db; *.g3dj; *.gltf; *.glb)"), "obj", "g3db", "g3dj", "gltf", "glb");
-		FILENAMEFILTER_IMAGES = new FileNameExtensionFilter(format(I18n.get("speceditor.utils.fileNameFilter.images"), " (*.png; *.jpg; *.jpeg; *.etc1)"), "png", "jpg", "jpeg", "etc1");
+		FILENAMEFILTER_MODELS = new FileNameExtensionFilter(format(I18n.get("speceditor.utils.fileNameFilter.models"), " (obj; g3db; gltf)"), "obj", "g3db", "g3dj", "gltf", "glb");
+		FILENAMEFILTER_IMAGES = new FileNameExtensionFilter(format(I18n.get("speceditor.utils.fileNameFilter.images"), " (png; jpeg; bmp; etc; ktx)"), "png", "jpg", "jpeg", "bmp", "etc1", "ktx", "zktx");
 		
 	}
 	
@@ -112,7 +113,7 @@ public class Utils {
 	public static int getHeight() { return SpecEditor.get.height; }
 	
 	public static String dFormat(double value, int symbolsAfterDot) {
-		PREDEFINED_DF.applyPattern(PREDEFINED_DF_FORMATS[symbolsAfterDot + 1]);
+		PREDEFINED_DF.applyPattern(PREDEFINED_DF_FORMATS[symbolsAfterDot]);
 		return PREDEFINED_DF.format(value);
 	}
 	
@@ -122,11 +123,11 @@ public class Utils {
 		return builder.toString();
 	}
 	
-	public static void logInfo(String tag, Object... objects) { System.err.println(format("[INFO] ", tag, ": ", format(objects))); }
-	public static void logWarn(String tag, Object... objects) { System.err.println(format("[WARN] ", tag, ": ", format(objects))); }
+	public static void logInfo(String tag, Object... objects) { Gdx.app.log(format("INFO][", tag), format(objects)); }
+	public static void logWarn(String tag, Object... objects) { Gdx.app.error(format("WARN][", tag), format(objects)); }
 	public static void logError(Throwable throwable, String tag, Object... objects) {
-		System.err.println(format("[ERROR] ", tag, ": ", format(objects)));
+		Gdx.app.error(format("ERROR][", tag), format(objects));
 		if (SpecEditor.DEBUG && throwable != null) throwable.printStackTrace();
 	}
-	public static void logDebug(Object... objects) { if (SpecEditor.DEBUG) System.err.println(format("[DEBUG] ", format(objects))); }	
+	public static void logDebug(Object... objects) { Gdx.app.debug("DEBUG", format(objects)); }	
 }
