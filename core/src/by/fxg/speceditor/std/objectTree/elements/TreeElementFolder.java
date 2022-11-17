@@ -9,7 +9,7 @@ public abstract class TreeElementFolder extends TreeElement implements ITreeElem
 	protected ElementStack elementStack;
 	
 	public TreeElementFolder() {
-		this.elementStack = new ElementStack();
+		this.elementStack = new ElementStack().setParent(this);
 	}
 	
 	public boolean isFolderAccepting(TreeElement element) {

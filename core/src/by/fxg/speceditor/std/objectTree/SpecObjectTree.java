@@ -339,19 +339,18 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 			case "default.delete": {
 				Array<TreeElement> toDelete = new Array<>();
 				for (int i = 0; i != this.elementSelector.size(); i++) toDelete.add(this.elementSelector.get(i));
+				this.dropdownArea.close();
 				SpecEditor.get.renderer.currentGui = new GuiObjectTreeDelete(this, toDelete);
 			} break;
 			default: {
-				boolean closeArea = true;
 				for (int elementIndex = 0; elementIndex != this.elementSelector.size(); elementIndex++) {
 					if (!this.elementSelector.get(elementIndex).processDropdownAction(this, element, id)) {
-						closeArea = false;
+						return;
 					}
 				}
-				if (!closeArea) return;
+				this.dropdownArea.close();
 			} break;
 		}
-		this.dropdownArea.close();
 	}
 
 	public void refreshTree() {
