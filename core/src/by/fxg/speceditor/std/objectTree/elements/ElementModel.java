@@ -44,7 +44,7 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 				}
 			}
 			copy.modelAsset.addHandler(this);
-		}
+		} else this.modelInstance = new ModelInstance(DefaultResources.INSTANCE.standardModel);
 		this.position.set(copy.position);
 		this.rotation.set(copy.rotation);
 		this.scale.set(copy.scale);

@@ -52,7 +52,7 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 			copy.modelAsset.addHandler(this);
 			this.nodes = Arrays.copyOf(copy.nodes, copy.nodes.length);
 			this.generateMesh();
-		}
+		} else this.setNewModel(DefaultResources.INSTANCE.standardModel);
 		this.position.set(copy.position);
 		this.rotation.set(copy.rotation);
 		this.scale.set(copy.scale);
