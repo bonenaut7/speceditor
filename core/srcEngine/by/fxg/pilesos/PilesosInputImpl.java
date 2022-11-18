@@ -16,7 +16,7 @@ public class PilesosInputImpl implements InputProcessor {
 	public long[] mouseClickTime = new long[5];
 	public long[] keyboardClickTime = new long[255/*180 max*/];
 	
-	public boolean isMouseScrolled(boolean up) { return this.mouseScrollTime[up ? 1 : 0] == Pilesos.getApp().getTick() - 1; }
+	public boolean isMouseScrolled(boolean down) { return this.mouseScrollTime[down ? 1 : 0] == Pilesos.getApp().getTick() - 1; }
 	public boolean isMouseDown(int key, boolean isHold) { return isHold ? this.mouseClickTime[key] > 0L : this.mouseClickTime[key] == Pilesos.getApp().getTick() - 1; }
 	public boolean isKeyboardDown(int key, boolean isHold) { return isHold ? this.keyboardClickTime[key] > 0L : this.keyboardClickTime[key] == Pilesos.getApp().getTick() - 1; }
 	

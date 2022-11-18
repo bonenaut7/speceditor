@@ -37,7 +37,7 @@ public abstract class UIElement {
 		return this.isMouseOver(this.x, this.y, this.width, this.height);
 	}
 	
-	public boolean isMouseOver(int x, int y, int width, int height) {
+	public boolean isMouseOver(float x, float y, float width, float height) {
 		return isMouseInArea(x, y, width, height) && SpecInterface.isFocused(this);
 	}
 	
@@ -45,7 +45,7 @@ public abstract class UIElement {
 		return SpecEditor.get.getInput();
 	}
 	
-	public static boolean isMouseInArea(int x, int y, int width, int height) {
+	public static boolean isMouseInArea(float x, float y, float width, float height) {
 		if (GEOMETRICALLY_ACCURATE_CALCULATIONS) return GDXUtil.isMouseInArea(x, y, width - 1, height - 1);
 		else return GDXUtil.isMouseInArea(x, y, width, height);
 	}

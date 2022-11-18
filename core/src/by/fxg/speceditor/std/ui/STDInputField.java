@@ -216,7 +216,7 @@ public class STDInputField extends UIElement implements IFocusable {
 	}
 
 	@Override
-	public boolean isMouseOver(int x, int y, int width, int height) {
+	public boolean isMouseOver(float x, float y, float width, float height) {
 		return isMouseInArea(x, y, width, height);
 	}
 	
