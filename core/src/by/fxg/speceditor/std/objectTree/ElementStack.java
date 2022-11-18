@@ -10,11 +10,23 @@ public class ElementStack {
 	private TreeElement parent;
 	private Array<TreeElement> elements = new Array<>();
 	
+	/** Adds element to stack, sets parent but not removes from old parent. To remove from old parent and add element use {@link #set(TreeElement)} instead **/
 	public boolean add(TreeElement element) {
 		if (element != null) {
 			element.setParent(this.parent);
 			this.elements.add(element);
 			return true;
+		}
+		return false;
+	}
+	
+	/** Safe method to add the element and not leave it somewhere else **/
+	public boolean set(TreeElement element) {
+		if (element != null) {
+			if (element.parent != null && element.parent instanceof ITreeElementFolder) {
+				((ITreeElementFolder)element.parent).getFolderStack().remove(element);
+			}
+			return this.add(element);
 		}
 		return false;
 	}
