@@ -3,6 +3,8 @@ package by.fxg.speceditor.std.ui;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -402,9 +404,7 @@ public class STDInputField extends UIElement implements IFocusable {
 							this.listener.onInputFieldTextChanged(this, this.listenerID, objString);
 						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				} catch (IOException | UnsupportedFlavorException flavorException) { ; }
 			}
 		}
 		

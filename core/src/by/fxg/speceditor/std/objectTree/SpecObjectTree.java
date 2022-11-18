@@ -23,6 +23,7 @@ import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.utils.Utils;
 import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -31,9 +32,19 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 	public ITreeElementHandler elementHandler;
 	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector();
 	
+	//parameters
+	private final int _sizeExpandIcon = 14, _sizeElementHeight = 20, _sizeSpriteIcon = 16;
+	
+	//ElementStack of TreeElements inside of UI element
 	private ElementStack elementStack = new ElementStack();
+	
+	//Local clipboard for elements
+	private boolean clipboardCut = false;
+	private Array<TreeElement> clipboard = new Array<>();
+	
 	/** [scroll]Scrolls, [canvas]Size of rendered elements in list for scrolls, [renderPosition]Position buffer for elements to render **/
 	private Vector2 scroll = new Vector2(), elementsCanvasSize = new Vector2(), renderPosition = new Vector2(); 
+	
 	//Drag'N'Drop
 	private boolean isDragNDropping = false, isDragNDropPossible = false;
 	private TreeElement _dragNDropElement;
@@ -67,15 +78,43 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 					this.scroll.y = MathUtils.clamp(this.scroll.y - (this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true) ? boundY / 8 : 23), 0, boundY);
 				}
 			}
+			
+			//Element Copy/Cut/Paste
+			if (this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
+				if (this.getInput().isKeyboardDown(Keys.C, false) || this.getInput().isKeyboardDown(Keys.X, false)) { //[Element Copy/Cut]
+					if (this.elementSelector.size() > 0) {
+						this.clipboard.size = 0;
+						for (TreeElement element : this.elementSelector.getIterable()) {
+							this.clipboard.add(element);
+						}
+						this.clipboardCut = this.getInput().isKeyboardDown(Keys.X, false);
+					}
+				} else if (this.getInput().isKeyboardDown(Keys.V, false)) { //[Element paste]
+					if (this.elementSelector.size() == 1 && this.clipboard.size > 0) {
+						TreeElement selectedElement = this.elementSelector.get(0);
+						ElementStack stackForPaste = selectedElement instanceof ITreeElementFolder ? ((ITreeElementFolder)selectedElement).getFolderStack() : 
+							(selectedElement.getParent() instanceof ITreeElementFolder ? ((ITreeElementFolder)selectedElement.getParent()).getFolderStack() : this.elementStack);
+						for (int i = 0; i != this.clipboard.size; i++) {
+							stackForPaste.set(this.clipboardCut ? this.clipboard.get(i) : this.clipboard.get(i).cloneElement());
+						}
+						if (this.clipboardCut) this.clipboard.size = 0;
+					}
+				}
+			}
+			
+			//Element delete
+			if (this.getInput().isKeyboardDown(Keys.FORWARD_DEL, false) && this.elementSelector.size() > 0) {
+				Array<TreeElement> toDelete = new Array<>();
+				for (int i = 0; i != this.elementSelector.size(); i++) toDelete.add(this.elementSelector.get(i));
+				SpecEditor.get.renderer.currentGui = new GuiObjectTreeDelete(this, toDelete);
+			}
 		}
 	}
-	
-	private int $triangle = 14, $elementHeight = 16, $iconHeight = 16;
 	
 	public void render(Batch batch, ShapeDrawer shape, Foster foster) {
 		//Tree
 		this.elementsCanvasSize.setZero();
-		this.renderPosition.set(this.x + 17 - this.scroll.x, this.y + this.height - this.$elementHeight - 1 + this.scroll.y); //1+2offset+14triangle, 1 
+		this.renderPosition.set(this.x + 17 - this.scroll.x, this.y + this.height - this._sizeElementHeight - 1 + this.scroll.y); //1+2offset+14triangle, 1 
 		batch.flush();
 		Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
 		Gdx.gl.glScissor(this.x, this.y, this.width, this.height);
@@ -114,13 +153,13 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 			isFolder = element instanceof ITreeElementFolder;
 			foster.setString(element.getName()); //preparing foster to text work
 			//[Max width calculation] width + elementHeight(referenced as sprite width, but sprite is equal in dimensions and rely on element height) + (2 border offset + 8 visual offset)
-			if (this.elementsCanvasSize.x < position.x + foster.getWidth() + this.$elementHeight + 10) this.elementsCanvasSize.x = position.x + foster.getWidth() + this.$elementHeight + 10; 
+			if (this.elementsCanvasSize.x < position.x + foster.getWidth() + this._sizeElementHeight + 10) this.elementsCanvasSize.x = position.x + foster.getWidth() + this._sizeElementHeight + 10; 
 			
 			//processing
 			if (isMouseInArea(this.x, this.y, this.width, this.height) && SpecInterface.isFocused(null)) {
-				if (isMouseInArea(this.x + 1, position.y - 1, this.width - 2, this.$elementHeight)) {
+				if (isMouseInArea(this.x + 1, position.y - 1, this.width - 2, this._sizeElementHeight)) {
 					//[LMB Click expand] Small arrow click, Visibility of folders
-					if (isFolder && this.getInput().isMouseDown(0, false) && isMouseInArea(position.x - 14, position.y + this.$elementHeight / 2 - this.$triangle / 2, this.$triangle, this.$triangle)) {
+					if (isFolder && this.getInput().isMouseDown(0, false) && isMouseInArea(position.x - 14, position.y + this._sizeElementHeight / 2 - this._sizeExpandIcon / 2, this._sizeExpandIcon, this._sizeExpandIcon)) {
 						if (SpecEditor.get.getTick() - this._expandClickTime > 6L) {
 							this.setClick(null, true);
 							((ITreeElementFolder)element).setFolderOpened(!((ITreeElementFolder)element).isFolderOpened());
@@ -157,7 +196,7 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 						}
 					}
 					shape.setColor(this.elementSelector.isElementSelected(element) ? UColor.elementHover : UColor.elementBoundsClicked);
-					shape.filledRectangle(this.x + 1, position.y, this.width - 2, this.$elementHeight);
+					shape.filledRectangle(this.x + 1, position.y, this.width - 2, this._sizeElementHeight);
 				}
 			}
 			
@@ -172,13 +211,13 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 				}
 				if (isDragNDropValid) { //1px offset to down in the first case because of visual bug
 					shape.setColor(UColor.white);
-					int half = this.$elementHeight / 2, quarter = half / 2;
+					int half = this._sizeElementHeight / 2, quarter = half / 2;
 					if (element instanceof ITreeElementFolder) {
-						if (isMouseInArea(this.x + 1, position.y + quarter + half, this.width - 2, quarter)) shape.line(this.x + 1, position.y + this.$elementHeight - 1, this.x + this.width - 1, position.y + this.$elementHeight - 1);
-						else if (isMouseInArea(this.x + 1, position.y + quarter, this.width - 2, half)) shape.rectangle(this.x + 1, position.y, this.width - 2, this.$elementHeight);
+						if (isMouseInArea(this.x + 1, position.y + quarter + half, this.width - 2, quarter)) shape.line(this.x + 1, position.y + this._sizeElementHeight - 1, this.x + this.width - 1, position.y + this._sizeElementHeight - 1);
+						else if (isMouseInArea(this.x + 1, position.y + quarter, this.width - 2, half)) shape.rectangle(this.x + 1, position.y, this.width - 2, this._sizeElementHeight);
 						else if (isMouseInArea(this.x + 1, position.y, this.width - 2, quarter)) shape.line(this.x + 1, position.y, this.x + this.width - 1, position.y);
 					} else {
-						if (isMouseInArea(this.x + 1, position.y + half, this.width - 2, half)) shape.line(this.x + 1, position.y + this.$elementHeight - 1, this.x + this.width - 1, position.y + this.$elementHeight - 1); 
+						if (isMouseInArea(this.x + 1, position.y + half, this.width - 2, half)) shape.line(this.x + 1, position.y + this._sizeElementHeight - 1, this.x + this.width - 1, position.y + this._sizeElementHeight - 1); 
 						else if (isMouseInArea(this.x + 1, position.y, this.width - 2, half)) shape.line(this.x + 1, position.y, this.x + this.width - 1, position.y);
 					}
 					
@@ -202,9 +241,9 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 			
 			//element render
 			if (isFolder) { //triangle of insides
-				 if (isMouseInArea(position.x - 14, position.y + this.$elementHeight / 2 - this.$triangle / 2, this.$triangle, this.$triangle) && SpecInterface.isFocused(null)) {
+				 if (isMouseInArea(position.x - 14, position.y + this._sizeElementHeight / 2 - this._sizeExpandIcon / 2, this._sizeExpandIcon, this._sizeExpandIcon) && SpecInterface.isFocused(null)) {
 					 shape.setColor(UColor.elementHover);
-					 shape.filledRectangle(position.x - 14, position.y + this.$elementHeight / 2 - this.$triangle / 2, this.$triangle, this.$triangle);
+					 shape.filledRectangle(position.x - 14, position.y + this._sizeElementHeight / 2 - this._sizeExpandIcon / 2, this._sizeExpandIcon, this._sizeExpandIcon);
 				 }
 				 //TODO make rendering from center
 				 shape.setColor(UColor.white);
@@ -217,20 +256,18 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 			
 			if (this.elementSelector.isElementSelected(element)) {
 				shape.setColor(UColor.elementHover);
-				shape.filledRectangle(this.x + 1, position.y, this.width - 2, this.$elementHeight);
+				shape.filledRectangle(this.x + 1, position.y, this.width - 2, this._sizeElementHeight);
 			}
 			
-			int maxSpriteSize = Math.min(this.$elementHeight, 16);
-			int spriteMargin = (this.$elementHeight - maxSpriteSize) / 2;
+			int maxSpriteSize = Math.min(this._sizeElementHeight, 16);
+			int spriteMargin = (this._sizeElementHeight - maxSpriteSize) / 2;
 			Sprite sprite = element.getObjectTreeSprite(); //16x16 sprite with 2px margin
 			sprite.setPosition(position.x + spriteMargin, position.y + spriteMargin); //2px margin
 			sprite.setScale(1.0F / (sprite.getWidth() / maxSpriteSize)); //force scaling to 16px icon
 			
 			sprite.draw(batch);
-			foster.setString(element.getName()).draw(position.x + maxSpriteSize + 4, position.y + this.$elementHeight / 2 - foster.getHalfHeight(), Align.left);
-			position.add(0, -this.$elementHeight); 
-			
-			this.$elementHeight = 20; //debug
+			foster.setString(element.getName()).draw(position.x + maxSpriteSize + 4, position.y + this._sizeElementHeight / 2 - foster.getHalfHeight(), Align.left);
+			position.add(0, -this._sizeElementHeight); 
 			
 			//sub-elements render
 			if (isFolder && ((ITreeElementFolder)element).isFolderOpened()) {

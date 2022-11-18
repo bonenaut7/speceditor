@@ -30,8 +30,8 @@ public class GuiObjectTreeDelete extends BaseScreen {
 	private UButton buttonClose;
 	private UHoldButton buttonDelete;
 	
-	public GuiObjectTreeDelete(SpecObjectTree pmoe, Array<TreeElement> treeElements) {
-		this.objectTree = pmoe;
+	public GuiObjectTreeDelete(SpecObjectTree objectTree, Array<TreeElement> treeElements) {
+		this.objectTree = objectTree;
 		this.treeElements = new Array<TreeElement>(treeElements);
 		for (TreeElement element : treeElements) {
 			this.inspect(element, false);
@@ -44,7 +44,7 @@ public class GuiObjectTreeDelete extends BaseScreen {
 		};
 		
 		this.buttonClose = new UButton("Cancel");
-		this.buttonDelete = new UHoldButton("Delete", UHoldButton.NO_KEY, 60).setColor(UColor.redgray);
+		this.buttonDelete = new UHoldButton("Delete", Keys.ENTER, 60).setColor(UColor.redgray);
 		
 		this.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
