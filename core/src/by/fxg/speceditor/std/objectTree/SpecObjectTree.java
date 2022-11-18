@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.utils.GDXUtil;
-import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.objectTree.impl.DefaultTreeElementSelector;
@@ -23,11 +23,10 @@ import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
+import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
-	private int x, y, width, height;
-	private GInputProcessor input;
+public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListener, IFocusable {
 	public STDDropdownArea dropdownArea;
 	public ITreeElementHandler elementHandler;
 	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector();
@@ -35,71 +34,59 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 	private ElementStack elementStack = new ElementStack();
 	/** [scroll]Scrolls, [canvas]Size of rendered elements in list for scrolls, [renderPosition]Position buffer for elements to render **/
 	private Vector2 scroll = new Vector2(), elementsCanvasSize = new Vector2(), renderPosition = new Vector2(); 
-	
 	//Drag'N'Drop
 	private boolean isDragNDropping = false, isDragNDropPossible = false;
 	private TreeElement _dragNDropElement;
 	private int _dragNDropMove = -1;
 
 	//LMB click control
-	private boolean _isClicked = false, _isClickElementSelectorEmpty, _clickSkip = false;
+	private boolean _isClicked, _isClickElementSelectorEmpty, _clickSkip;
 	private int _clickX = -1, _clickY = -1;
-	private long _folderInteractTime = 0L;
+	private long _expandClickTime, _elementClickTime;
 	private TreeElement _clickElement = null;
 	
 	public SpecObjectTree(int x, int y, int width, int height) { this(); this.setTransforms(x, y, width, height); }
 	public SpecObjectTree() {
-		this.input = SpecEditor.get.getInput();
 		this.dropdownArea = new STDDropdownArea(15).setListener(this);
 	}
 	
 	public void update() {
-		float outboundX = Math.max(0, this.elementsCanvasSize.x - this.width);
-		float outboundY = Math.max(0, this.y - this.renderPosition.y + this.scroll.y - 23 + 5);
-		if (GDXUtil.isMouseInArea(this.x, this.y, this.width, this.height) && SpecInterface.isFocused(this)) {
-			if (this.input.isMouseScrolled(true)) {
-				if (SpecEditor.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
-					if (this.scroll.x < outboundX) {
-						this.scroll.x = Math.min(this.scroll.x + 25, outboundX);
-					}
+		float boundX = Math.max(0, this.elementsCanvasSize.x - this.width);
+		float boundY = Math.max(0, this.y - this.renderPosition.y + this.scroll.y - 23 + 5);
+		if (this.isMouseOver()) {
+			if (this.getInput().isMouseScrolled(true)) {
+				if (this.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
+					this.scroll.x = MathUtils.clamp(this.scroll.x + (this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true) ? boundX / 8 : 25), 0, boundX);
 				} else {
-					if (this.scroll.y < outboundY) {
-						this.scroll.y = Math.min(this.scroll.y + 23, outboundY);
-					}
+					this.scroll.y = MathUtils.clamp(this.scroll.y + (this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true) ? boundY / 8 : 23), 0, boundY);
 				}
 			} else if (SpecEditor.get.getInput().isMouseScrolled(false)) {
-				if (SpecEditor.get.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
-					if (this.scroll.x > 0) {
-						this.scroll.x = Math.max(0, this.scroll.x - 25);
-					}
+				if (this.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true)) {
+					this.scroll.x = MathUtils.clamp(this.scroll.x - (this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true) ? boundX / 8 : 25), 0, boundX);
 				} else {
-					if (this.scroll.y > 0) {
-						this.scroll.y = Math.max(0, this.scroll.y - 23);
-					}
+					this.scroll.y = MathUtils.clamp(this.scroll.y - (this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true) ? boundY / 8 : 23), 0, boundY);
 				}
 			}
 		}
-		if (!this.elementsCanvasSize.isZero()) {
-			if (this.scroll.x > outboundX) this.scroll.x = outboundX;
-			if (this.scroll.y > outboundY) this.scroll.y = outboundY;
-		}
 	}
+	
+	private int $triangle = 14, $elementHeight = 16, $iconHeight = 16;
 	
 	public void render(Batch batch, ShapeDrawer shape, Foster foster) {
 		//Tree
 		this.elementsCanvasSize.setZero();
-		this.renderPosition.set(this.x + 1 - this.scroll.x, this.y + this.height - 21 + this.scroll.y);
-		shape.setColor(1, 1, 1, 0.4f);
+		this.renderPosition.set(this.x + 17 - this.scroll.x, this.y + this.height - this.$elementHeight - 1 + this.scroll.y); //1+2offset+14triangle, 1 
 		batch.flush();
 		Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
 		Gdx.gl.glScissor(this.x, this.y, this.width, this.height);
-		this.drawTree(batch, shape, foster, this.renderPosition, this.elementStack.getElements(), false);
+		this.drawTree(batch, shape, foster, this.renderPosition, this.elementStack.getElements(), true);
 		batch.flush();
 		Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
 		this.elementsCanvasSize.x = Math.max(0, this.elementsCanvasSize.x - (this.x - this.scroll.x));
 		this.elementsCanvasSize.y = this.y - this.renderPosition.y + this.height + this.scroll.y - 21;
 			
 		//Scroll
+		shape.setColor(UColor.elementBoundsClicked);
 		int realHeight = this.height + 3;
 		float xScrollWidth = Interpolation.linear.apply(0, this.width, Math.min(this.width / this.elementsCanvasSize.x, 1));
 		float xScrollPosition = Interpolation.linear.apply(0, this.width - xScrollWidth, Math.min(-(this.scroll.x / (this.width - this.elementsCanvasSize.x)), 1));
@@ -119,20 +106,38 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 		this.updateClick();
 	}
 	
-	private void drawTree(Batch batch, ShapeDrawer shape, Foster foster, Vector2 vector, Array<TreeElement> iterable, boolean isChild) {
+	private void drawTree(Batch batch, ShapeDrawer shape, Foster foster, Vector2 position, Array<TreeElement> iterable, boolean isParentVisible) {
 		boolean isFolder = false, isDragNDrop = this.isDragNDropping && this.isDragNDropPossible && this.isFocused(), isDragNDropValid = false;
-		
+
 		for (int i = 0; i != iterable.size; i++) {
 			TreeElement element = iterable.get(i);
-			if ((isFolder = element instanceof ITreeElementFolder) && !isChild) vector.add(16, 0); //Adding 16px if folder created with ObjectTree as parent
+			isFolder = element instanceof ITreeElementFolder;
 			foster.setString(element.getName()); //preparing foster to text work
-			if (this.elementsCanvasSize.x < vector.x + foster.getWidth() + 26) this.elementsCanvasSize.x = vector.x + foster.getWidth() + 26; //25 - size of box + textWidth
+			//[Max width calculation] width + elementHeight(referenced as sprite width, but sprite is equal in dimensions and rely on element height) + (2 border offset + 8 visual offset)
+			if (this.elementsCanvasSize.x < position.x + foster.getWidth() + this.$elementHeight + 10) this.elementsCanvasSize.x = position.x + foster.getWidth() + this.$elementHeight + 10; 
 			
 			//processing
-			if (GDXUtil.isMouseInArea(this.x, this.y, this.width, this.height) && SpecInterface.isFocused(null)) {
-				if (this.isClicked(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20)) this.setClick(element);
-				if (GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20)) { // isMouseOver
-					if (SpecEditor.get.getInput().isMouseDown(1, false)) {
+			if (isMouseInArea(this.x, this.y, this.width, this.height) && SpecInterface.isFocused(null)) {
+				if (isMouseInArea(this.x + 1, position.y - 1, this.width - 2, this.$elementHeight)) {
+					//[LMB Click expand] Small arrow click, Visibility of folders
+					if (isFolder && this.getInput().isMouseDown(0, false) && isMouseInArea(position.x - 14, position.y + this.$elementHeight / 2 - this.$triangle / 2, this.$triangle, this.$triangle)) {
+						if (SpecEditor.get.getTick() - this._expandClickTime > 6L) {
+							this.setClick(null, true);
+							((ITreeElementFolder)element).setFolderOpened(!((ITreeElementFolder)element).isFolderOpened());
+							this._expandClickTime = SpecEditor.get.getTick();
+							this._elementClickTime = -1L;
+						} else {
+							this.setClick(null, true);
+						}
+					} else if (this.getInput().isMouseDown(0, false)) { //[LMB Click]
+						if (this._clickElement == element && isFolder && SpecEditor.get.getTick() - this._elementClickTime < 15L) { //[LMB Click expand]
+							this.setClick(element, true);
+							((ITreeElementFolder)element).setFolderOpened(!((ITreeElementFolder)element).isFolderOpened());
+							this._elementClickTime = -1L;
+						} else {
+							this.setClick(element);
+						}
+					} else if (this.getInput().isMouseDown(1, false)) { //[RMB Click]
 						if (!this.elementSelector.isElementSelected(element)) {
 							this.elementSelector.clearSelection();
 							this.elementSelector.selectElement(element);
@@ -151,14 +156,8 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 							this.dropdownArea.setElements(elements, foster).open();
 						}
 					}
-					shape.filledRectangle(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20);
-				} else if (isFolder && this.input.isMouseDown(0, false) && GDXUtil.isMouseInArea(vector.x - 15, vector.y + 2, 14, 14) && SpecInterface.isFocused(null)) {
-					//Small arrow click, Visibility of folders
-					if (SpecEditor.get.getTick() - this._folderInteractTime > 20L) {
-						((ITreeElementFolder)element).setFolderOpened(!((ITreeElementFolder)element).isFolderOpened());
-						this._folderInteractTime = SpecEditor.get.getTick();
-					}
-					this.setClick(null, true);
+					shape.setColor(this.elementSelector.isElementSelected(element) ? UColor.elementHover : UColor.elementBoundsClicked);
+					shape.filledRectangle(this.x + 1, position.y, this.width - 2, this.$elementHeight);
 				}
 			}
 			
@@ -171,67 +170,75 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 						break;
 					}
 				}
-				if (isDragNDropValid) {
-					float color = shape.getPackedColor();
-					shape.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+				if (isDragNDropValid) { //1px offset to down in the first case because of visual bug
+					shape.setColor(UColor.white);
+					int half = this.$elementHeight / 2, quarter = half / 2;
 					if (element instanceof ITreeElementFolder) {
-						if (GDXUtil.isMouseInArea(vector.x - 1, vector.y + 13, 25 + foster.getWidth(), 7)) {
-							shape.line(vector.x + 4, vector.y + 20, vector.x + 20 + foster.getWidth(), vector.y + 20);
-						} else if (GDXUtil.isMouseInArea(vector.x - 1, vector.y + 4, 25 + foster.getWidth(), 9)) {
-							shape.rectangle(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 19);
-						} else if (GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 6)) {
-							shape.line(vector.x + 4, vector.y - 2, vector.x + 20 + foster.getWidth(), vector.y - 2);
-						}
+						if (isMouseInArea(this.x + 1, position.y + quarter + half, this.width - 2, quarter)) shape.line(this.x + 1, position.y + this.$elementHeight - 1, this.x + this.width - 1, position.y + this.$elementHeight - 1);
+						else if (isMouseInArea(this.x + 1, position.y + quarter, this.width - 2, half)) shape.rectangle(this.x + 1, position.y, this.width - 2, this.$elementHeight);
+						else if (isMouseInArea(this.x + 1, position.y, this.width - 2, quarter)) shape.line(this.x + 1, position.y, this.x + this.width - 1, position.y);
 					} else {
-						if (GDXUtil.isMouseInArea(vector.x - 1, vector.y + 10, 25 + foster.getWidth(), 10)) {
-							shape.line(vector.x + 4, vector.y + 20, vector.x + 20 + foster.getWidth(), vector.y + 20);
-						} else if (GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 11)) {
-							shape.line(vector.x + 4, vector.y - 2, vector.x + 20 + foster.getWidth(), vector.y - 2);
-						}
+						if (isMouseInArea(this.x + 1, position.y + half, this.width - 2, half)) shape.line(this.x + 1, position.y + this.$elementHeight - 1, this.x + this.width - 1, position.y + this.$elementHeight - 1); 
+						else if (isMouseInArea(this.x + 1, position.y, this.width - 2, half)) shape.line(this.x + 1, position.y, this.x + this.width - 1, position.y);
 					}
 					
-					if (!this.input.isMouseDown(0, true)) {
-						int move = -1;
-						if (element instanceof ITreeElementFolder) move = GDXUtil.isMouseInArea(vector.x - 1, vector.y + 13, 25 + foster.getWidth(), 7) ? 2 : GDXUtil.isMouseInArea(vector.x - 1, vector.y + 4, 25 + foster.getWidth(), 9) ? 1 : GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 6) ? 0 : -1;
-						else move = GDXUtil.isMouseInArea(vector.x - 1, vector.y + 10, 25 + foster.getWidth(), 10) ? 2 : GDXUtil.isMouseInArea(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 11) ? 0 : -1;
-						if (move > -1) {
-							this._dragNDropMove = move;
+					if (!this.getInput().isMouseDown(0, true)) {
+						int step = -1;
+						if (element instanceof ITreeElementFolder) {
+							step = isMouseInArea(this.x + 1, position.y + quarter + half, this.width - 2, quarter) ? 2 :
+								   isMouseInArea(this.x + 1, position.y + quarter, this.width - 2, half) ? 1 :
+								   isMouseInArea(this.x + 1, position.y, this.width - 2, quarter) ? 0 : -1;
+						} else {
+							step = isMouseInArea(this.x + 1, position.y + half, this.width - 2, half) ? 2 :
+								   isMouseInArea(this.x + 1, position.y, this.width - 2, half) ? 0 : -1;
+						}
+						if (step > -1) {
+							this._dragNDropMove = step;
 							this._dragNDropElement = element;
 						}
 					}
-					shape.setColor(color);
 				}
 			}
 			
 			//element render
-			if (isFolder) {
-				 if (GDXUtil.isMouseInArea(vector.x - 15, vector.y + 2, 14, 14) && SpecInterface.isFocused(null)) shape.filledRectangle(vector.x - 15, vector.y + 2, 14, 14);
-				 shape.setColor(1, 1, 1, 1);
-				 if (((ITreeElementFolder)element).isFolderOpened()) shape.filledTriangle(vector.x - 12, vector.y + 13, vector.x - 4, vector.y + 13, vector.x - 8, vector.y + 4);
-				 else shape.filledTriangle(vector.x - 10, vector.y + 14, vector.x - 4, vector.y + 9, vector.x - 10, vector.y + 4);
-				 shape.setColor(1, 1, 1, 0.4f);
+			if (isFolder) { //triangle of insides
+				 if (isMouseInArea(position.x - 14, position.y + this.$elementHeight / 2 - this.$triangle / 2, this.$triangle, this.$triangle) && SpecInterface.isFocused(null)) {
+					 shape.setColor(UColor.elementHover);
+					 shape.filledRectangle(position.x - 14, position.y + this.$elementHeight / 2 - this.$triangle / 2, this.$triangle, this.$triangle);
+				 }
+				 //TODO make rendering from center
+				 shape.setColor(UColor.white);
+				 if (((ITreeElementFolder)element).isFolderOpened()) shape.filledTriangle(position.x - 11, position.y + 14, position.x - 3, position.y + 14, position.x - 7, position.y + 5);
+				 else shape.filledTriangle(position.x - 9, position.y + 15, position.x - 3, position.y + 10, position.x - 9, position.y + 5);
 			}
 			
+			//visibility icon
+			//TODO add visibility icon
+			
 			if (this.elementSelector.isElementSelected(element)) {
-				shape.setColor(1, 1, 1, 0.2f);
-				shape.filledRectangle(vector.x - 1, vector.y - 1, 25 + foster.getWidth(), 20);
-				shape.setColor(1, 1, 1, 0.4f);
+				shape.setColor(UColor.elementHover);
+				shape.filledRectangle(this.x + 1, position.y, this.width - 2, this.$elementHeight);
 			}
-			Sprite sprite = element.getObjectTreeSprite();
-			sprite.setPosition(vector.x - (sprite.getWidth() - 16) / 2 + 1, vector.y - (sprite.getHeight() - 16) / 2 + 1);
-			sprite.setScale(1.0F / (sprite.getWidth() / 16.0F));
+			
+			int maxSpriteSize = Math.min(this.$elementHeight, 16);
+			int spriteMargin = (this.$elementHeight - maxSpriteSize) / 2;
+			Sprite sprite = element.getObjectTreeSprite(); //16x16 sprite with 2px margin
+			sprite.setPosition(position.x + spriteMargin, position.y + spriteMargin); //2px margin
+			sprite.setScale(1.0F / (sprite.getWidth() / maxSpriteSize)); //force scaling to 16px icon
+			
 			sprite.draw(batch);
-			foster.setString(element.getName()).draw(vector.x + 20, vector.y + 9 - foster.getHalfHeight(), Align.left);
-			vector.add(0, -22); 
+			foster.setString(element.getName()).draw(position.x + maxSpriteSize + 4, position.y + this.$elementHeight / 2 - foster.getHalfHeight(), Align.left);
+			position.add(0, -this.$elementHeight); 
+			
+			this.$elementHeight = 20; //debug
 			
 			//sub-elements render
 			if (isFolder && ((ITreeElementFolder)element).isFolderOpened()) {
 				ITreeElementFolder folder = (ITreeElementFolder)element;
-				vector.add(16, 0);
-				this.drawTree(batch, shape, foster, vector, folder.getFolderStack().getElements(), true);
-				vector.add(-16, 0);
+				position.add(16, 0);
+				this.drawTree(batch, shape, foster, position, folder.getFolderStack().getElements(), isParentVisible ? element.isVisible() : false);
+				position.add(-16, 0);
 			}
-			if (isFolder && !isChild) vector.add(-16, 0);
 		}
 	}
 	
@@ -241,10 +248,11 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 			this._isClicked = true;
 			this._clickX = GDXUtil.getMouseX();
 			this._clickY = GDXUtil.getMouseY();
+			this._elementClickTime = SpecEditor.get.getTick();
 			if (!(this._clickSkip = skipClick)) {
 				this._clickElement = element;
 				this._isClickElementSelectorEmpty = this.elementSelector.size() < 1;
-				if (!this.input.isKeyboardDown(Keys.SHIFT_LEFT, true) && !this.input.isKeyboardDown(Keys.CONTROL_LEFT, true) && this.elementSelector.size() < 2) {
+				if (!this.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true) && !this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true) && this.elementSelector.size() < 2) {
 					this.elementSelector.clearSelection();
 					this.elementSelector.selectElement(element);
 				}
@@ -254,9 +262,9 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 	
 	private void updateClick() {
 		if (this._isClicked) {
-			if (this.input.isMouseDown(0, true)) {
+			if (this.getInput().isMouseDown(0, true)) {
 				int area0 = 6, area1=area0/2;
-				if (!this.isDragNDropping && !GDXUtil.isMouseInArea(this._clickX - area1, this._clickY - area1, area0, area0) && this.elementSelector.size() > 0) {
+				if (!this.isDragNDropping && !isMouseInArea(this._clickX - area1, this._clickY - area1, area0, area0) && this.elementSelector.size() > 0) {
 					this.setFocused(this.isDragNDropPossible = this.isDragNDropping = true);
 					for (int i = 0; i != this.elementSelector.size(); i++) {
 						if (this.isTreeElementAnyParentsSelected(this.elementSelector.get(i))) {
@@ -275,7 +283,7 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 		
 		//Drag'n'Drop
 		if (this.isDragNDropping) {
-			if (!this.input.isMouseDown(0, true)) {
+			if (!this.getInput().isMouseDown(0, true)) {
 				this.setFocused(this.isDragNDropping = false);
 				if (this.isDragNDropPossible && this._dragNDropMove > -1 && this._dragNDropElement != null) {
 					boolean isDragNDropValid = true;
@@ -299,7 +307,7 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 					}
 				}
 			} else {
-				SpecInterface.setCursor(this.isDragNDropPossible && GDXUtil.isMouseInArea(this.x, this.y, this.width, this.height) ? AppCursor.GRABBING : AppCursor.UNAVAILABLE);
+				SpecInterface.setCursor(this.isDragNDropPossible && isMouseInArea(this.x, this.y, this.width, this.height) ? AppCursor.GRABBING : AppCursor.UNAVAILABLE);
 			}
 		}
 	}
@@ -307,7 +315,7 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 	private void onClick() {
 		if (!this._clickSkip) {
 			if (this._clickElement != null) {
-				if (this.input.isKeyboardDown(Keys.SHIFT_LEFT, true) && this.elementSelector.size() > 0) {
+				if (this.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true) && this.elementSelector.size() > 0) {
 					Array<TreeElement> elements = new Array<>();
 					this.getVisibleElements(this.elementStack, elements);
 					if (elements.contains(this.elementSelector.get(0), true) && elements.contains(this._clickElement, true)) {
@@ -320,14 +328,14 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 							}
 						}
 					}
-				} else if (this.input.isKeyboardDown(Keys.CONTROL_LEFT, true)) {
+				} else if (this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) {
 					if (!this._isClickElementSelectorEmpty && this.elementSelector.isElementSelected(this._clickElement)) this.elementSelector.deselectElement(this._clickElement);
 					else this.elementSelector.selectElement(this._clickElement);
 				} else {
 					this.elementSelector.clearSelection();
 					this.elementSelector.selectElement(this._clickElement);
 				}
-			} else if (!this.input.isKeyboardDown(Keys.SHIFT_LEFT, true) && !this.input.isKeyboardDown(Keys.CONTROL_LEFT, true)) this.elementSelector.clearSelection();
+			} else if (!this.getInput().isKeyboardDown(Keys.SHIFT_LEFT, true) && !this.getInput().isKeyboardDown(Keys.CONTROL_LEFT, true)) this.elementSelector.clearSelection();
 		}
 		this.refreshTree();
 	}
@@ -377,16 +385,16 @@ public class SpecObjectTree implements ISTDDropdownAreaListener, IFocusable {
 		return this;
 	}
 	
-	public SpecObjectTree setTransforms(int x, int y, int sx, int sy) {
-		this.x = x;
-		this.y = y + 4;
-		this.width = sx - 4;
-		this.height = sy - 4;
+	public SpecObjectTree setTransforms(float x, float y, float width, float height) {
+		this.x = (int)x;
+		this.y = (int)y + 4;
+		this.width = width > 0 ? (int)width - 4 : 0;
+		this.height = height > 0 ? (int)height - 4 : 0;
 		return this;
 	}
 	
 	private boolean isClicked(float x, float y, float width, float height) {
-		return SpecInterface.isFocused(this) && this.input.isMouseDown(0, false) && GDXUtil.isMouseInArea(x, y, width, height);
+		return this.isMouseOver(x, y, width, height) && this.getInput().isMouseDown(0, false);
 	}
 	
 	//Inspects specified TreeElement's parents for selection, returns false if one of its parents is selected
