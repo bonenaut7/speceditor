@@ -41,14 +41,13 @@ public class RenderManager {
 	
 	public void update(SpecEditor demo, int width, int height) {
 		if (this.currentGui != null) this.currentGui.update(batch, shape, foster, width, height);
-		else {
-			if (this.currentScreen != null) this.currentScreen.update(batch, shape, foster, width, height);
-		}
+		else if (this.currentScreen != null) this.currentScreen.update(batch, shape, foster, width, height);
 	}
 	
 	public void render(SpecEditor demo, int width, int height) {
-		if (this.currentScreen != null) this.currentScreen.render(batch, shape, foster, width, height);
 		if (this.currentGui != null) this.currentGui.render(batch, shape, foster, width, height);
+		// Not allowing to render screen if gui is rendering because of UI issues, XXX need to make something like FrameBuffer to save prev. frame of screen or something like that
+		else if (this.currentScreen != null) this.currentScreen.render(batch, shape, foster, width, height);
 	}
 	
 	public Screen getScreen() {
