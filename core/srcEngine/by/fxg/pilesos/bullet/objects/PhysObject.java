@@ -33,15 +33,21 @@ public class PhysObject extends PhysBaseObject {
 		private Vector3 position = new Vector3(), scale = new Vector3(1, 1, 1);
 		private Quaternion rotation = new Quaternion();
 		
-		private long specFlags;
+		private long physFlags;
 		private int activationState, collisionFlags, filterMask, filterGroup;
 		
 		public Builder() {
-			this(UUID.randomUUID().toString());
+			this.setName(null);
 		}
 		
 		public Builder(String name) {
+			this.setName(name);
+		}
+		
+		/** Sets object name **/
+		public Builder setName(String name) {
 			this.name = name == null ? UUID.randomUUID().toString() : name;
+			return this;
 		}
 		
 		//Shape
@@ -69,10 +75,10 @@ public class PhysObject extends PhysBaseObject {
 		
 		//Flags
 		/** Returns {@link IPhysObject} flags **/
-		public long getSpecFlags() { return this.specFlags; }
+		public long getPhysFlags() { return this.physFlags; }
 		/** Sets {@link IPhysObject} flags **/
-		public Builder setSpecFlags(long flags) {
-			this.specFlags = flags;
+		public Builder setPhysFlags(long flags) {
+			this.physFlags = flags;
 			return this;
 		}
 		
@@ -121,6 +127,12 @@ public class PhysObject extends PhysBaseObject {
 			return this;
 		}
 		
+		/** Sets rotation of object(in euler angles) **/
+		public Builder setRotation(Vector3 rotation) {
+			this.rotation.setEulerAngles(rotation.y, rotation.x, rotation.z);
+			return this;
+		}
+		
 		/** Sets rotation of object **/
 		public Builder setRotation(Quaternion rotation) {
 			this.rotation.set(rotation);
@@ -133,7 +145,7 @@ public class PhysObject extends PhysBaseObject {
 			
 			PhysObject physObject = new PhysObject();
 			physObject.name = this.name;
-			physObject.setFlags(this.specFlags);
+			physObject.setPhysFlags(this.physFlags);
 			physObject.setFilterMask(this.filterMask);
 			physObject.setFilterGroup(this.filterGroup);
 			physObject.shape = this.shape;
@@ -151,6 +163,14 @@ public class PhysObject extends PhysBaseObject {
 			transform.scale(this.scale.x, this.scale.x, this.scale.x);
 			physObject.object.setWorldTransform(transform);
 			return physObject;
+		}
+		
+		public void reset() {
+			this.shape = null;
+			this.position = new Vector3();
+			this.rotation = new Quaternion();
+			this.scale = new Vector3();
+			this.physFlags = this.activationState = this.collisionFlags = this.filterMask = this.filterGroup = 0;
 		}
 	}
 }
