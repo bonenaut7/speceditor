@@ -14,8 +14,8 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 public class ScenesKryoExtension {
-	public static class ScenesGraphSerializer extends Serializer<ScenesGraph> {
-		public void write(Kryo kryo, Output output, ScenesGraph object) {
+	public static class ScenesGraphSerializer extends Serializer<ScenesNodeGraph> {
+		public void write(Kryo kryo, Output output, ScenesNodeGraph object) {
 			kryo.writeObject(output, object.bufferClearColor != null ? object.bufferClearColor : new Color(0, 0, 0, 1));
 			kryo.writeObject(output, object.cameraParameters != null ? object.cameraParameters : new Vector3(67.0F, 50.0F, 0.01F));
 			kryo.writeObject(output, object.environment != null ? object.environment : new Environment());
@@ -38,34 +38,34 @@ public class ScenesKryoExtension {
 			}
 		}
 
-		public ScenesGraph read(Kryo kryo, Input input, Class<ScenesGraph> type) {
-			ScenesGraph graph = new ScenesGraph();
+		public ScenesNodeGraph read(Kryo kryo, Input input, Class<ScenesNodeGraph> type) {
+			ScenesNodeGraph graph = new ScenesNodeGraph();
 			graph.bufferClearColor = kryo.readObject(input, Color.class);
 			graph.cameraParameters = kryo.readObject(input, Vector3.class);
 			graph.environment = kryo.readObject(input, Environment.class);
 			
 			int lights = input.readInt();
 			for (int i = 0; i != lights; i++) {
-				graph.lights.add((ScenesGraph.Light)kryo.readClassAndObject(input));
+				graph.lights.add((ScenesNodeGraph.NodeLight)kryo.readClassAndObject(input));
 			}
 			int hitboxes = input.readInt();
 			for (int i = 0; i != hitboxes; i++) {
-				graph.hitboxes.add((ScenesGraph.Hitbox)kryo.readClassAndObject(input));
+				graph.hitboxes.add((ScenesNodeGraph.NodeHitbox)kryo.readClassAndObject(input));
 			}
 			int decals = input.readInt();
 			for (int i = 0; i != decals; i++) {
-				graph.decals.add((ScenesGraph.Decal)kryo.readClassAndObject(input));
+				graph.decals.add((ScenesNodeGraph.NodeDecal)kryo.readClassAndObject(input));
 			}
 			int models = input.readInt();
 			for (int i = 0; i != models; i++) {
-				graph.models.add((ScenesGraph.Model)kryo.readClassAndObject(input));
+				graph.models.add((ScenesNodeGraph.NodeModel)kryo.readClassAndObject(input));
 			}
 			return graph;
 		}
 	}
 	
-	public static class ScenesDecalSerializer extends Serializer<ScenesGraph.Decal> {
-		public void write(Kryo kryo, Output output, ScenesGraph.Decal object) {
+	public static class ScenesDecalSerializer extends Serializer<ScenesNodeGraph.NodeDecal> {
+		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeDecal object) {
 			output.writeString(object.name);
 			output.writeString(object.assetIndex.toString());
 			output.writeBoolean(object.isBillboard);
@@ -74,8 +74,8 @@ public class ScenesKryoExtension {
 			kryo.writeObject(output, object.scale);
 		}
 
-		public ScenesGraph.Decal read(Kryo kryo, Input input, Class<ScenesGraph.Decal> type) {
-			ScenesGraph.Decal decal = new ScenesGraph.Decal();
+		public ScenesNodeGraph.NodeDecal read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeDecal> type) {
+			ScenesNodeGraph.NodeDecal decal = new ScenesNodeGraph.NodeDecal();
 			decal.name = input.readString();
 			decal.assetIndex = UUID.fromString(input.readString());
 			decal.isBillboard = input.readBoolean();
@@ -86,8 +86,8 @@ public class ScenesKryoExtension {
 		}
 	}
 	
-	public static class ScenesLightSerializer extends Serializer<ScenesGraph.Light> {
-		public void write(Kryo kryo, Output output, ScenesGraph.Light object) {
+	public static class ScenesLightSerializer extends Serializer<ScenesNodeGraph.NodeLight> {
+		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeLight object) {
 			output.writeString(object.name);
 			output.writeInt(object.type);
 			switch (object.type) {
@@ -107,8 +107,8 @@ public class ScenesKryoExtension {
 			}
 		}
 
-		public ScenesGraph.Light read(Kryo kryo, Input input, Class<ScenesGraph.Light> type) {
-			ScenesGraph.Light light = new ScenesGraph.Light();
+		public ScenesNodeGraph.NodeLight read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeLight> type) {
+			ScenesNodeGraph.NodeLight light = new ScenesNodeGraph.NodeLight();
 			light.name = input.readString();
 			light.type = input.readInt();
 			switch (light.type) {
@@ -130,8 +130,8 @@ public class ScenesKryoExtension {
 		}
 	}
 	
-	public static class ScenesModelSerializer extends Serializer<ScenesGraph.Model> {
-		public void write(Kryo kryo, Output output, ScenesGraph.Model object) {
+	public static class ScenesModelSerializer extends Serializer<ScenesNodeGraph.NodeModel> {
+		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeModel object) {
 			output.writeString(object.name);
 			output.writeString(object.assetIndex.toString());
 			output.writeInt(object.materials.size);
@@ -143,8 +143,8 @@ public class ScenesKryoExtension {
 			kryo.writeObject(output, object.scale);
 		}
 
-		public ScenesGraph.Model read(Kryo kryo, Input input, Class<ScenesGraph.Model> type) {
-			ScenesGraph.Model model = new ScenesGraph.Model();
+		public ScenesNodeGraph.NodeModel read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeModel> type) {
+			ScenesNodeGraph.NodeModel model = new ScenesNodeGraph.NodeModel();
 			model.name = input.readString();
 			model.assetIndex = UUID.fromString(input.readString());
 			model.materials = new Array<>();
@@ -159,8 +159,8 @@ public class ScenesKryoExtension {
 		}
 	}
 	
-	public static class ScenesHitboxSerializer extends Serializer<ScenesGraph.Hitbox> {
-		public void write(Kryo kryo, Output output, ScenesGraph.Hitbox object) {
+	public static class ScenesHitboxSerializer extends Serializer<ScenesNodeGraph.NodeHitbox> {
+		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeHitbox object) {
 			output.writeString(object.name);
 			output.writeLong(object.specFlags);
 			output.writeInt(object.bulletFlags);
@@ -172,8 +172,8 @@ public class ScenesKryoExtension {
 			kryo.writeObject(output, object.scale);
 		}
 
-		public ScenesGraph.Hitbox read(Kryo kryo, Input input, Class<ScenesGraph.Hitbox> type) {
-			ScenesGraph.Hitbox hitbox = new ScenesGraph.Hitbox();
+		public ScenesNodeGraph.NodeHitbox read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeHitbox> type) {
+			ScenesNodeGraph.NodeHitbox hitbox = new ScenesNodeGraph.NodeHitbox();
 			hitbox.name = input.readString();
 			hitbox.specFlags = input.readLong();
 			hitbox.bulletFlags = input.readInt();
@@ -187,8 +187,8 @@ public class ScenesKryoExtension {
 		}
 	}
 	
-	public static class ScenesHitboxMeshSerializer extends Serializer<ScenesGraph.HitboxMesh> {
-		public void write(Kryo kryo, Output output, ScenesGraph.HitboxMesh object) {
+	public static class ScenesHitboxMeshSerializer extends Serializer<ScenesNodeGraph.NodeHitboxMesh> {
+		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeHitboxMesh object) {
 			output.writeString(object.name);
 			output.writeLong(object.specFlags);
 			output.writeInt(object.bulletFlags);
@@ -205,8 +205,8 @@ public class ScenesKryoExtension {
 			}
 		}
 
-		public ScenesGraph.HitboxMesh read(Kryo kryo, Input input, Class<ScenesGraph.HitboxMesh> type) {
-			ScenesGraph.HitboxMesh hitboxMesh = new ScenesGraph.HitboxMesh();
+		public ScenesNodeGraph.NodeHitboxMesh read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeHitboxMesh> type) {
+			ScenesNodeGraph.NodeHitboxMesh hitboxMesh = new ScenesNodeGraph.NodeHitboxMesh();
 			hitboxMesh.name = input.readString();
 			hitboxMesh.specFlags = input.readLong();
 			hitboxMesh.bulletFlags = input.readInt();
@@ -225,8 +225,8 @@ public class ScenesKryoExtension {
 		}
 	}
 	
-	public static class ScenesHitboxStackSerializer extends Serializer<ScenesGraph.HitboxStack> {
-		public void write(Kryo kryo, Output output, ScenesGraph.HitboxStack object) {
+	public static class ScenesHitboxStackSerializer extends Serializer<ScenesNodeGraph.NodeHitboxStack> {
+		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeHitboxStack object) {
 			output.writeString(object.name);
 			output.writeLong(object.specFlags);
 			output.writeInt(object.bulletFlags);
@@ -243,8 +243,8 @@ public class ScenesKryoExtension {
 			}
 		}
 
-		public ScenesGraph.HitboxStack read(Kryo kryo, Input input, Class<ScenesGraph.HitboxStack> type) {
-			ScenesGraph.HitboxStack hitboxStack = new ScenesGraph.HitboxStack();
+		public ScenesNodeGraph.NodeHitboxStack read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeHitboxStack> type) {
+			ScenesNodeGraph.NodeHitboxStack hitboxStack = new ScenesNodeGraph.NodeHitboxStack();
 			hitboxStack.name = input.readString();
 			hitboxStack.specFlags = input.readLong();
 			hitboxStack.bulletFlags = input.readInt();
@@ -255,9 +255,9 @@ public class ScenesKryoExtension {
 			hitboxStack.rotation = kryo.readObject(input, Vector3.class);
 			hitboxStack.scale = kryo.readObject(input, Vector3.class);
 			hitboxStack.isArrayHitbox = input.readBoolean();
-			hitboxStack.children = new ScenesGraph.Hitbox[input.readInt()];
+			hitboxStack.children = new ScenesNodeGraph.NodeHitbox[input.readInt()];
 			for (int i = 0; i != hitboxStack.children.length; i++) {
-				hitboxStack.children[i] = (ScenesGraph.Hitbox)kryo.readClassAndObject(input);
+				hitboxStack.children[i] = (ScenesNodeGraph.NodeHitbox)kryo.readClassAndObject(input);
 			}
 			return hitboxStack;
 		}

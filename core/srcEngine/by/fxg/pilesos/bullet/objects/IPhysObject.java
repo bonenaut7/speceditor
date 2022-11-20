@@ -8,8 +8,8 @@ public interface IPhysObject {
 	btCollisionObject getObject();
 	btCollisionShape getShape();
 	
-	long getFlags();
-	IPhysObject setFlags(long flags);
+	long getPhysFlags();
+	IPhysObject setPhysFlags(long flags);
 	int getFilterMask();
 	IPhysObject setFilterMask(int filterMask);
 	int getFilterGroup();

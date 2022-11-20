@@ -51,21 +51,21 @@ import net.mgsx.gltf.scene3d.attributes.PBRFlagAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRFloatAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 
-public class ScenesDeserializer {
+public class ScenesNodeGraphDeserializer {
 	protected ScenesAssetIndexer assetIndexer;
 	protected FileHandle assetsFileHandle, graphFileHandle;
 	
-	public ScenesDeserializer(FileHandle assetsFileHandle, FileHandle graphFileHandle) {
+	public ScenesNodeGraphDeserializer(FileHandle assetsFileHandle, FileHandle graphFileHandle) {
 		this.assetsFileHandle = assetsFileHandle;
 		this.graphFileHandle = graphFileHandle;
 	}
 	
-	public ScenesDeserializer(ScenesAssetIndexer assetIndexer, FileHandle graphFileHandle) {
+	public ScenesNodeGraphDeserializer(ScenesAssetIndexer assetIndexer, FileHandle graphFileHandle) {
 		this.assetIndexer = assetIndexer;
 		this.graphFileHandle = graphFileHandle;
 	}
 	
-	public ScenesGraph loadGraph() {
+	public ScenesNodeGraph loadGraph() {
 		try {
 			if (this.assetIndexer == null) {
 				this.assetIndexer = new ScenesAssetIndexer(this.assetsFileHandle);
@@ -74,7 +74,7 @@ public class ScenesDeserializer {
 			
 			Kryo kryo = this.createKryo();
 			Input input = new Input(new ByteArrayInputStream(this.graphFileHandle.readBytes()));
-			ScenesGraph graph = (ScenesGraph)kryo.readClassAndObject(input);
+			ScenesNodeGraph graph = (ScenesNodeGraph)kryo.readClassAndObject(input);
 			input.close();
 			return graph;
 		} catch (ZipException zipException) {
@@ -112,13 +112,13 @@ public class ScenesDeserializer {
 		
 		kryo.register(TextureAttribute.class, new TextureAttributeDeserializer(this.assetIndexer));
 		kryo.register(PBRTextureAttribute.class, new PBRTextureAttributeDeserializer(this.assetIndexer));
-		kryo.register(ScenesGraph.class, new ScenesKryoExtension.ScenesGraphSerializer());
-		kryo.register(ScenesGraph.Decal.class, new ScenesKryoExtension.ScenesDecalSerializer());
-		kryo.register(ScenesGraph.Light.class, new ScenesKryoExtension.ScenesLightSerializer());
-		kryo.register(ScenesGraph.Model.class, new ScenesKryoExtension.ScenesModelSerializer());
-		kryo.register(ScenesGraph.Hitbox.class, new ScenesKryoExtension.ScenesHitboxSerializer());
-		kryo.register(ScenesGraph.HitboxMesh.class, new ScenesKryoExtension.ScenesHitboxMeshSerializer());
-		kryo.register(ScenesGraph.HitboxStack.class, new ScenesKryoExtension.ScenesHitboxStackSerializer());
+		kryo.register(ScenesNodeGraph.class, new ScenesKryoExtension.ScenesGraphSerializer());
+		kryo.register(ScenesNodeGraph.NodeDecal.class, new ScenesKryoExtension.ScenesDecalSerializer());
+		kryo.register(ScenesNodeGraph.NodeLight.class, new ScenesKryoExtension.ScenesLightSerializer());
+		kryo.register(ScenesNodeGraph.NodeModel.class, new ScenesKryoExtension.ScenesModelSerializer());
+		kryo.register(ScenesNodeGraph.NodeHitbox.class, new ScenesKryoExtension.ScenesHitboxSerializer());
+		kryo.register(ScenesNodeGraph.NodeHitboxMesh.class, new ScenesKryoExtension.ScenesHitboxMeshSerializer());
+		kryo.register(ScenesNodeGraph.NodeHitboxStack.class, new ScenesKryoExtension.ScenesHitboxStackSerializer());
 		return kryo;
 	}
 	

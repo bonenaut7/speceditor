@@ -10,7 +10,7 @@ public class PhysMotionState extends btMotionState {
 		this.transform = matrix;
 	}
 	
-	public Matrix4 getPrimaryTransform() {
+	public Matrix4 getTransform() {
 		return this.transform;
 	}
 	

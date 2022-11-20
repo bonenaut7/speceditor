@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 
 public abstract class PhysBaseObject implements IPhysObject {
 	protected String name;
-	protected long flags;
+	protected long physFlags;
 	protected int filterMask, filterGroup;
 	protected btCollisionShape shape;
 	
@@ -16,9 +16,9 @@ public abstract class PhysBaseObject implements IPhysObject {
 		return this.shape;
 	}
 
-	public long getFlags() { return this.flags; }
-	public PhysBaseObject setFlags(long flags) {
-		this.flags = flags;
+	public long getPhysFlags() { return this.physFlags; }
+	public PhysBaseObject setPhysFlags(long flags) {
+		this.physFlags = flags;
 		return this;
 	}
 	

@@ -9,17 +9,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-public class ScenesGraph {
+public class ScenesNodeGraph {
 	public Color bufferClearColor = new Color(0, 0, 0, 1);
 	public Vector3 cameraParameters = new Vector3(67.0F, 50.0F, 0.01F);
 	public Environment environment = new Environment();
 	
-	public Array<Light> lights = new Array<>();
-	public Array<Hitbox> hitboxes = new Array<>();
-	public Array<Decal> decals = new Array<>();
-	public Array<Model> models = new Array<>();
+	public Array<NodeLight> lights = new Array<>();
+	public Array<NodeHitbox> hitboxes = new Array<>();
+	public Array<NodeDecal> decals = new Array<>();
+	public Array<NodeModel> models = new Array<>();
 	
-	public static class Decal {
+	public static class NodeDecal {
 		/** Object name **/
 		public String name;
 		/** Index of asset that contains image for decal **/
@@ -32,7 +32,7 @@ public class ScenesGraph {
 		public Vector2 scale;
 	}	
 
-	public static class Light {
+	public static class NodeLight {
 		/** Object name **/
 		public String name;
 		/** Light type index. Default converter: Point = 0, Directional = 1, Spot = 2 **/
@@ -45,7 +45,7 @@ public class ScenesGraph {
 		public float intensity, cutoffAngle, exponent;
 	}
 	
-	public static class Model {
+	public static class NodeModel {
 		/** Object name **/
 		public String name;
 		/** Index of asset that contains model **/
@@ -56,7 +56,7 @@ public class ScenesGraph {
 		public Vector3 position, rotation, scale;
 	}
 	
-	public static class Hitbox {
+	public static class NodeHitbox {
 		/** Object name **/
 		public String name;
 		/** Flags of features implemented by Pilesos for bullet physics **/
@@ -75,7 +75,7 @@ public class ScenesGraph {
 		public Vector3 position, rotation, scale;
 	}
 	
-	public static class HitboxMesh extends Hitbox {
+	public static class NodeHitboxMesh extends NodeHitbox {
 		/** Index of asset that contains mesh data for generating hitbox **/
 		public UUID assetIndex;
 		/** Nodes for generating hitbox. <br>
@@ -83,11 +83,10 @@ public class ScenesGraph {
 		public boolean[] nodes;
 	}
 	
-	public static class HitboxStack extends Hitbox {
+	public static class NodeHitboxStack extends NodeHitbox {
 		/** if false - should combine all objects into one shape **/
 		public boolean isArrayHitbox;
 		/** Stack's children **/
-		public Hitbox[] children;
+		public NodeHitbox[] children;
 	}
-
 }

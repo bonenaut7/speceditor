@@ -12,7 +12,7 @@ import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.scenes.ScenesFormatFileFilter;
 import by.fxg.speceditor.scenes.ScenesProject;
-import by.fxg.speceditor.scenes.format.ScenesSerializer;
+import by.fxg.speceditor.scenes.format.ScenesNodeGraphSerializer;
 import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.screen.gui.GuiAbout;
 import by.fxg.speceditor.screen.gui.GuiConfirmation;
@@ -159,14 +159,14 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 						SpecEditor.get.renderer.currentGui = new GuiConfirmation("Are you sure you want to overwrite selected file?") {
 							public void onConfirm() {
 								DefaultRenderer renderer = (DefaultRenderer)project.renderer;
-								ScenesSerializer serializer = new ScenesSerializer().setBufferClearColor(renderer.bufferColor).setCameraParameters(renderer.cameraSettings);
+								ScenesNodeGraphSerializer serializer = new ScenesNodeGraphSerializer().setBufferClearColor(renderer.bufferColor).setCameraParameters(renderer.cameraSettings);
 								Exception exception = serializer.setEnvironment(renderer.viewportEnvironment).addElementStack(project.objectTree.getStack()).setFile(handle).pack();
 								if (exception != null) SpecEditor.get.renderer.currentGui = new GuiError("Error while exporting project", exception);
 							}
 						};
 					} else {
 						DefaultRenderer renderer = (DefaultRenderer)this.project.renderer;
-						ScenesSerializer serializer = new ScenesSerializer().setBufferClearColor(renderer.bufferColor).setCameraParameters(renderer.cameraSettings);
+						ScenesNodeGraphSerializer serializer = new ScenesNodeGraphSerializer().setBufferClearColor(renderer.bufferColor).setCameraParameters(renderer.cameraSettings);
 						Exception exception = serializer.setEnvironment(renderer.viewportEnvironment).addElementStack(this.project.objectTree.getStack()).setFile(handle).pack();
 						if (exception != null) SpecEditor.get.renderer.currentGui = new GuiError("Error while exporting project", exception);
 					}

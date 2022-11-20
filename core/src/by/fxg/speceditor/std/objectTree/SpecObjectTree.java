@@ -23,7 +23,6 @@ import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
-import by.fxg.speceditor.utils.Utils;
 import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -33,7 +32,7 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector();
 	
 	//parameters
-	private final int _sizeExpandIcon = 14, _sizeElementHeight = 20, _sizeSpriteIcon = 16;
+	private final int _sizeExpandIcon = 14, _sizeElementHeight = 20;
 	
 	//ElementStack of TreeElements inside of UI element
 	private ElementStack elementStack = new ElementStack();

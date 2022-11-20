@@ -31,33 +31,33 @@ import by.fxg.speceditor.std.objectTree.elements.ElementModel;
 import by.fxg.speceditor.std.objectTree.elements.TreeElementHitbox;
 import by.fxg.speceditor.utils.Utils;
 
-public class ScenesSerializer {
-	private ScenesGraph graph = new ScenesGraph();
+public class ScenesNodeGraphSerializer {
+	private ScenesNodeGraph graph = new ScenesNodeGraph();
 	private FileHandle outFile = null;
 	
-	public ScenesSerializer setBufferClearColor(Color color) { return this.setBufferClearColor(color.r, color.g, color.b, color.a); }
-	public ScenesSerializer setBufferClearColor(float r, float g, float b, float a) {
+	public ScenesNodeGraphSerializer setBufferClearColor(Color color) { return this.setBufferClearColor(color.r, color.g, color.b, color.a); }
+	public ScenesNodeGraphSerializer setBufferClearColor(float r, float g, float b, float a) {
 		this.graph.bufferClearColor.set(r, g, b, a);
 		return this;
 	}
 	
-	public ScenesSerializer setCameraParameters(Vector3 cameraParameters) { return this.setCameraParameters(cameraParameters.x, cameraParameters.y, cameraParameters.z); }
-	public ScenesSerializer setCameraParameters(float fieldOfView, float far, float near) {
+	public ScenesNodeGraphSerializer setCameraParameters(Vector3 cameraParameters) { return this.setCameraParameters(cameraParameters.x, cameraParameters.y, cameraParameters.z); }
+	public ScenesNodeGraphSerializer setCameraParameters(float fieldOfView, float far, float near) {
 		this.graph.cameraParameters.set(fieldOfView, far, near);
 		return this;
 	}
 	
-	public ScenesSerializer setEnvironment(Attributes environment) {
+	public ScenesNodeGraphSerializer setEnvironment(Attributes environment) {
 		this.graph.environment.set(environment);
 		return this;
 	}
 	
-	public ScenesSerializer addElementStack(ElementStack stack) {
+	public ScenesNodeGraphSerializer addElementStack(ElementStack stack) {
 		this.inspectElementStack(stack);
 		return this;
 	}
 	
-	public ScenesSerializer setFile(FileHandle fileHandle) {
+	public ScenesNodeGraphSerializer setFile(FileHandle fileHandle) {
 		this.outFile = fileHandle.extension().equalsIgnoreCase("ssf") ? fileHandle : fileHandle.parent().child(Utils.format(fileHandle.nameWithoutExtension(), ".ssf"));
 		return this;
 	}
@@ -100,10 +100,10 @@ public class ScenesSerializer {
 	
 	private void addToGraph(Object object) {
 		if (object == null) return;
-		if (object instanceof ScenesGraph.Decal) this.graph.decals.add((ScenesGraph.Decal)object);
-		else if (object instanceof ScenesGraph.Light) this.graph.lights.add((ScenesGraph.Light)object);
-		else if (object instanceof ScenesGraph.Model) this.graph.models.add((ScenesGraph.Model)object);
-		else if (object instanceof ScenesGraph.Hitbox) this.graph.hitboxes.add((ScenesGraph.Hitbox)object);
+		if (object instanceof ScenesNodeGraph.NodeDecal) this.graph.decals.add((ScenesNodeGraph.NodeDecal)object);
+		else if (object instanceof ScenesNodeGraph.NodeLight) this.graph.lights.add((ScenesNodeGraph.NodeLight)object);
+		else if (object instanceof ScenesNodeGraph.NodeModel) this.graph.models.add((ScenesNodeGraph.NodeModel)object);
+		else if (object instanceof ScenesNodeGraph.NodeHitbox) this.graph.hitboxes.add((ScenesNodeGraph.NodeHitbox)object);
 	}
 	
 	private void inspectElementStack(ElementStack stack) {
@@ -119,7 +119,7 @@ public class ScenesSerializer {
 		} else if (element instanceof ElementDecal) {
 			ElementDecal elementDecal = (ElementDecal)element;
 			if (elementDecal.decalAsset == null) return null;
-			ScenesGraph.Decal decal = new ScenesGraph.Decal();
+			ScenesNodeGraph.NodeDecal decal = new ScenesNodeGraph.NodeDecal();
 			decal.name = elementDecal.getName();
 			decal.assetIndex = elementDecal.decalAsset.getUUID();
 			decal.isBillboard = elementDecal.decal.isBillboard();
@@ -129,7 +129,7 @@ public class ScenesSerializer {
 			return decal;
 		} else if (element instanceof ElementLight) {
 			ElementLight elementLight = (ElementLight)element;
-			ScenesGraph.Light light = new ScenesGraph.Light();
+			ScenesNodeGraph.NodeLight light = new ScenesNodeGraph.NodeLight();
 			light.name = elementLight.getName();
 			light.color = elementLight.getLight(BaseLight.class).color;
 			switch (elementLight.type) {
@@ -151,7 +151,7 @@ public class ScenesSerializer {
 		} else if (element instanceof ElementModel) {
 			ElementModel elementModel = (ElementModel)element;
 			if (elementModel.modelAsset == null) return null;
-			ScenesGraph.Model model = new ScenesGraph.Model();
+			ScenesNodeGraph.NodeModel model = new ScenesNodeGraph.NodeModel();
 			model.name = elementModel.getName();
 			model.assetIndex = elementModel.modelAsset.getUUID();
 			model.materials = elementModel.modelInstance.materials;
@@ -168,7 +168,7 @@ public class ScenesSerializer {
 	private Object convertHitboxElements(TreeElement treeElement, long parentSpecFlags, int parentCollisionFlags, int parentActivationState, int parentFilterMask, int parentFilterGroup) {
 		if (treeElement instanceof ElementHitbox) {
 			ElementHitbox element = (ElementHitbox)treeElement;
-			ScenesGraph.Hitbox hitbox = new ScenesGraph.Hitbox();
+			ScenesNodeGraph.NodeHitbox hitbox = new ScenesNodeGraph.NodeHitbox();
 			hitbox.name = element.getName();
 			hitbox.specFlags = element.linkToParent[0] ? parentSpecFlags : element.specFlags;
 			hitbox.bulletFlags = element.linkToParent[1] ? parentCollisionFlags : element.btCollisionFlags;
@@ -183,7 +183,7 @@ public class ScenesSerializer {
 		} else if (treeElement instanceof ElementHitboxMesh) {
 			ElementHitboxMesh element = (ElementHitboxMesh)treeElement;
 			if (element.modelAsset == null) return null;
-			ScenesGraph.HitboxMesh hitboxMesh = new ScenesGraph.HitboxMesh();
+			ScenesNodeGraph.NodeHitboxMesh hitboxMesh = new ScenesNodeGraph.NodeHitboxMesh();
 			hitboxMesh.name = element.getName();
 			hitboxMesh.specFlags = element.linkToParent[0] ? parentSpecFlags : element.specFlags;
 			hitboxMesh.bulletFlags = element.linkToParent[1] ? parentCollisionFlags : element.btCollisionFlags;
@@ -200,7 +200,7 @@ public class ScenesSerializer {
 		} else if (treeElement instanceof ElementHitboxStack) {
 			ElementHitboxStack element = (ElementHitboxStack)treeElement;
 			Array<TreeElement> elements = element.getFolderStack().getElements();
-			ScenesGraph.HitboxStack hitboxStack = new ScenesGraph.HitboxStack();
+			ScenesNodeGraph.NodeHitboxStack hitboxStack = new ScenesNodeGraph.NodeHitboxStack();
 			hitboxStack.name = element.getName();
 			hitboxStack.specFlags = element.linkToParent[0] ? parentSpecFlags : element.specFlags;
 			hitboxStack.bulletFlags = element.linkToParent[1] ? parentCollisionFlags : element.btCollisionFlags;
@@ -213,13 +213,13 @@ public class ScenesSerializer {
 			hitboxStack.scale = element.getTransform(GizmoTransformType.SCALE);
 			hitboxStack.isArrayHitbox = element.isArrayStack;
 			
-			Array<ScenesGraph.Hitbox> hitboxes = new Array<>();
+			Array<ScenesNodeGraph.NodeHitbox> hitboxes = new Array<>();
 			Object object;
 			for (int i = 0; i != elements.size; i++) {
 				object = this.convertHitboxElements(elements.get(i), hitboxStack.specFlags, hitboxStack.bulletFlags, hitboxStack.bulletActivationState, hitboxStack.bulletFilterMask, hitboxStack.bulletFilterGroup);
-				if (object != null) hitboxes.add((ScenesGraph.Hitbox)object);
+				if (object != null) hitboxes.add((ScenesNodeGraph.NodeHitbox)object);
 			}
-			hitboxStack.children = hitboxes.toArray(ScenesGraph.Hitbox.class);
+			hitboxStack.children = hitboxes.toArray(ScenesNodeGraph.NodeHitbox.class);
 			return hitboxStack;
 		}
 		return null;
@@ -234,13 +234,13 @@ public class ScenesSerializer {
 		SpecEditorSerialization.INSTANCE.registerSpecEditorAttributesSerializers(kryo);
 		
 		//Extension
-		kryo.register(ScenesGraph.class, new ScenesKryoExtension.ScenesGraphSerializer());
-		kryo.register(ScenesGraph.Decal.class, new ScenesKryoExtension.ScenesDecalSerializer());
-		kryo.register(ScenesGraph.Light.class, new ScenesKryoExtension.ScenesLightSerializer());
-		kryo.register(ScenesGraph.Model.class, new ScenesKryoExtension.ScenesModelSerializer());
-		kryo.register(ScenesGraph.Hitbox.class, new ScenesKryoExtension.ScenesHitboxSerializer());
-		kryo.register(ScenesGraph.HitboxMesh.class, new ScenesKryoExtension.ScenesHitboxMeshSerializer());
-		kryo.register(ScenesGraph.HitboxStack.class, new ScenesKryoExtension.ScenesHitboxStackSerializer());
+		kryo.register(ScenesNodeGraph.class, new ScenesKryoExtension.ScenesGraphSerializer());
+		kryo.register(ScenesNodeGraph.NodeDecal.class, new ScenesKryoExtension.ScenesDecalSerializer());
+		kryo.register(ScenesNodeGraph.NodeLight.class, new ScenesKryoExtension.ScenesLightSerializer());
+		kryo.register(ScenesNodeGraph.NodeModel.class, new ScenesKryoExtension.ScenesModelSerializer());
+		kryo.register(ScenesNodeGraph.NodeHitbox.class, new ScenesKryoExtension.ScenesHitboxSerializer());
+		kryo.register(ScenesNodeGraph.NodeHitboxMesh.class, new ScenesKryoExtension.ScenesHitboxMeshSerializer());
+		kryo.register(ScenesNodeGraph.NodeHitboxStack.class, new ScenesKryoExtension.ScenesHitboxStackSerializer());
 		return kryo;
 	}
 }

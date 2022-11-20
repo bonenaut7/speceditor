@@ -52,7 +52,7 @@ public class BasePhysics {
 	public boolean addObject(IPhysObject object) {
 		if (object != null && object.getObject() != null) {
 			int filterGroup = object.getFilterGroup();
-			if (IPhysObject.hasFlag(object.getFlags(), IPhysObject.RAYCASTABLE)) IPhysObject.addFlag(filterGroup, IPhysObject.FILTER_RAYCASTABLE);
+			if (IPhysObject.hasFlag(object.getPhysFlags(), IPhysObject.RAYCASTABLE)) IPhysObject.addFlag(filterGroup, IPhysObject.FILTER_RAYCASTABLE);
 			return this.addObject(object.getObject(), object.getFilterMask(), filterGroup);
 		}
 		return false;
