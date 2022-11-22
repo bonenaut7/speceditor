@@ -17,8 +17,8 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.bullet.objects.IPhysObject;
 
 public class BasePhysics {
-	private int maxSubSteps = 5;
-	private float fixedTimeSteps = 1f/60f;
+	private int maxSubSteps = 15;
+	private float fixedTimeSteps = 1f/60f; //120=270max 60=500max
 	private Vector3 gravity = new Vector3(0f, -9.8f, 0f);
 	
 	public btCollisionConfiguration config;
@@ -28,11 +28,10 @@ public class BasePhysics {
 	public btDiscreteDynamicsWorld world;
 	public Array<btCollisionObject> objects = new Array<>();
 
-	public BasePhysics(int maxSubSteps, float fixedTimeSteps, Vector3 gravity) {
+	public BasePhysics(int maxSubSteps, float fixedTimeSteps) {
 		this();
 		this.maxSubSteps = maxSubSteps;
 		this.fixedTimeSteps = fixedTimeSteps;
-		this.world.setGravity(this.gravity = gravity);
 	}
 	
 	public BasePhysics() {
@@ -52,8 +51,8 @@ public class BasePhysics {
 	public boolean addObject(IPhysObject object) {
 		if (object != null && object.getObject() != null) {
 			int filterGroup = object.getFilterGroup();
-			if (IPhysObject.hasFlag(object.getPhysFlags(), IPhysObject.RAYCASTABLE)) IPhysObject.addFlag(filterGroup, IPhysObject.FILTER_RAYCASTABLE);
-			return this.addObject(object.getObject(), object.getFilterMask(), filterGroup);
+			if (IPhysObject.hasFlag(object.getPhysFlags(), IPhysObject.RAYCASTABLE)) filterGroup = (int)IPhysObject.addFlag(filterGroup, IPhysObject.FILTER_RAYCASTABLE);
+			return this.addObject(object.getObject(), filterGroup, object.getFilterMask());
 		}
 		return false;
 	}

@@ -9,7 +9,7 @@ public class PhysContactListener extends ContactListener {
 	private static PhysContactListener instance;
 	
 	/** Creates main instance of PhysContactListener **/
-	public static void create() {  if (instance != null) instance = new PhysContactListener(); }
+	public static void create() {  if (instance == null) instance = new PhysContactListener(); }
 	
 	/** Enables main instance of PhysContactListener if was disabled before **/
 	public static void reEnable() { if (instance != null) instance.enable(); }

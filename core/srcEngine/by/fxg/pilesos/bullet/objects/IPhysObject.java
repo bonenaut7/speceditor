@@ -54,6 +54,7 @@ public interface IPhysObject {
 		RESERVED30			= (long)Math.pow(2, 30), /*536870914*//*  */
 		RESERVED31			= (long)Math.pow(2, 31); /*107374824*//*  */
 	
+	/** Collision filter **/
 	public static final int
 		FILTER_ALL				= -1,					/*-1       *//* Default bullet filter, used as all filterGroups */
 		FILTER_btDEFAULT		= 1,					/*1        *//* Default bullet filter for default objects */
@@ -73,7 +74,16 @@ public interface IPhysObject {
 		FILTER_RESERVED13		= (int)Math.pow(2, 13), /*8192     *//*  */
 		FILTER_RESERVED14		= (int)Math.pow(2, 14), /*16384    *//*  */
 		FILTER_RESERVED15		= (int)Math.pow(2, 15); /*32768    *//*  */
-
+	
+	/** Bullet activation state **/
+	public static final int
+		ACTSTATE_NOT_SET				= 0,
+		ACTSTATE_ACTIVE					= 1,
+		ACTSTATE_DEACTIVATED			= 2,
+		ACTSTATE_WANTS_DEACTIVATION		= 3,
+		ACTSTATE_DISABLE_DEACTIVATION	= 4,
+		ACTSTATE_DISABLE_SIMULATION		= 5;
+	
 	public static long addFlag(long flags, long flag) {
 		if (!hasFlag(flags, flag)) {
 			flags |= flag;

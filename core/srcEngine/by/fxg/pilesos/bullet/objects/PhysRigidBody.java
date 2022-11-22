@@ -9,7 +9,10 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btConeShape;
+import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
+import com.badlogic.gdx.physics.bullet.collision.btStaticPlaneShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody.btRigidBodyConstructionInfo;
 
@@ -52,8 +55,9 @@ public class PhysRigidBody extends PhysBaseObject {
 		private Quaternion rotation = new Quaternion();
 		
 		private long physFlags;
-		private int activationState, collisionFlags, filterMask, filterGroup;
-		private float mass;
+		private int activationState = IPhysObject.ACTSTATE_ACTIVE, collisionFlags, filterMask = IPhysObject.FILTER_ALL, filterGroup = IPhysObject.FILTER_btDEFAULT;
+		private boolean calculateInertia = true;
+		private float mass = 1f;
 		
 		public Builder() {
 			this.setName(null);
@@ -75,20 +79,25 @@ public class PhysRigidBody extends PhysBaseObject {
 		}
 		
 		//Shape
-		/** Sets AABB shape if construction info is not set **/
-		public Builder setShapeAABB(Vector3 size) {
-			return this.setShape(new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)));
-		}
+		/** Sets box shape if construction info is not set **/ public Builder setShapeBox() { return this.setShapeBox(0.5F, 0.5F, 0.5F); }
+		/** Sets box shape if construction info is not set **/ public Builder setShapeBox(float x, float y, float z) { return this.setShapeBox(new Vector3(x, y, z)); }
+		/** Sets box shape if construction info is not set **/ public Builder setShapeBox(Vector3 vec) { return this.setShape(new btBoxShape(vec)); }
 		
-		/** Sets sphere shape if construction info is not set **/
-		public Builder setShapeSphere() {
-			return this.setShape(new btSphereShape(0.5f));
-		}
+		/** Sets capsule shape if construction info is not set **/ public Builder setShapeCapsule() { return this.setShapeCapsule(0.5F, 1.0F); }
+		/** Sets capsule shape if construction info is not set **/ public Builder setShapeCapsule(float radius, float height) { return this.setShape(new btCapsuleShape(radius, height)); }
 		
-		/** Sets capsule shape if construction info is not set **/
-		public Builder setShapeCapsule() {
-			return this.setShape(new btCapsuleShape(0.5f, 1f));
-		}
+		/** Sets cone shape if construction info is not set **/ public Builder setShapeCone() { return this.setShapeCone(0.5F, 0.5F); }
+		/** Sets cone shape if construction info is not set **/ public Builder setShapeCone(float radius, float height) { return this.setShape(new btConeShape(radius, height)); }
+		
+		/** Sets cylinder shape if construction info is not set **/ public Builder setShapeCylinder() { return this.setShapeCylinder(0.5F, 0.5F, 0.5F); }
+		/** Sets cylinder shape if construction info is not set **/ public Builder setShapeCylinder(float x, float y, float z) { return this.setShapeCylinder(new Vector3(x, y, z)); }
+		/** Sets cylinder shape if construction info is not set **/ public Builder setShapeCylinder(Vector3 halfSize) { return this.setShape(new btCylinderShape(halfSize)); }
+		
+		/** Sets plane shape if construction info is not set **/ public Builder setShapePlane() { return this.setShapePlane(Vector3.Y, 0.5F); }
+		/** Sets plane shape if construction info is not set **/ public Builder setShapePlane(Vector3 normal, float constant) { return this.setShape(new btStaticPlaneShape(normal, constant)); }
+		
+		/** Sets sphere shape if construction info is not set **/ public Builder setShapeSphere() { return this.setShapeSphere(0.5F); }
+		/** Sets sphere shape if construction info is not set **/ public Builder setShapeSphere(float radius) { return this.setShape(new btSphereShape(radius)); }
 		
 		/** Sets shape if construction info is not set **/
 		public Builder setShape(btCollisionShape shape) {
@@ -98,8 +107,9 @@ public class PhysRigidBody extends PhysBaseObject {
 		}
 		
 		/** Sets mass value for further inertia calculation **/
-		public Builder setMass(float mass) {
+		public Builder setMass(float mass, boolean calculateInertia) {
 			this.mass = mass;
+			this.calculateInertia = calculateInertia;
 			return this;
 		}
 		
@@ -146,14 +156,32 @@ public class PhysRigidBody extends PhysBaseObject {
 		
 		//Transforms
 		/** Sets position of object **/
+		public Builder setPosition(float x, float y, float z) {
+			this.position.set(x, y, z);
+			return this;
+		}
+		
+		/** Sets position of object **/
 		public Builder setPosition(Vector3 position) {
 			this.position.set(position);
 			return this;
 		}
 		
 		/** Sets scale of object **/
+		public Builder setScale(float x, float y, float z) {
+			this.scale.set(x, y, z);
+			return this;
+		}
+		
+		/** Sets scale of object **/
 		public Builder setScale(Vector3 scale) {
 			this.scale.set(scale);
+			return this;
+		}
+		
+		/** Sets rotation of object(in euler angles) **/
+		public Builder setRotation(float pitch, float yaw, float roll) {
+			this.rotation.setEulerAngles(pitch, yaw, roll);
 			return this;
 		}
 		
@@ -193,10 +221,12 @@ public class PhysRigidBody extends PhysBaseObject {
 			physObject.body.userData = physObject;
 			
 			//Inertia calculation
-			Vector3 inertia = new Vector3();
-			physObject.shape.calculateLocalInertia(this.mass, inertia);
-			physObject.body.setMassProps(this.mass, inertia);
-
+			if (this.calculateInertia) {
+				Vector3 inertia = new Vector3();
+				physObject.shape.calculateLocalInertia(this.mass, inertia);
+				physObject.body.setMassProps(this.mass, inertia);
+			}
+			
 			//Transforms
 			Matrix4 transform = physObject.body.getWorldTransform();
 			transform.setToTranslation(this.position);
