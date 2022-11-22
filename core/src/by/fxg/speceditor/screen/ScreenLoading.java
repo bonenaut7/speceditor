@@ -26,7 +26,7 @@ public class ScreenLoading extends BaseScreen {
 		if (!this.assetManager.isFinished()) {
 			if (this.assetManager.update(33)) { //16.6 - single frame time
 				this.assetManager.finishLoading();
-				Utils.logDebug("[ScreenLoading] Assets loaded within ", System.currentTimeMillis() - this.assetLoadingStart, "ms.");
+				Utils.logInfo("ScreenLoading", "Assets loaded within ", System.currentTimeMillis() - this.assetLoadingStart, "ms.");
 				SpecEditor.get.init();
 			}
 		} else {

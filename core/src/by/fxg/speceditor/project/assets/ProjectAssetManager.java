@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import by.fxg.speceditor.utils.Utils;
 
@@ -69,7 +70,7 @@ public class ProjectAssetManager implements Disposable {
 				}
 			} else unidentifiedAssets.add(projectAsset);
 		}
-		if (unidentifiedAssets.size > 0) Utils.logError(null, "ProjectAssetManager", "There is ", unidentifiedAssets.size, " assets that can't be indexed!");
+		Utils.logDebug("There is ", unidentifiedAssets.size, " assets that can't be indexed!");
 		
 		
 		dos.writeInt(0x00000000); //version
@@ -94,18 +95,22 @@ public class ProjectAssetManager implements Disposable {
 			try {
 				typeIndexes.add(Class.forName(classType));
 			} catch (ClassNotFoundException classNotFoundException) {
-				Utils.logDebug("[ProjectAssetManager][loadIndexes] Index class not found, skipping... (", classType, ")");
+				Utils.logDebug("Index class not found, skipping... (", classType, ")");
 				typeIndexes.add(null);
 			}
 		}
 		for (int i = 0; i != indexesSize; i++) {
-			int index = dis.readInt();
-			String path = dis.readUTF();
-			UUID uuid = UUID.fromString(dis.readUTF());
-			if (index > -1) {
-				ProjectAsset<?> projectAsset = new ProjectAsset(typeIndexes.get(index), uuid, path);
-				projectAsset.load();
-				this.addAsset(projectAsset);
+			try {
+				int index = dis.readInt();
+				String path = dis.readUTF();
+				UUID uuid = UUID.fromString(dis.readUTF());
+				if (index > -1) {
+					ProjectAsset<?> projectAsset = new ProjectAsset(typeIndexes.get(index), uuid, path);
+					projectAsset.load();
+					this.addAsset(projectAsset);
+				}
+			} catch (GdxRuntimeException gdxRuntimeException) {
+				Utils.logError(gdxRuntimeException, "Asset loading", gdxRuntimeException.getMessage());
 			}
 		}
 	}

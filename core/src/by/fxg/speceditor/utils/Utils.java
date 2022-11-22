@@ -129,5 +129,8 @@ public class Utils {
 		Gdx.app.error(format("ERROR][", tag), format(objects));
 		if (SpecEditor.DEBUG && throwable != null) throwable.printStackTrace();
 	}
-	public static void logDebug(Object... objects) { Gdx.app.debug("DEBUG", format(objects)); }	
+	public static void logDebug(Object... objects) {
+		StackTraceElement element = Thread.currentThread().getStackTrace()[2];
+		Gdx.app.debug(format("DEBUG][", element.getClassName(), ":", element.getLineNumber()), format(objects));
+	}	
 }

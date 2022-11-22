@@ -44,7 +44,7 @@ public class ProjectAsset<TYPE> {
 		if (ResourceManager.INSTANCE.loadAsset(this.descriptor)) {
 			this.asset = ResourceManager.get(this.descriptor);
 			this.assetHandlers.forEach(handler -> handler.onAssetLoad(this));
-			Utils.logDebug("asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) loaded.");
+			Utils.logDebug("Asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) loaded.");
 			return true;
 		}
 		return false;
@@ -53,7 +53,7 @@ public class ProjectAsset<TYPE> {
 	public boolean unload() {
 		this.assetHandlers.forEach(handler -> handler.onAssetUnload(this));
 		if (ResourceManager.INSTANCE.unloadAsset(this.descriptor)) {
-			Utils.logDebug("asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) unloaded.");
+			Utils.logDebug("Asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) unloaded.");
 			this.asset = null;
 			return true;
 		}
@@ -68,7 +68,7 @@ public class ProjectAsset<TYPE> {
 		if (!this.assetHandlers.contains(handler, true)) {
 			this.assetHandlers.add(handler);
 			handler.onAssetHandlerAdded(this);
-			Utils.logDebug("asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) added handler. Handlers: ", this.assetHandlers.size);
+			Utils.logDebug("Asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) added handler. Handlers: ", this.assetHandlers.size);
 			return true;
 		}
 		return false;
@@ -76,7 +76,7 @@ public class ProjectAsset<TYPE> {
 	
 	public boolean removeHandler(IProjectAssetHandler<TYPE> handler) {
 		if (this.assetHandlers.removeValue(handler, true)) {
-			Utils.logDebug("asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) removed handler. Handlers left: ", this.assetHandlers.size);
+			Utils.logDebug("Asset `", this.assetUUID.toString(), "`(`", this.pathToAsset, "`) removed handler. Handlers left: ", this.assetHandlers.size);
 			handler.onAssetHandlerRemoved(this);
 			return true;
 		}
