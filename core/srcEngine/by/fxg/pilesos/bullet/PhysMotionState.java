@@ -4,10 +4,10 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 
 public class PhysMotionState extends btMotionState {
-	private final Matrix4 transform;
+	protected Matrix4 transform;
 	
-	public PhysMotionState(Matrix4 matrix) {
-		this.transform = matrix;
+	public PhysMotionState(Matrix4 transform) {
+		this.transform = transform;
 	}
 	
 	public Matrix4 getTransform() {
