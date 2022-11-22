@@ -1,13 +1,16 @@
 package by.fxg.speceditor.std.objectTree.elements;
 
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags;
+
+import by.fxg.pilesos.bullet.objects.IPhysObject;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 
 public abstract class TreeElementHitbox extends TreeElement {
 	public long specFlags;
-	public int btCollisionFlags;
-	public int btActivationState;
-	public int btFilterMask;
-	public int btFilterGroup;
+	public int btCollisionFlags = CollisionFlags.CF_STATIC_OBJECT;
+	public int btActivationState = IPhysObject.ACTSTATE_DEACTIVATED;
+	public int btFilterMask = IPhysObject.FILTER_ALL;
+	public int btFilterGroup = IPhysObject.FILTER_btDEFAULT;
 	public boolean[] linkToParent = new boolean[5];
 	
 	public void setParent(TreeElement parent) {

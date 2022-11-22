@@ -14,6 +14,7 @@ import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
 import by.fxg.speceditor.std.objectTree.elements.ElementHitboxMesh;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -29,7 +30,7 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements ISTDInputFieldListener {
+public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements ISTDInputFieldListener, ISTDInterfaceActionListener {
 	private ElementHitboxMesh element = null;
 	private STDInputField elementName;
 	private UButton buttonSelectModel;
@@ -42,11 +43,8 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 	public EditorPaneHitboxMesh() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
 		this.buttonSelectModel = new UButton("Open file");
-		this.nodesSelector = new UDropdownSelectMultiple(15, "None") {
-			public void invertSelected(int variant) {
-				element.nodes[variant] = this.variantValues[variant] = !this.variantValues[variant];
-			}
-		};
+		this.nodesSelector = new UDropdownSelectMultiple(15, "None");
+		this.nodesSelector.setActionListener(this, "selector.nodes");
 		
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
 		this.specFlags = (SpecFlagsBlock)new SpecFlagsBlock(this).setDropped(true);
@@ -76,6 +74,7 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 					for (int i = 0 ; i != this.element.model.nodes.size; i++) nodes[i] = this.element.model.nodes.get(i).id;
 					this.nodesSelector.setVariants(nodes, this.element.nodes);
 				} else this.nodesSelector.setVariants(new String[]{"None available"}, new boolean[]{false});
+				this.updateNodeSelector();
 			}
 		}
 		
@@ -96,16 +95,17 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 		}
 	}
 	
+	public void onDropdownSelectMultipleAction(UDropdownSelectMultiple element, String id, int variant) {
+		switch (id) {
+			case "selector.nodes": this.element.nodes[variant] = element.getVariantsSelected()[variant]; break;
+		}
+	}
+	
 	public void updatePane(ITreeElementSelector<?> selector) {
 		super.updatePane(selector);
 		this.element = (ElementHitboxMesh)selector.get(0);
 		this.elementName.setText(this.element.getName());
-		if (this.element.model != null) {
-			String[] nodes = new String[this.element.model.nodes.size];
-			for (int i = 0 ; i != this.element.model.nodes.size; i++) nodes[i] = this.element.model.nodes.get(i).id;
-			this.nodesSelector.setVariants(nodes, this.element.nodes).updateDisplayString(SpecEditor.fosterNoDraw);
-		} else this.nodesSelector.setVariants(new String[]{"None available"}, new boolean[]{false}).updateDisplayString(SpecEditor.fosterNoDraw);
-		
+		this.updateNodeSelector();
 		this.transform.updateBlock(this.element);
 		this.specFlags.updateBlock(this.element);
 		this.bulletFlags.updateBlock(this.element);
@@ -113,6 +113,14 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 
 	public boolean acceptElement(ITreeElementSelector<?> selector) {
 		return selector.size() == 1 && selector.get(0) instanceof ElementHitboxMesh;
+	}
+	
+	private void updateNodeSelector() {
+		if (this.element != null && this.element.model != null) {
+			String[] nodes = new String[this.element.model.nodes.size];
+			for (int i = 0 ; i != this.element.model.nodes.size; i++) nodes[i] = this.element.model.nodes.get(i).id;
+			this.nodesSelector.setVariants(nodes, this.element.nodes).updateDisplayString(SpecEditor.fosterNoDraw);
+		} else this.nodesSelector.setVariants(new String[]{"None available"}, new boolean[]{false}).updateDisplayString(SpecEditor.fosterNoDraw);
 	}
 	
 	private class TransformBlock extends URenderBlock implements ISTDInputFieldListener {
