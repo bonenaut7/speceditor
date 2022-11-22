@@ -22,6 +22,9 @@ public class UCheckbox extends UIElement {
 	public void update() {
 		if (this.enabled && SpecEditor.get.getInput().isMouseDown(0, false) && this.isMouseOver()) {
 			this.setValue(!this.getValue());
+			if (this.actionListener != null) {
+				this.actionListener.onCheckboxAction(this, this.actionListenerID);
+			}
 		}
 	}
 	

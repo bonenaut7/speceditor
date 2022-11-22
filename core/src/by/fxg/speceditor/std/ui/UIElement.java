@@ -32,6 +32,8 @@ public abstract class UIElement {
 	
 	public static float prevColor = 0;
 	protected int x, y, width, height;
+	protected ISTDInterfaceActionListener actionListener = null;
+	protected String actionListenerID = null;
 	
 	public boolean isMouseOver() {
 		return this.isMouseOver(this.x, this.y, this.width, this.height);
@@ -39,6 +41,12 @@ public abstract class UIElement {
 	
 	public boolean isMouseOver(float x, float y, float width, float height) {
 		return isMouseInArea(x, y, width, height) && SpecInterface.isFocused(this);
+	}
+	
+	public UIElement setActionListener(ISTDInterfaceActionListener listener, String id) {
+		this.actionListener = listener;
+		this.actionListenerID = id;
+		return this;
 	}
 	
 	public GInputProcessor getInput() {

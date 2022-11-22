@@ -30,6 +30,10 @@ public class UHoldButton extends UIElement {
 	public void update() {
 		if (this.isKeyTouched()) this.ticks++;
 		else this.ticks = 0;
+		
+		if (this.actionListener != null && this.isPressed()) {
+			this.actionListener.onHoldButtonAction(this, this.actionListenerID, this.ticks);
+		}
 	}
 	
 	public void render(ShapeDrawer shape, Foster foster) {

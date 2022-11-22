@@ -32,6 +32,9 @@ public class UDropdownClick extends UIElement implements IFocusable {
 					int idx = (this.y - GDXUtil.getMouseY() - 2) / this.dropHeight;
 					if (idx < this.variants.length && idx > -1) {
 						this.setVariantSelected(idx);
+						if (this.actionListener != null) {
+							this.actionListener.onDropdownClickAction(this, this.actionListenerID, idx);
+						}
 						this.setFocused(false);
 					}
 				} else this.setFocused(false);

@@ -32,6 +32,9 @@ public class UDropdownSelectMultiple extends UIElement implements IFocusable {
 					if (idx < this.variants.length && idx > -1) {
 						this.invertSelected(idx);
 						this.updateDisplayString(foster);
+						if (this.actionListener != null) {
+							this.actionListener.onDropdownSelectMultipleAction(this, this.actionListenerID, idx);
+						}
 					}
 				} else this.setFocused(false);
 			}
