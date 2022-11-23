@@ -34,6 +34,7 @@ import by.fxg.speceditor.scenes.format.ScenesNodeGraph.NodeLight;
 import by.fxg.speceditor.scenes.format.ScenesNodeGraph.NodeModel;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
+@SuppressWarnings("rawtypes")
 public class ScenesRenderGraph {
 	public ScenesAssetIndexer assetIndexer;
 	public Environment environment;
@@ -41,7 +42,7 @@ public class ScenesRenderGraph {
 	public float cameraFieldOfView, cameraFar, cameraNear;
 	
 	public Map<Object, String> objectNames;
-	public Array<BaseLight<?>> lights;
+	public Array<BaseLight> lights;
 	public Array<SmartDecal> decals;
 	public Array<ModelInstance> modelInstances;
 	public Array<IPhysObject> physObjects;
@@ -116,7 +117,6 @@ public class ScenesRenderGraph {
 		builder.setCollisionFilterGroup(node.bulletFilterGroup);
 		builder.setPosition(node.position);
 		builder.setRotation(node.rotation);
-		builder.setScale(node.scale);
 		this.physObjects.add(builder.build());
 		this.objectNames.put(this.physObjects.get(this.physObjects.size - 1), node.name);
 	}
@@ -135,22 +135,30 @@ public class ScenesRenderGraph {
 						localTransform.rotate(0F, 1F, 0F, node$.rotation.y);
 						localTransform.rotate(0F, 0F, 1F, node$.rotation.z);
 						shape.setLocalScaling(node$.scale);
-						compoundShape.addChildShape(localTransform, compoundShape);
+						compoundShape.addChildShape(localTransform, shape);
 					}
 				}
 				return compoundShape;
 			} else return null;
 		} else if (node instanceof NodeHitboxMesh) {
-			NodeHitboxMesh nodeHitboxStack = (NodeHitboxMesh)node;
+			NodeHitboxMesh nodeHitboxMesh = (NodeHitboxMesh)node;
 			Array<Node> modelNodes = null;
-			Class<?> type = this.assetIndexer.getAssetManager().getAssetType(assetIndexer.getPath(nodeHitboxStack.assetIndex));
-			if (type == Model.class) modelNodes = this.assetIndexer.getAsset(Model.class, nodeHitboxStack.assetIndex).nodes;
-			else if (type == SceneAsset.class) modelNodes = this.assetIndexer.getAsset(SceneAsset.class, nodeHitboxStack.assetIndex).scene.model.nodes;
+			Array<Node> genNodes = new Array<>();
+			Class<?> type = this.assetIndexer.getAssetManager().getAssetType(this.assetIndexer.getPath(nodeHitboxMesh.assetIndex));
+			if (type == Model.class) modelNodes = this.assetIndexer.getAsset(Model.class, nodeHitboxMesh.assetIndex).nodes;
+			else if (type == SceneAsset.class) modelNodes = this.assetIndexer.getAsset(SceneAsset.class, nodeHitboxMesh.assetIndex).scene.model.nodes;
 			if (modelNodes != null && modelNodes.size > 0) {
-				return Bullet.obtainStaticNodeShape(modelNodes);
+				for (int i = 0; i < modelNodes.size && i < nodeHitboxMesh.nodes.length; i++) {
+					if (nodeHitboxMesh.nodes[i]) genNodes.add(modelNodes.get(i));
+				}
+				btCollisionShape shape = Bullet.obtainStaticNodeShape(genNodes);
+				shape.setLocalScaling(node.scale);
+				return shape;
 			} else return null;
 		} else {
-			return new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
+			btCollisionShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
+			shape.setLocalScaling(node.scale);
+			return shape;
 		}
 	}
 }

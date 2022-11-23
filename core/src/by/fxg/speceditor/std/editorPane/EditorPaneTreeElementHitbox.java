@@ -174,7 +174,7 @@ public abstract class EditorPaneTreeElementHitbox extends EditorPane {
 		
 		public void onCheckboxAction(UCheckbox element, String id) {
 			switch (id) {
-				case "parentLink.collisionFilter": {
+				case "parentLink.collisionFlags": {
 					this.parent._element.linkToParent[1] = element.getValue();
 					if (!element.getValue()) this.updateBlock(1);
 				} break;
