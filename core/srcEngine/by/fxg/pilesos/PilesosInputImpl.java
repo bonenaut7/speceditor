@@ -4,13 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 
 public class PilesosInputImpl implements InputProcessor {
-	private static final String 
-		SYMBOL_RU = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя",
-		SYMBOL_RUI = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ",
-		SYMBOL_EN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-		SYMBOL_MK = "1234567890.,;:?!()[]{}<>|\\/ \"'@$€-%+=#_&~*§©";
-	public static String ALLOWED_CHARACTERS = SYMBOL_RU + SYMBOL_RUI + SYMBOL_EN + SYMBOL_MK;
-	
 	public boolean isCursorCatched = true;
 	public long[] mouseScrollTime = new long[2];
 	public long[] mouseClickTime = new long[5];
@@ -53,12 +46,9 @@ public class PilesosInputImpl implements InputProcessor {
 	private String lastChar = "";
 	private long lastCharTyped;
 	public boolean keyTyped(char character) {
-		if (ALLOWED_CHARACTERS.contains(String.valueOf(character))) {
-			this.lastChar = String.valueOf(character);
-			this.lastCharTyped = Pilesos.getApp().getTick();
-			return true;
-		}
-		return false;
+		this.lastChar = String.valueOf(character);
+		this.lastCharTyped = Pilesos.getApp().getTick();
+		return true;
 	}
 
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
