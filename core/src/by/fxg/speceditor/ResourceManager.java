@@ -98,7 +98,6 @@ public class ResourceManager {
 		parameter.hinting = Hinting.AutoSlight;
 		parameter.flip = false;
 		parameter.size = size;
-		parameter.characters = PilesosInputImpl.ALLOWED_CHARACTERS;
 		parameter.incremental = true;
 		return generator.generateFont(parameter);
 	}
