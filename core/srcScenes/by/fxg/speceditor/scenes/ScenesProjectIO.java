@@ -16,6 +16,7 @@ import by.fxg.speceditor.serialization.SpecEditorSerialization;
 import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
+import by.fxg.speceditor.utils.Utils;
 
 public class ScenesProjectIO {
 	private ScenesProject project;
@@ -40,19 +41,23 @@ public class ScenesProjectIO {
 			}
 			int version = dis.readInt();
 			
+			Utils.logDebug("Version: ", version, ", Loading asset indexes");
 			/** ProjectAssetManager section **/ {
 				projectAssetManager.loadIndexes(dis);
 			}
 			
+			Utils.logDebug("Asset indexes loaded, Loading viewport data");
 			InputChunked input = new InputChunked(dis);
 			/** Viewport section **/ {
 				viewportRenderer.readData(kryo, input);
 				input.nextChunks();
 			}
 			
+			Utils.logDebug("Viewport data loaded, Loading stack");
 			/** ObjectTree section **/ {
 				objectTree.setStack(kryo.readObject(input, ElementStack.class));
 			}
+			Utils.logDebug("Stack loaded, finishing");
 			
 			input.close();
 			dis.close();
