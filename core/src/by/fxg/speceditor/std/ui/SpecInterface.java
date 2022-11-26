@@ -1,10 +1,9 @@
 package by.fxg.speceditor.std.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
-import by.fxg.speceditor.DefaultResources;
+import by.fxg.pilesos.i18n.I18n;
 
 public class SpecInterface {
 	public static SpecInterface INSTANCE;
@@ -13,7 +12,7 @@ public class SpecInterface {
 	
 	public void onUpdate() {
 		if (this._cursor != this._prevCursor) {
-			Gdx.graphics.setCursor(DefaultResources.INSTANCE.getCursor(this._cursor));
+			//Gdx.graphics.setCursor(DefaultResources.INSTANCE.getCursor(this._cursor));
 			this._prevCursor = this._cursor;
 		}
 		this._cursor = AppCursor.ARROW;
@@ -21,6 +20,7 @@ public class SpecInterface {
 	
 	public static void init() {
 		INSTANCE = new SpecInterface();
+		I18n.init();
 	}
 	
 	public static boolean isFocused(Object focusable) {
