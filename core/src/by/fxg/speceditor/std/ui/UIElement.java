@@ -43,9 +43,9 @@ public abstract class UIElement {
 		return isMouseInArea(x, y, width, height) && SpecInterface.isFocused(this);
 	}
 	
-	public UIElement setActionListener(ISTDInterfaceActionListener listener, String id) {
+	public UIElement setActionListener(ISTDInterfaceActionListener listener, String actionListenerID) {
 		this.actionListener = listener;
-		this.actionListenerID = id;
+		this.actionListenerID = actionListenerID;
 		return this;
 	}
 	
