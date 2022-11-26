@@ -46,6 +46,7 @@ public class PilesosInputImpl implements InputProcessor {
 	private String lastChar = "";
 	private long lastCharTyped;
 	public boolean keyTyped(char character) {
+		if ((int)character < 32 || (int)character == 127) return false; //ASCII Standard, reserved control characters
 		this.lastChar = String.valueOf(character);
 		this.lastCharTyped = Pilesos.getApp().getTick();
 		return true;
