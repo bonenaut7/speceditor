@@ -2,7 +2,6 @@ package by.fxg.speceditor.scenes.screen;
 
 import java.awt.Desktop;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
@@ -22,7 +21,7 @@ import by.fxg.speceditor.screen.gui.GuiProjectExitSave;
 import by.fxg.speceditor.screen.project.SubscreenExplorer;
 import by.fxg.speceditor.screen.project.SubscreenProjectManager;
 import by.fxg.speceditor.screen.project.SubscreenViewport;
-import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
+import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -33,31 +32,42 @@ import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaListener {
+public class ScreenSceneProject extends BaseScreen implements ISTDInterfaceActionListener {
 	public ScenesProject project;
 	public SubscreenProjectManager subObjectTree;
 	public SubscreenExplorer unnamedUselessModule; //TODO do something with it lol, or at least give it a name
 	public SubscreenSceneEditor subEditorPane;
 	public SubscreenViewport subViewport;
 	
-	private UButton dropdownButtonApp;
-	private STDDropdownArea dropdownArea;
-	private UDragArea viewObjectTreeExplorer, viewEditorPaneExplorer, viewAssetSelector;
 	private int timer;
 	private long nextBackupTime;
 	
+	//ui
+	private UButton dropdownButtonApp;
+	private STDDropdownArea dropdownArea;
+	private UDragArea viewObjectTreeExplorer, viewEditorPanesEditor, viewAssetSelector;
+	
+	//transforms
+	private int sObjectTreeX, sObjectTreeY, sObjectTreeW, sObjectTreeH, sUUMX, sUUMY, sUUMW, sUUMH;
+	private int sEditorX, sEditorY, sEditorW, sEditorH, sViewportX, sViewportY, sViewportW, sViewportH;
+	
 	public ScreenSceneProject(ScenesProject project) {
 		this.project = project;
-		int width = Gdx.graphics.getWidth(), height = Gdx.graphics.getHeight();
+		int width = Utils.getWidth(), height = Utils.getHeight();
+		this.updateDimensions(width, height);
+		this.nextBackupTime = System.currentTimeMillis() + project.getBackupInterval() * 1000L;
+		
+		//Setup scene interface
 		this.dropdownButtonApp = new UButton("Editor", 1, height - 16, 90, 15);
-		this.dropdownArea = new STDDropdownArea(15).setListener(this);
+		this.dropdownArea = new STDDropdownArea(15);
+		this.dropdownArea.setActionListener(this, "dropdownArea");
 		Array<STDDropdownAreaElement> array = this.dropdownArea.getElementsArrayAsEmpty();
 		array.add(STDDropdownAreaElement.button("project.save", "Save project"));
-		array.add(STDDropdownAreaElement.subwindow("Export as...")
+		array.add(STDDropdownAreaElement.subwindow(this.dropdownArea, "Export as...")
 				.add(STDDropdownAreaElement.button("project.export.specformat", "Specformat"))
 				.add(STDDropdownAreaElement.button("project.export.json", "json")));
 		array.add(STDDropdownAreaElement.line());
-		array.add(STDDropdownAreaElement.subwindow("Open...")
+		array.add(STDDropdownAreaElement.subwindow(this.dropdownArea, "Open...")
 				.add(STDDropdownAreaElement.button("editor.open.projectFolder", "Project folder"))
 				.add(STDDropdownAreaElement.button("editor.open.specEditorFolder", "SpecEditor folder")));
 		array.add(STDDropdownAreaElement.line());
@@ -66,36 +76,19 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 		array.add(STDDropdownAreaElement.button("editor.exit", "Exit"));
 		this.dropdownArea.setElements(array, SpecEditor.fosterNoDraw);
 		
-		this.updateDimensions(width, height);
 		this.subObjectTree = new SubscreenProjectManager(project.objectTree, this.sObjectTreeX, this.sObjectTreeY, this.sObjectTreeW, this.sObjectTreeH);
 		this.unnamedUselessModule = new SubscreenExplorer(this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
 		this.subEditorPane = new SubscreenSceneEditor(this, this.sEditorX, this.sEditorY, this.sEditorW, this.sEditorH);
 		this.subViewport = new SubscreenViewport(project.renderer, project.objectTree, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 		
-		this.viewObjectTreeExplorer = new UDragArea() {
-			public void onDrag(int start, int value, boolean disfocus) {
-				ScreenSceneProject.this.project.setPreference("screen.view.objectTreeExplorer.width", (float)value / (float)Utils.getWidth());
-				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
-			}
-		}.setTransforms(this.sObjectTreeX + this.sObjectTreeW - 1, 2, 3, height - 25).setParameters(50, this.sEditorX - 50, false);
-		this.viewEditorPaneExplorer = new UDragArea() {
-			public void onDrag(int start, int value, boolean disfocus) {
-				ScreenSceneProject.this.project.setPreference("screen.view.editorPanesEditor.width", (float)value / (float)Utils.getWidth());
-				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
-			}
-		}.setTransforms(this.sEditorX - 3, 2, 3, height - 25).setParameters(this.sObjectTreeW + 100, width - 50, false);
-		this.viewAssetSelector = new UDragArea() {
-			public void onDrag(int start, int value, boolean disfocus) {
-				ScreenSceneProject.this.project.setPreference("screen.view.assetSelector.height", (float)value / (float)Utils.getHeight());
-				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
-			}
-		}.setTransforms(this.sUUMX, this.sUUMY + this.sUUMH, this.sUUMW, 2).setParameters(20, height - 75, true);
-
-		this.nextBackupTime = System.currentTimeMillis() + project.getBackupInterval() * 1000L;
+		this.viewObjectTreeExplorer = new UDragArea(this, "objectTreeExplorer").setParameters(50, this.sEditorX - 50, false);
+		this.viewEditorPanesEditor = new UDragArea(this, "editorPanesEditor").setParameters(this.sObjectTreeW + 100, width - 50, false);
+		this.viewAssetSelector = new UDragArea(this, "assetSelector").setParameters(20, height - 75, true);
+		this.resize(width, height);
 	}
 	
+	@Override
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
-		this.resize(width, height); //FIXME TODO XXX REMOVE
 		if (this.dropdownButtonApp.isPressed()) {
 			this.dropdownArea.open(1, height - 18);
 		}
@@ -108,7 +101,7 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 		
 		this.viewObjectTreeExplorer.update();
 		this.viewAssetSelector.update();
-		this.viewEditorPaneExplorer.update();
+		this.viewEditorPanesEditor.update();
 		if (++this.timer > 59) {
 			this.timer = 0;
 			if (this.project.isBackupsEnabled() && this.nextBackupTime < System.currentTimeMillis()) {
@@ -118,8 +111,7 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 		}
 	}
 	
-	private int sObjectTreeX, sObjectTreeY, sObjectTreeW, sObjectTreeH, sUUMX, sUUMY, sUUMW, sUUMH;
-	private int sEditorX, sEditorY, sEditorW, sEditorH, sViewportX, sViewportY, sViewportW, sViewportH;
+	@Override
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		batch.begin();
 		shape.update(true);
@@ -130,7 +122,7 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 		this.dropdownButtonApp.render(shape, foster);
 		this.viewObjectTreeExplorer.render(shape);
 		this.viewAssetSelector.render(shape);
-		this.viewEditorPaneExplorer.render(shape);
+		this.viewEditorPanesEditor.render(shape);
 		batch.end();
 		
 		this.subViewport.render(batch, shape, foster, this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
@@ -143,8 +135,9 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 		batch.end();
 	}
 	
-	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {
-		switch (id) {
+	@Override
+	public void onDropdownAreaClick(STDDropdownArea area, String id, STDDropdownAreaElement element, String elementID) {
+		switch (elementID) {
 			case "project.save": {
 				this.project.saveConfiguration();
 				if (!this.project.saveProject()) {
@@ -180,6 +173,25 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 		}
 	}
 	
+	@Override
+	public void onDragAreaDrag(UDragArea dragArea, String id, int start, int value, boolean stopFocus) {
+		switch (id) {
+			case "objectTreeExplorer": {
+				this.project.setPreference("screen.view.objectTreeExplorer.width", (float)value / (float)Utils.getWidth());
+				this.resize(Utils.getWidth(), Utils.getHeight());
+			} break;
+			case "editorPanesEditor": {
+				this.project.setPreference("screen.view.editorPanesEditor.width", (float)value / (float)Utils.getWidth());
+				this.resize(Utils.getWidth(), Utils.getHeight());
+			} break;
+			case "assetSelector": {
+				ScreenSceneProject.this.project.setPreference("screen.view.assetSelector.height", (float)value / (float)Utils.getHeight());
+				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
+			} break;
+		}
+	}
+	
+	@Override
 	public void resize(int width, int height) {
 		int topLine = 17, dragWidth = 4;
 		this.dropdownButtonApp.setTransforms(1, height - topLine + 1, 90, 15);
@@ -190,7 +202,7 @@ public class ScreenSceneProject extends BaseScreen implements ISTDDropdownAreaLi
 		this.subViewport.resize(this.sViewportX, this.sViewportY, this.sViewportW, this.sViewportH);
 		this.viewObjectTreeExplorer.setTransforms(this.sObjectTreeX + this.sObjectTreeW, 0, dragWidth, height - topLine).setParameters(50, this.sEditorX - 50, false);
 		this.viewAssetSelector.setTransforms(this.sUUMX, this.sUUMY + this.sUUMH, this.sUUMW, dragWidth).setParameters(20, height - 75, true);
-		this.viewEditorPaneExplorer.setTransforms(this.sEditorX - dragWidth, 0, dragWidth, height - topLine).setParameters(this.sObjectTreeW + 100, width - 50, false);
+		this.viewEditorPanesEditor.setTransforms(this.sEditorX - dragWidth, 0, dragWidth, height - topLine).setParameters(this.sObjectTreeW + 100, width - 50, false);
 	}
 
 	private void updateDimensions(int width, int height) {
