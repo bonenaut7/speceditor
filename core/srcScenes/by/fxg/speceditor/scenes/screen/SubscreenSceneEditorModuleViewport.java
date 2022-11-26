@@ -21,6 +21,7 @@ public class SubscreenSceneEditorModuleViewport extends BaseSubscreen {
 		this.viewportRenderer = viewportRenderer;
 	}
 	
+	@Override
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		if (GDXUtil.isMouseInArea(x, y, width, height) && SpecInterface.isFocused(this)) {
 			if (SpecEditor.get.getInput().isMouseScrolled(true) && this.scroll.x < this.scroll.y) {
@@ -32,6 +33,7 @@ public class SubscreenSceneEditorModuleViewport extends BaseSubscreen {
 		if (this.scroll.x > this.scroll.y) this.scroll.x = this.scroll.y;
 	}
 
+	@Override
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		if (this.viewportRenderer != null && this.viewportRenderer.getEditorPane() != null) {
 			batch.flush();
@@ -49,5 +51,6 @@ public class SubscreenSceneEditorModuleViewport extends BaseSubscreen {
 		} else foster.setString("Editor pane not found for viewport").draw(x + width / 2, y + height / 2 - foster.getHalfHeight());
 	}
 	
+	@Override
 	public void resize(int subX, int subY, int subWidth, int subHeight) {}
 }
