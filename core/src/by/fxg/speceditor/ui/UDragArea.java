@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 
 import by.fxg.speceditor.GInputProcessor;
 import by.fxg.speceditor.GInputProcessor.IMouseController;
+import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
@@ -13,10 +14,14 @@ import by.fxg.speceditor.std.ui.UIElement;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public abstract class UDragArea extends UIElement implements IFocusable, IMouseController {
+public class UDragArea extends UIElement implements IFocusable, IMouseController {
 	protected int minValue, maxValue;
 	protected boolean moveByHeight = false;
 	protected int dragStart, drag;
+	
+	public UDragArea(ISTDInterfaceActionListener actionListener, String actionListenerID) {
+		this.setActionListener(actionListener, actionListenerID);
+	}
 	
 	public UDragArea setParameters(int minValue, int maxValue, boolean moveByHeight) {
 		this.minValue = minValue;
@@ -30,7 +35,7 @@ public abstract class UDragArea extends UIElement implements IFocusable, IMouseC
 			SpecInterface.setCursor(AppCursor.GRABBING);
 			if (!this.getInput().isMouseDown(0, true)) {
 				this.drag = MathUtils.clamp(this.drag, this.minValue, this.maxValue);
-				this.onDrag(this.dragStart, this.drag, true);
+				this.actionListener.onDragAreaDrag(this, this.actionListenerID, this.dragStart, this.drag, true);
 				this.setFocused(false);
 				this.getInput().setCursorCatched(false);
 				Gdx.input.setCursorPosition(this.x + this.width / 2, Utils.getHeight() - (this.y + this.height / 2));
@@ -64,9 +69,7 @@ public abstract class UDragArea extends UIElement implements IFocusable, IMouseC
 	public void onMouseInput(float x, float y) {
 		if (this.isFocused()) {
 			this.drag = MathUtils.clamp(this.drag + (int)(this.moveByHeight ? y : -x), this.minValue, this.maxValue);
-			this.onDrag(this.dragStart, this.drag, false);
+			this.actionListener.onDragAreaDrag(this, this.actionListenerID, this.dragStart, this.drag, false);
 		}
 	}
-	
-	abstract public void onDrag(int start, int value, boolean disfocus);
 }
