@@ -13,6 +13,7 @@ import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 
 public class ElementHitboxStack extends TreeElementHitbox implements ITreeElementFolder, ITreeElementGizmos, IDebugDraw {
@@ -46,11 +47,11 @@ public class ElementHitboxStack extends TreeElementHitbox implements ITreeElemen
 		this.scale.set(copy.scale);
 	}
 	
-	public void addDropdownItems(SpecObjectTree tree, Array<STDDropdownAreaElement> elements, boolean allSameType) {
-		super.addDropdownItems(tree, elements, allSameType);
+	public void addDropdownItems(SpecObjectTree tree, STDDropdownArea area, Array<STDDropdownAreaElement> elements, boolean allSameType) {
+		super.addDropdownItems(tree, area, elements, allSameType);
 		
 		if (tree.elementSelector.size() == 1) {
-			elements.add(STDDropdownAreaElement.subwindow("Add element")
+			elements.add(STDDropdownAreaElement.subwindow(area, "Add element")
 				.add(STDDropdownAreaElement.button("hitboxstack.add.hitboxstack", "Hitbox Stack"))
 				.add(STDDropdownAreaElement.button("hitboxstack.add.hitbox", "Hitbox"))
 				.add(STDDropdownAreaElement.button("hitboxstack.add.hitboxmesh", "Mesh Hitbox"))

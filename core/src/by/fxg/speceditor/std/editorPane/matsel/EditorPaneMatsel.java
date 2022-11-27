@@ -6,8 +6,12 @@ import com.badlogic.gdx.graphics.g3d.Attributes;
 import by.fxg.speceditor.ui.URenderBlock;
 
 public abstract class EditorPaneMatsel extends URenderBlock {
-	public EditorPaneMatsel(String name) {
+	protected IEditorPaneMatselModuleProvider moduleProvider;
+	
+	
+	public EditorPaneMatsel(IEditorPaneMatselModuleProvider moduleProvider, String name) {
 		super(name);
+		this.moduleProvider = moduleProvider;
 	}
 	
 	abstract public Attributes getSelectedAttributes();

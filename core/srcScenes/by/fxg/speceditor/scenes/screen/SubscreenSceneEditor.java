@@ -26,7 +26,7 @@ public class SubscreenSceneEditor extends BaseSubscreen {
 		this.editorModeSelector = new UDropdownSelectSingle(12, this.EDITOR_MODES).setVariantSelected(this.EDITOR_MODES.length - 1);
 		this.moduleProject = new ModuleProject();
 		this.moduleViewport = new SubscreenSceneEditorModuleViewport(this.screenProject.project.renderer);
-		this.moduleObjectExplorer = new SubscreenSceneEditorModuleObjectExplorer();
+		this.moduleObjectExplorer = new SubscreenSceneEditorModuleObjectExplorer(this.screenProject.project.useLegacyRenderer);
 		this.resize(x, y, width, height);
 	}
 

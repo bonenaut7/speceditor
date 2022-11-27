@@ -9,18 +9,18 @@ import by.fxg.speceditor.std.objectTree.TreeElement;
 import by.fxg.speceditor.std.viewport.IViewportRenderer;
 
 public class ScenesObjectTreeHandler implements ITreeElementHandler {
-	private ScenesProject prefabProject;
+	private ScenesProject project;
 	
 	public ScenesObjectTreeHandler(ScenesProject prefabProject) {
-		this.prefabProject = prefabProject;
+		this.project = prefabProject;
 	}
 	
 	public void onRefresh(SpecObjectTree objectTree) {
-		this.prefabProject.projectScreen.subEditorPane.updateSelectableEditorPane(objectTree.elementSelector);
-		this.prefabProject.projectScreen.subViewport.gizmosModule.updateSelectorMode(objectTree.elementSelector);
+		this.project.projectScreen.subEditorPane.updateSelectableEditorPane(objectTree.elementSelector);
+		this.project.projectScreen.subViewport.gizmosModule.updateSelectorMode(objectTree.elementSelector);
 
-		this.prefabProject.renderer.clear();
-		this.searchRenderables(this.prefabProject.renderer, objectTree, objectTree.getStack().getElements(), true);
+		this.project.renderer.reset();
+		this.searchRenderables(this.project.renderer, objectTree, objectTree.getStack().getElements(), true);
 	}
 	
 	private void searchRenderables(IViewportRenderer renderer, SpecObjectTree objectTree, Array<TreeElement> elements, boolean parentVisible) { 

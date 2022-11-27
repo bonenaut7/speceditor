@@ -4,17 +4,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.attributes.CubemapAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.DirectionalLightsAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.PointLightsAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.SpotLightsAttribute;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.std.STDManager;
-import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
+import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -24,13 +19,9 @@ import by.fxg.speceditor.ui.UHoldButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements ISTDDropdownAreaListener {
-	private static final Array<Class<?>> bannedAttributes = new Array<>();
-	static {
-		bannedAttributes.add(PointLightsAttribute.class, DirectionalLightsAttribute.class, SpotLightsAttribute.class);
-		bannedAttributes.add(CubemapAttribute.class);
-	}
-	
+public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements ISTDInterfaceActionListener {
+	public static IEditorPaneMatselModuleProvider defaultModuleProvider = null;
+
 	protected Environment environment;
 	protected EditorPaneMatselModule currentModule;
 	protected UDropdownSelectSingle selectedAttribute;
@@ -42,7 +33,11 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 	public STDDropdownArea dropdownArea;
 	
 	public EditorPaneMatselEnvironment(String name, Environment environment) {
-		super(name);
+		this(defaultModuleProvider, name, environment);
+	}
+	
+	public EditorPaneMatselEnvironment(IEditorPaneMatselModuleProvider moduleProvider, String name, Environment environment) {
+		super(moduleProvider, name);
 		this.environment = environment;
 		this.selectedAttribute = new UDropdownSelectSingle(15, "None") {
 			public UDropdownSelectSingle setVariantSelected(int variant) {
@@ -53,7 +48,8 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		};
 		this.buttonAddAttribute = new UButton("+");
 		this.buttonRemoveAttribute = new UHoldButton("Remove attribute", UHoldButton.NO_KEY, 30).setColor(UColor.redblack);
-		this.dropdownArea = new STDDropdownArea(15).setListener(this);
+		this.dropdownArea = new STDDropdownArea(15);
+		this.dropdownArea.setActionListener(this, "dropdownArea");
 		this.refreshAttributes();
 	}
 	
@@ -67,7 +63,8 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		this.buttonAddAttribute.setTransforms(this.x, yOffset -= 14, 14, 14).render(shape, foster);
 		if (this.buttonAddAttribute.isPressed()) {
 			Array<STDDropdownAreaElement> elements = this.dropdownArea.getElementsArrayAsEmpty();
-			STDManager.INSTANCE.getEditorPaneMatselModules().forEach(editorPaneMatselModule -> editorPaneMatselModule.onAttributeCreationPress(elements));
+			Array<EditorPaneMatselModule> modules = this.moduleProvider.getModules();
+			for (int i = 0; i != modules.size; i++) modules.get(i).onAttributeCreationPress(this, this.dropdownArea, elements);
 			this.dropdownArea.setElements(elements, foster).open(this.x + 1, yOffset + 3);
 		}
 		
@@ -109,15 +106,15 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		return yOffset - 3;
 	}
 
-	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {
-		Array<EditorPaneMatselModule> array = STDManager.INSTANCE.getEditorPaneMatselModules();
-		for (int i = 0; i != array.size; i++) array.get(i).onDropdownAreaClick(this, element, id);
+	public void onDropdownAreaClick(STDDropdownArea area, String id, STDDropdownAreaElement element, String elementID) {
+		Array<EditorPaneMatselModule> array = this.moduleProvider.getModules();
+		for (int i = 0; i != array.size; i++) array.get(i).onDropdownAreaClick(this, element, elementID);
 		this.refreshAttributes();
 	}
 	
 	protected void onAttributeSelect() {
 		Attribute attribute = this.getSelectedAttribute();
-		EditorPaneMatselModule editorPaneMatselModule = STDManager.INSTANCE.searchAvailablePaneMatselModule(this, attribute);
+		EditorPaneMatselModule editorPaneMatselModule = this.moduleProvider.getModuleForAttribute(this, attribute);
 		if (attribute != null && editorPaneMatselModule != null && editorPaneMatselModule.acceptAttribute(this, attribute)) {
 			editorPaneMatselModule.onSelect(this, attribute);
 			this.currentModule = editorPaneMatselModule;
@@ -129,9 +126,9 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 		attributes.add("None");
 		if (this.environment != null) {
 			for (Attribute attribute : this.environment) {
-				//FIXME removing lights attribute because of visual bugs, not used anyway. (Same thing done in the #getSelectedAttribute)
-				if (bannedAttributes.contains(attribute.getClass(), true)) continue;
-				attributes.add(Utils.format(attribute.getClass().getSimpleName().replace("Attribute", ""), " - ", Attribute.getAttributeAlias(attribute.type)));
+				if (this.moduleProvider.isAttributeAllowed(this, attribute)) {
+					attributes.add(Utils.format(attribute.getClass().getSimpleName().replace("Attribute", ""), " - ", Attribute.getAttributeAlias(attribute.type)));
+				}
 			}
 		}
 		this.selectedAttribute.setVariants(attributes.toArray(String.class));
@@ -148,10 +145,11 @@ public class EditorPaneMatselEnvironment extends EditorPaneMatsel implements IST
 			//FIXME bad way to search for attribute
 			int _index = 0;
 			for (Attribute attribute$ : this.environment) {
-				if (bannedAttributes.contains(attribute$.getClass(), true)) continue;
-				if (++_index == this.selectedAttribute.getVariantSelected()) {
-					attribute = attribute$;
-					break;
+				if (this.moduleProvider.isAttributeAllowed(this, attribute$)) {
+					if (++_index == this.selectedAttribute.getVariantSelected()) {
+						attribute = attribute$;
+						break;
+					}
 				}
 			}
 		}

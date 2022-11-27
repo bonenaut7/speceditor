@@ -12,7 +12,6 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class STDDropdownArea extends UIElement implements IFocusable {
 	protected Array<STDDropdownAreaElement> elements = new Array<>();
-	protected ISTDDropdownAreaListener listener;
 	protected int dropHeight;
 	protected long tickOpen = -1L;
 	protected STDDropdownAreaElement shownChild = null;
@@ -35,22 +34,42 @@ public class STDDropdownArea extends UIElement implements IFocusable {
 		}
 	}
 	
-	public STDDropdownArea setElements(Array<STDDropdownAreaElement> elements, Foster foster) {
-		this.elements = elements;
-		for (int i = 0; i != this.elements.size; i++) {
-			STDDropdownAreaElement element = this.elements.get(i);
-			if (element.name != null) {
-				int size = (int)SpecEditor.fosterNoDraw.setString(element.name).getWidth() + (element.type == Type.SUBWINDOW ? 25 : 10);
-				if (this.width < size) {
-					this.width = size;
+	public STDDropdownArea add(STDDropdownAreaElement element) { return this.add(element, true); }
+	public STDDropdownArea add(STDDropdownAreaElement element, boolean notify) {
+		if (element != null) {
+			if (element != null && (notify && this.actionListener != null ? this.actionListener.onDropdownAreaAddElement(this, this.actionListenerID, null, element) : true)) {
+				this.elements.add(element.setDropdownArea(this));
+				if (element.type != Type.LINE) {
+					for (int i = 0; i != this.elements.size; i++) {
+						STDDropdownAreaElement element$ = this.elements.get(i);
+						if (element$.name != null) {
+							int size = (int)SpecEditor.fosterNoDraw.setString(element$.name).getWidth() + (element$.type == Type.SUBWINDOW ? 25 : 10);
+							if (this.width < size) {
+								this.width = size;
+							}
+						}
+					}
 				}
 			}
 		}
 		return this;
 	}
 	
-	public STDDropdownArea setListener(ISTDDropdownAreaListener listener) {
-		this.listener = listener;
+	public STDDropdownArea setElements(Array<STDDropdownAreaElement> elements, Foster foster) {
+		this.elements = new Array<>();
+		for (int i = 0; i != elements.size; i++) {
+			STDDropdownAreaElement element = elements.get(i);
+			if (this.actionListener != null ? this.actionListener.onDropdownAreaAddElement(this, this.actionListenerID, null, element) : true) {
+				this.elements.add(element.setDropdownArea(this));
+				if (element.name != null) {
+					int size = (int)SpecEditor.fosterNoDraw.setString(element.name).getWidth() + (element.type == Type.SUBWINDOW ? 25 : 10);
+					if (this.width < size) {
+						this.width = size;
+					}
+				}
+			}
+		}
+		elements.clear(); // XXX may cause lags
 		return this;
 	}
 	

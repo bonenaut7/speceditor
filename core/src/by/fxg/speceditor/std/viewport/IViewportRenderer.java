@@ -13,7 +13,7 @@ public interface IViewportRenderer {
 	/** Adds object to renderer **/
 	void add(SpecObjectTree objectTree, Object object, Object... args);
 	/** Clears data from renderer **/
-	void clear();
+	void reset();
 	/** Called after position and direction set to camera and before <code>camera.update();</code> **/
 	default void updateCamera() { this.getCamera().update(); }
 	/** Use framebuffer to store rendered info to the color buffer, and then return it in the {@link #getTexture()} method**/

@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.editorPane.matsel;
+package by.fxg.speceditor.std.editorPane.matsel.legacy;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
@@ -8,7 +8,10 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.i18n.I18n;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModule;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
@@ -28,8 +31,8 @@ public class EditorPaneMatselModuleFloatAttribute extends EditorPaneMatselModule
 		return yOffset;
 	}
 
-	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
-		elements.add(STDDropdownAreaElement.subwindow(I18n.get("speceditor.std.matsel.float.name"))
+	public void onAttributeCreationPress(EditorPaneMatsel matsel, STDDropdownArea area, Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow(area, I18n.get("speceditor.std.matsel.float.name"))
 			.add(STDDropdownAreaElement.button("default.float.alphaTest", I18n.get("speceditor.std.matsel.float.alphaTest.name")))
 			.add(STDDropdownAreaElement.button("default.float.shininess", I18n.get("speceditor.std.matsel.float.shininess.name")))
 		);

@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.editorPane.matsel;
+package by.fxg.speceditor.std.editorPane.matsel.legacy;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,7 +8,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModule;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
@@ -59,8 +62,8 @@ public class EditorPaneMatselModuleDepthTestAttribute extends EditorPaneMatselMo
 		return yOffset;
 	}
 
-	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
-		elements.add(STDDropdownAreaElement.subwindow("Depth Testing")
+	public void onAttributeCreationPress(EditorPaneMatsel matsel, STDDropdownArea area, Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow(area, "Depth Testing")
 			.add(STDDropdownAreaElement.button("default.depthTest.stencil", "Stencil"))
 		);
 	}

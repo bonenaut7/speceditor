@@ -9,8 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.std.STDManager;
-import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
+import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -20,7 +19,9 @@ import by.fxg.speceditor.ui.UHoldButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements ISTDDropdownAreaListener {
+public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements ISTDInterfaceActionListener {
+	public static IEditorPaneMatselModuleProvider defaultModuleProvider = null;
+	
 	protected Array<Material> materials = null;
 	protected EditorPaneMatselModule currentModule;
 	protected UDropdownSelectSingle selectedMaterial, selectedAttribute;
@@ -32,7 +33,11 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 	public STDDropdownArea dropdownArea;
 	
 	public EditorPaneMatselMaterialArray(String name) {
-		super(name);
+		this(defaultModuleProvider, name);
+	}
+	
+	public EditorPaneMatselMaterialArray(IEditorPaneMatselModuleProvider moduleProvider, String name) {
+		super(moduleProvider, name);
 		this.materials = new Array<>();
 		this.selectedMaterial = new UDropdownSelectSingle(15, "None") {
 			public UDropdownSelectSingle setVariantSelected(int variant) {
@@ -50,10 +55,11 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 		};
 		this.buttonAddAttribute = new UButton("+");
 		this.buttonRemoveAttribute = new UHoldButton("Remove attribute", UHoldButton.NO_KEY, 30).setColor(UColor.redblack);
-		this.dropdownArea = new STDDropdownArea(15).setListener(this);
+		this.dropdownArea = new STDDropdownArea(15);
+		this.dropdownArea.setActionListener(this, "dropdownArea");
+		this.refreshAttributes();
 	}
 
-	//FIXME [UI] re-markup required for elements
 	protected int renderInside(Batch batch, ShapeDrawer shape, Foster foster, int yOffset) {
 		yOffset -= 5;
 		foster.setString("Material").draw(this.x + 5, yOffset -= foster.getHeight() + 5, Align.left);
@@ -67,7 +73,8 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 				this.buttonAddAttribute.setTransforms(this.x, yOffset -= 17, 14, 14).render(shape, foster);
 				if (this.buttonAddAttribute.isPressed()) {
 					Array<STDDropdownAreaElement> elements = this.dropdownArea.getElementsArrayAsEmpty();
-					STDManager.INSTANCE.getEditorPaneMatselModules().forEach(editorPaneMatselModule -> editorPaneMatselModule.onAttributeCreationPress(elements));
+					Array<EditorPaneMatselModule> modules = this.moduleProvider.getModules();
+					for (int i = 0; i != modules.size; i++) modules.get(i).onAttributeCreationPress(this, this.dropdownArea, elements);
 					this.dropdownArea.setElements(elements, foster).open(this.x + 1, yOffset + 3);
 				}
 				
@@ -111,16 +118,16 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 		this.selectedMaterial.render(shape, foster);
 		return yOffset - 3;
 	}
-
-	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {
-		Array<EditorPaneMatselModule> array = STDManager.INSTANCE.getEditorPaneMatselModules();
-		for (int i = 0; i != array.size; i++) array.get(i).onDropdownAreaClick(this, element, id);
+	
+	public void onDropdownAreaClick(STDDropdownArea area, String id, STDDropdownAreaElement element, String elementID) {
+		Array<EditorPaneMatselModule> array = this.moduleProvider.getModules();
+		for (int i = 0; i != array.size; i++) array.get(i).onDropdownAreaClick(this, element, elementID);
 		this.refreshAttributes();
 	}
 	
 	protected void onAttributeSelect() {
 		Attribute attribute = this.getSelectedAttribute();
-		EditorPaneMatselModule editorPaneMatselModule = STDManager.INSTANCE.searchAvailablePaneMatselModule(this, attribute);
+		EditorPaneMatselModule editorPaneMatselModule = this.moduleProvider.getModuleForAttribute(this, attribute);
 		if (attribute != null && editorPaneMatselModule != null && editorPaneMatselModule.acceptAttribute(this, attribute)) {
 			editorPaneMatselModule.onSelect(this, attribute);
 			this.currentModule = editorPaneMatselModule;
@@ -132,7 +139,9 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 		attributes.add("None");
 		if (this.materials != null && this.selectedMaterial.getVariantSelected() > 0) {
 			for (Attribute attribute : this.materials.get(this.selectedMaterial.getVariantSelected() - 1)) {
-				attributes.add(Utils.format(attribute.getClass().getSimpleName().replace("Attribute", ""), " - ", Attribute.getAttributeAlias(attribute.type)));
+				if (this.moduleProvider.isAttributeAllowed(this, attribute)) {
+					attributes.add(Utils.format(attribute.getClass().getSimpleName().replace("Attribute", ""), " - ", Attribute.getAttributeAlias(attribute.type)));
+				}
 			}
 		}
 		this.selectedAttribute.setVariants(attributes.toArray(String.class));
@@ -161,9 +170,13 @@ public class EditorPaneMatselMaterialArray extends EditorPaneMatsel implements I
 		if (selectedAttributes != null) {
 			//FIXME bad way to search for attribute
 			int _index = 0;
-			for (Attribute attribute$ : selectedAttributes) if (++_index == this.selectedAttribute.getVariantSelected()) {
-				attribute = attribute$;
-				break;
+			for (Attribute attribute$ : selectedAttributes) {
+				if (this.moduleProvider.isAttributeAllowed(this, attribute$)) {
+					if (++_index == this.selectedAttribute.getVariantSelected()) {
+						attribute = attribute$;
+						break;
+					}
+				}
 			}
 		}
 		return attribute;

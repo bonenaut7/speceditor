@@ -5,6 +5,10 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g3d.attributes.CubemapAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.DirectionalLightsAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.PointLightsAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.SpotLightsAttribute;
 
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.project.BasicProject;
@@ -12,6 +16,8 @@ import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.scenes.screen.ScreenSceneProject;
 import by.fxg.speceditor.screen.gui.GuiError;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselMaterialArray;
+import by.fxg.speceditor.std.editorPane.matsel.legacy.EditorPaneMatselModuleProviderLegacy;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.elements.ElementFolder;
 import by.fxg.speceditor.std.viewport.DefaultRenderer;
@@ -20,6 +26,9 @@ import by.fxg.speceditor.std.viewport.IViewportRenderer;
 public class ScenesProject extends BasicProject {
 	private final FileHandle scenesDataFile;
 	public ScenesProjectIO io;
+	public boolean useLegacyRenderer = true;
+	
+	//Runtime
 	public ScreenSceneProject projectScreen;
 	public SpecObjectTree objectTree;
 	public IViewportRenderer renderer;
@@ -37,9 +46,14 @@ public class ScenesProject extends BasicProject {
 	}
 
 	public boolean loadProject() {
+		//Setup default UI parameters
+		EditorPaneMatselMaterialArray.defaultModuleProvider = //EditorPaneMatselEnvironment.defaultModuleProvider = this.useLegacyRenderer ?
+				new EditorPaneMatselModuleProviderLegacy(PointLightsAttribute.class, DirectionalLightsAttribute.class, SpotLightsAttribute.class, CubemapAttribute.class);// :
+				//new EditorPaneMatselModuleProviderGLTF(PointLightsAttribute.class, DirectionalLightsAttribute.class, SpotLightsAttribute.class, CubemapAttribute.class);
+		
 		this.assetManager = new ProjectAssetManager();
 		this.objectTree = new SpecObjectTree().setHandler(new ScenesObjectTreeHandler(this));
-		this.renderer = new DefaultRenderer(this.objectTree);
+		this.renderer = new DefaultRenderer(this.objectTree);//this.useLegacyRenderer ? new DefaultRenderer(this.objectTree) : new GLTFRenderer(this.objectTree);
 		
 		if (this.projectFolder.child("scenes.data").exists()) {
 			if (!this.io.loadProjectData(this.scenesDataFile, this.assetManager, this.renderer, this.objectTree)) {
@@ -49,9 +63,15 @@ public class ScenesProject extends BasicProject {
 		return true;
 	}	
 	
+	public void loadConfiguration() {
+		super.loadConfiguration();
+		this.useLegacyRenderer = this.getPreference("useLegacyRenderer", boolean.class, true);
+	}
+	
 	public void saveConfiguration() {
 		LocalDateTime date = LocalDateTime.now();
 		this.lastSaveDate = String.format("%04d.%s.%02d %02d:%02d", date.getYear(), date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase(), date.getDayOfMonth(), date.getHour(), date.getMinute());
+		this.setPreference("useLegacyRenderer", this.useLegacyRenderer);
 		super.saveConfiguration();
 	}
 	

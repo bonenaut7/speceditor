@@ -8,19 +8,25 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class STDDropdownAreaElement {
+	protected STDDropdownArea dropdownArea;
 	protected Array<STDDropdownAreaElement> elements;
 	protected STDDropdownAreaElement shownChild = null;
-	protected String id, name;
+	protected String elementID, name;
 	protected Type type;
 	protected int width;
 	
 	private STDDropdownAreaElement(Type type, String id, String name) {
 		this.type = type;
-		this.id = id;
+		this.elementID = id;
 		this.name = name;
 		if (this.type == Type.SUBWINDOW) {
 			this.elements = new Array<>();
 		}
+	}
+	
+	protected STDDropdownAreaElement setDropdownArea(STDDropdownArea dropdownArea) {
+		this.dropdownArea = dropdownArea;
+		return this;
 	}
 	
 	public int render(STDDropdownArea area, STDDropdownAreaElement parent, ShapeDrawer shape, Foster foster, int x, int y, int width) {
@@ -45,8 +51,8 @@ public class STDDropdownAreaElement {
 					shape.setColor(UColor.elementHover);
 					shape.filledRectangle(x, y - area.dropHeight - 1, width, area.dropHeight);
 					this.setParentShownChildAs(area, parent, null);
-					if (area.getInput().isMouseDown(0, false) && area.listener != null) {
-						area.listener.onDropdownAreaClick(this, this.id);
+					if (area.getInput().isMouseDown(0, false) && area.actionListener != null) {
+						area.actionListener.onDropdownAreaClick(area, area.actionListenerID, this, this.elementID);
 					}
 				}
 			} break;
@@ -81,22 +87,33 @@ public class STDDropdownAreaElement {
 		return area.dropHeight;
 	}
 
-	public STDDropdownAreaElement add(STDDropdownAreaElement element) {
+	public STDDropdownAreaElement add(STDDropdownAreaElement element) { return this.add(element, true); }
+	public STDDropdownAreaElement add(STDDropdownAreaElement element, boolean notify) {
 		if (this.type == Type.SUBWINDOW && element != null) {
-			this.elements.add(element);
-			if (element.type != Type.LINE) {
-				for (int i = 0; i != this.elements.size; i++) {
-					STDDropdownAreaElement element$ = this.elements.get(i);
-					if (element$.name != null) {
-						int size = (int)SpecEditor.fosterNoDraw.setString(element$.name).getWidth() + (element$.type == Type.SUBWINDOW ? 25 : 10);
-						if (this.width < size) {
-							this.width = size;
+			if (element != null && (notify && this.dropdownArea.actionListener != null ? this.dropdownArea.actionListener.onDropdownAreaAddElement(this.dropdownArea, this.dropdownArea.actionListenerID, this, element) : true)) {
+				this.elements.add(element.setDropdownArea(this.dropdownArea));
+				if (element.type != Type.LINE) {
+					for (int i = 0; i != this.elements.size; i++) {
+						STDDropdownAreaElement element$ = this.elements.get(i);
+						if (element$.name != null) {
+							int size = (int)SpecEditor.fosterNoDraw.setString(element$.name).getWidth() + (element$.type == Type.SUBWINDOW ? 25 : 10);
+							if (this.width < size) {
+								this.width = size;
+							}
 						}
 					}
 				}
 			}
 		}
 		return this;
+	}
+	
+	public String getID() {
+		return this.elementID;
+	}
+	
+	public Type getType() {
+		return this.type;
 	}
 	
 	private void setParentShownChildAs(STDDropdownArea area, STDDropdownAreaElement parent, STDDropdownAreaElement child) {
@@ -135,8 +152,11 @@ public class STDDropdownAreaElement {
 		return new STDDropdownAreaElement(Type.BUTTON, id, name);
 	}
 	
-	public static STDDropdownAreaElement subwindow(String name) {
-		return new STDDropdownAreaElement(Type.SUBWINDOW, null, name);
+	public static STDDropdownAreaElement subwindow(String name) { return subwindow(null, null, name); }
+	public static STDDropdownAreaElement subwindow(String id, String name) { return subwindow(null, id, name); }
+	public static STDDropdownAreaElement subwindow(STDDropdownArea area, String name) { return subwindow(area, null, name); }
+	public static STDDropdownAreaElement subwindow(STDDropdownArea area, String id, String name) {
+		return new STDDropdownAreaElement(Type.SUBWINDOW, id, name).setDropdownArea(area);
 	}
 
 	public static enum Type {

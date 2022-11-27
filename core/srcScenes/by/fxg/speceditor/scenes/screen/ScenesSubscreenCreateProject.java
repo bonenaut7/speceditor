@@ -23,12 +23,11 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDInputFieldListener {
 	private final ProjectSolver projectSolver;
 	private ColoredInputField projectName, backupInterval;
-	private UCheckbox enableBackups;
+	private UCheckbox enableGLTFViewport, enableBackups;
 	private UButton buttonSelectFolder, buttonCreateProject;
 	
 	private boolean isProjectFolderValid, isProjectNameValid, isBackupIntervalValid;
 	private FileHandle projectFolder;
-	
 	
 	public ScenesSubscreenCreateProject(ProjectSolver projectSolver) {
 		this.projectSolver = projectSolver;
@@ -36,6 +35,7 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 		this.backupInterval = (ColoredInputField)new ColoredInputField().setBackgroundColor(UColor.redgray).setMaxLength(8).setListener(this, "backupInterval");
 		this.projectName.setNextField(this.backupInterval).setPreviousField(this.backupInterval);
 		this.backupInterval.setNextField(this.projectName).setPreviousField(this.projectName);
+		this.enableGLTFViewport = new UCheckbox(false).setEnabled(false);
 		this.enableBackups = new UCheckbox(false);
 		this.buttonSelectFolder = new UButton("Select project folder");
 		this.buttonCreateProject = new UButton("Create project");
@@ -43,6 +43,7 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height) {
 		this.projectName.update();
+		this.enableGLTFViewport.update();
 		this.enableBackups.update();
 		if (this.enableBackups.getValue()) this.backupInterval.update();
 		
@@ -55,6 +56,7 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 		if (this.buttonCreateProject.isPressed()) {
 			long backupInterval = this.enableBackups.getValue() && this.isBackupIntervalValid ? Utils.parseTime(this.backupInterval.getText()) : 600L; 
 			ScenesProject project = new ScenesProject(this.projectSolver, this.projectFolder, this.projectName.getText(), this.enableBackups.getValue(), backupInterval);
+			project.useLegacyRenderer = !this.enableGLTFViewport.getValue();
 			project.saveConfiguration();
 			ProjectManager.INSTANCE.setRecentProject(this.projectFolder);
 			if (project.loadProject()) {
@@ -68,15 +70,17 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 		foster.setString("Standard Scene project").draw(x + 5, y + height - 12, Align.left);
 		foster.setString(Utils.format("Project path: ", this.projectFolder != null ? this.projectFolder.path() : "Not selected")).draw(x + 5, y + height - 30, Align.left);
 		foster.setString("Project name:").draw(x + 5, y + height - 70, Align.left);
-		foster.setString("Enable backups:").draw(x + 5, y + height - 90, Align.left);
+		foster.setString("Enable GLTF Viewport:").draw(x + 5, y + height - 90, Align.left);
+		foster.setString("Enable backups:").draw(x + 5, y + height - 110, Align.left);
 		
 		this.buttonSelectFolder.render(shape, foster);
 		this.projectName.setFoster(foster).render(batch, shape);
+		this.enableGLTFViewport.render(shape);
 		this.enableBackups.render(shape);
 		if (this.enableBackups.getValue()) {
-			foster.setString("Backup interval:").draw(x + 5, y + height - 110, Align.left);
+			foster.setString("Backup interval:").draw(x + 5, y + height - 129, Align.left);
 			this.backupInterval.setFoster(foster).render(batch, shape);
-		} else foster.setString("Backup interval: auto-saving disabled").draw(x + 5, y + height - 110, Align.left);
+		} else foster.setString("Backup interval: auto-saving disabled").draw(x + 5, y + height - 129, Align.left);
 		this.buttonCreateProject.render(shape, foster);
 	}
 	
@@ -95,9 +99,10 @@ public class ScenesSubscreenCreateProject extends BaseSubscreen implements ISTDI
 
 	public void resize(int subX, int subY, int subWidth, int subHeight) {
 		this.projectName.setTransforms(subX + 10 + (int)SpecEditor.fosterNoDraw.setString("Project name:").getWidth(), subY + subHeight - 74, 150, 14);
-		this.backupInterval.setTransforms(subX + 10 + (int)SpecEditor.fosterNoDraw.setString("Backup interval:").getWidth(), subY + subHeight - 114, 132, 14);
-		this.enableBackups.setTransforms(subX + 10 + (int)SpecEditor.fosterNoDraw.setString("Enable backups:").getWidth(), subY + subHeight - 93, 12, 12);
+		this.enableGLTFViewport.setTransforms(subX + 10 + (int)SpecEditor.fosterNoDraw.setString("Enable GLTF Viewport:").getWidth(), subY + subHeight - 93, 12, 12);
+		this.enableBackups.setTransforms(subX + 10 + (int)SpecEditor.fosterNoDraw.setString("Enable backups:").getWidth(), subY + subHeight - 113, 12, 12);
+		this.backupInterval.setTransforms(subX + 10 + (int)SpecEditor.fosterNoDraw.setString("Backup interval:").getWidth(), subY + subHeight - 132, 132, 14);
 		this.buttonSelectFolder.setTransforms(subX + 5, subY + subHeight - 50, 150, 15);
-		this.buttonCreateProject.setTransforms(subX + 5, subY + subHeight - 135, 230, 14);
+		this.buttonCreateProject.setTransforms(subX + 5, subY + subHeight - 156, 230, 14);
 	}
 }

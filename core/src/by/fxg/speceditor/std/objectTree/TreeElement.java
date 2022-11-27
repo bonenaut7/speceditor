@@ -12,6 +12,7 @@ import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.IProjectAssetHandler;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 
 /** Basic element of {@link by.fxg.speceditor.std.objectTree.SpecObjectTree}. <br>
@@ -30,7 +31,7 @@ public abstract class TreeElement {
 	protected String displayName = "undefined";
 	protected boolean visible = true;
 
-	public void addDropdownItems(SpecObjectTree tree, Array<STDDropdownAreaElement> elements, boolean allSameType) {
+	public void addDropdownItems(SpecObjectTree tree, STDDropdownArea area, Array<STDDropdownAreaElement> elements, boolean allSameType) {
 		int cloneType = tree.elementSelector.get(0) instanceof ITreeElementFolder ? 1 : 2;
 		for (int i = 0; i != tree.elementSelector.size(); i++) {
 			if (tree.elementSelector.get(i) instanceof ITreeElementFolder && cloneType == 2) { cloneType = -1; break; }

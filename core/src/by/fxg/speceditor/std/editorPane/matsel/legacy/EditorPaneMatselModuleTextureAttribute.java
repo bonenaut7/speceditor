@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.editorPane.matsel;
+package by.fxg.speceditor.std.editorPane.matsel.legacy;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,7 +11,10 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.DefaultResources;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModule;
 import by.fxg.speceditor.std.g3d.attributes.SpecTextureAttribute;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.SpecFileChooser;
@@ -46,8 +49,8 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 		return yOffset;
 	}
 
-	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
-		elements.add(STDDropdownAreaElement.subwindow("Texture")
+	public void onAttributeCreationPress(EditorPaneMatsel matsel, STDDropdownArea area, Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow(area, "Texture")
 			.add(STDDropdownAreaElement.button("default.texture.diffuse", "Diffuse"))
 			.add(STDDropdownAreaElement.button("default.texture.specular", "Specular"))
 			.add(STDDropdownAreaElement.button("default.texture.bump", "Bump"))

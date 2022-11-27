@@ -89,13 +89,11 @@ public class ProjectAssetManager implements Disposable {
 		int typeIndexesSize = dis.readInt();
 		int indexesSize = dis.readInt();
 		Array<Class<?>> typeIndexes = new Array<>();
-		
 		for (int i = 0; i != typeIndexesSize; i++) {
 			String classType = dis.readUTF();
 			try {
 				typeIndexes.add(Class.forName(classType));
 			} catch (ClassNotFoundException classNotFoundException) {
-				Utils.logDebug("Index class not found, skipping... (", classType, ")");
 				typeIndexes.add(null);
 			}
 		}

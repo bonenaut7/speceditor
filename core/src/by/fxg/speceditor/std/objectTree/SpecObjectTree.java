@@ -16,7 +16,7 @@ import by.fxg.pilesos.utils.GDXUtil;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.screen.gui.GuiObjectTreeDelete;
 import by.fxg.speceditor.std.objectTree.impl.DefaultTreeElementSelector;
-import by.fxg.speceditor.std.ui.ISTDDropdownAreaListener;
+import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.SpecInterface;
@@ -26,7 +26,7 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.ui.UIElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListener, IFocusable {
+public class SpecObjectTree extends UIElement implements ISTDInterfaceActionListener, IFocusable {
 	public STDDropdownArea dropdownArea;
 	public ITreeElementHandler elementHandler;
 	public ITreeElementSelector<? extends TreeElement> elementSelector = new DefaultTreeElementSelector();
@@ -57,7 +57,8 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 	
 	public SpecObjectTree(int x, int y, int width, int height) { this(); this.setTransforms(x, y, width, height); }
 	public SpecObjectTree() {
-		this.dropdownArea = new STDDropdownArea(15).setListener(this);
+		this.dropdownArea = new STDDropdownArea(15);
+		this.dropdownArea.setActionListener(this, "SpecObjectTree");
 	}
 	
 	public void update() {
@@ -190,7 +191,7 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 							}
 							
 							Array<STDDropdownAreaElement> elements = this.dropdownArea.getElementsArrayAsEmpty();
-							this.elementSelector.get(0).addDropdownItems(this, elements, typeClass != null);
+							this.elementSelector.get(0).addDropdownItems(this, this.dropdownArea, elements, typeClass != null);
 							this.dropdownArea.setElements(elements, foster).open();
 						}
 					}
@@ -377,9 +378,9 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 	}
 
 	@Override
-	public void onDropdownAreaClick(STDDropdownAreaElement element, String id) {
-		if (this.elementHandler != null && this.elementHandler.onDropdownClick(this, id)) return;
-		switch (id) {
+	public void onDropdownAreaClick(STDDropdownArea area, String id, STDDropdownAreaElement element, String elementID) {
+		if (this.elementHandler != null && !this.elementHandler.specObjectTree_onDropdownClick(this, area, id, element, elementID)) return;
+		switch (elementID) {
 			case "default.delete": {
 				Array<TreeElement> toDelete = new Array<>();
 				for (int i = 0; i != this.elementSelector.size(); i++) toDelete.add(this.elementSelector.get(i));
@@ -388,13 +389,17 @@ public class SpecObjectTree extends UIElement implements ISTDDropdownAreaListene
 			} break;
 			default: {
 				for (int elementIndex = 0; elementIndex != this.elementSelector.size(); elementIndex++) {
-					if (!this.elementSelector.get(elementIndex).processDropdownAction(this, element, id)) {
+					if (!this.elementSelector.get(elementIndex).processDropdownAction(this, element, elementID)) {
 						return;
 					}
 				}
 				this.dropdownArea.close();
 			} break;
 		}
+	}
+	
+	public boolean onDropdownAreaAddElement(STDDropdownArea area, String id, STDDropdownAreaElement parent, STDDropdownAreaElement target) {
+		return this.elementHandler != null ? this.elementHandler.specObjectTree_onDropdownAreaAddElement(this, area, id, parent, target) : true;
 	}
 
 	public void refreshTree() {

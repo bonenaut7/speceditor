@@ -54,16 +54,16 @@ public class ScreenTestUI extends BaseScreen {
 		this.dropdownArea = new STDDropdownArea(15);
 		Array<STDDropdownAreaElement> array = new Array<>();
 		array.add(STDDropdownAreaElement.button("", "First"));
-		array.add(STDDropdownAreaElement.subwindow("Second")
+		array.add(STDDropdownAreaElement.subwindow(this.dropdownArea, "Second")
 				.add(STDDropdownAreaElement.button("", "Scnd-First"))
 				.add(STDDropdownAreaElement.button("", "Scnd-Second"))
 				.add(STDDropdownAreaElement.button("", "Scnd-Third")));
-		array.add(STDDropdownAreaElement.subwindow("Third")
+		array.add(STDDropdownAreaElement.subwindow(this.dropdownArea, "Third")
 				.add(STDDropdownAreaElement.subwindow("Thrd-First").add(STDDropdownAreaElement.button("", "ThrdFrst-First")))
 				.add(STDDropdownAreaElement.subwindow("Thrd-Second").add(STDDropdownAreaElement.button("", "ThrdScnd-First")))
 				.add(STDDropdownAreaElement.subwindow("Thrd-Third").add(STDDropdownAreaElement.button("", "ThrdThird-First")))
 				);
-		array.add(STDDropdownAreaElement.subwindow("Fourth").add(STDDropdownAreaElement.subwindow("Fourth-0").add(STDDropdownAreaElement.subwindow("Fourth-1").add(STDDropdownAreaElement.subwindow("Fourth-2")))));
+		array.add(STDDropdownAreaElement.subwindow(this.dropdownArea, "Fourth").add(STDDropdownAreaElement.subwindow("Fourth-0").add(STDDropdownAreaElement.subwindow("Fourth-1").add(STDDropdownAreaElement.subwindow("Fourth-2")))));
 		array.add(STDDropdownAreaElement.line());
 		array.add(STDDropdownAreaElement.button("", "Fifth"));
 		this.dropdownArea.setElements(array, SpecEditor.fosterNoDraw);

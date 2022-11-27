@@ -1,4 +1,4 @@
-package by.fxg.speceditor.std.editorPane.matsel;
+package by.fxg.speceditor.std.editorPane.matsel.legacy;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,7 +8,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModule;
 import by.fxg.speceditor.std.ui.ISTDInputFieldListener;
+import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.std.ui.STDInputField;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
@@ -59,8 +62,8 @@ public class EditorPaneMatselModuleColorAttribute extends EditorPaneMatselModule
 		try { inputField.setTextWithPointer(String.valueOf(Float.valueOf(inputField.getText()))).dropOffset(); } catch (Exception e) {}
 	}
 
-	public void onAttributeCreationPress(Array<STDDropdownAreaElement> elements) {
-		elements.add(STDDropdownAreaElement.subwindow("Color")
+	public void onAttributeCreationPress(EditorPaneMatsel matsel, STDDropdownArea area, Array<STDDropdownAreaElement> elements) {
+		elements.add(STDDropdownAreaElement.subwindow(area, "Color")
 			.add(STDDropdownAreaElement.button("default.color.diffuse", "Diffuse"))
 			.add(STDDropdownAreaElement.button("default.color.specular", "Specular"))
 			.add(STDDropdownAreaElement.button("default.color.ambient", "Ambient"))
