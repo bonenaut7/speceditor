@@ -67,11 +67,11 @@ public class GizmosModule implements IFocusable {
 			this.debugDraw.world.addCollisionObject(this.hitboxes[i].object);
 		}
 
-		TextureRegion gizmoDiffuse = SpriteStack.getTextureRegion("defaults/gizmo.diffuse.png");
+		TextureRegion gizmoDiffuse = SpriteStack.getTextureRegion("defaultAssets/gizmos/gizmo.diffuse.png");
 		gizmoDiffuse.flip(false, true);
 		String[] modelName = {"translate", "rotate", "scale"};
 		for (int i = 0; i != this.gizmoModel.length; i++) {
-			this.gizmoModel[i] = new ModelInstance(SpecEditor.get.resourceManager.get(Utils.format("defaults/gizmo.", modelName[i], ".obj"), Model.class));
+			this.gizmoModel[i] = new ModelInstance(SpecEditor.get.resourceManager.get(Utils.format("defaultAssets/gizmos/gizmo.", modelName[i], ".obj"), Model.class));
 			this.gizmoModel[i].materials.get(0).set(TextureAttribute.createDiffuse(gizmoDiffuse));
 		}
 	}
