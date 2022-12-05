@@ -1,5 +1,7 @@
 package by.fxg.speceditor.utils;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +11,6 @@ import java.util.regex.Pattern;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
@@ -22,6 +23,7 @@ public class Utils {
 	private static final Pattern timePattern = Pattern.compile("([0-9]+)([wdhms])");
 	private static final String[] PREDEFINED_DF_FORMATS = {"#", "#.#", "#.##", "#.###", "#.####", "#.#####", "#.######"};
 	private static final DecimalFormat PREDEFINED_DF = new DecimalFormat("#");
+	public static final String PATH_SYMBOLS = "acbdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.";
 	public static FileNameExtensionFilter FILENAMEFILTER_MODELS, FILENAMEFILTER_IMAGES;
 	
 	public static void init() {
@@ -30,30 +32,11 @@ public class Utils {
 		
 	}
 	
-	/** example: <br>
-	 * 	Target Handle: coreFolder/ <br>
-	 *  Absolute Path: C:/projects/coreFolder/images/file9.png <br>
-	 *  Returns: coreFolder/images/file9.png as Target Handle's child (or null if not possible) **/
-	@Deprecated //FIXME implement Utils#intersectCombinePaths(FileHandle, String)
-	public static FileHandle intersectCombinePaths(FileHandle targetHandle, String absolutePath) {
-		String targetPath = targetHandle.path(); 
-		if (absolutePath.contains(targetPath)) {
-			String[] subParts = absolutePath.split(targetPath);
-			if (subParts.length > 2) {
-				//concurrent path
-				//example: [/path/]TARGET[/]TARGET[/path.path]
-				
-				for (int i = 0; i != subParts.length; i++) {
-					//FileHandle child 
-				}
-			} else {
-				//exact path without concurrencies
-				//example: [/path/]TARGET[/path.path]
-				return targetHandle.child(subParts[subParts.length - 1]);
-			}
-		}
-		return null;
-	}
+	/** SpecEditor window width **/
+	public static int getWidth() { return SpecEditor.get.width; }
+	
+	/** SpecEditor window height **/
+	public static int getHeight() { return SpecEditor.get.height; }
 	
 	/** Returns parsed time in seconds in format: [1D 2H 3M 4S 5D...] 
 	 *  Time units: [S]econds, [M]inutes, [H]ours, [D]ays, [W]eeks
@@ -75,6 +58,23 @@ public class Utils {
 			return time;
 		}
 		return -1L;
+	}
+	
+	/**<pre> Calling examples:
+	 *    isValidPath("c:/test");      //returns true
+	 *    isValidPath("c:/te:t");      //returns false
+	 *    isValidPath("c:/te?t");      //returns false
+	 *    isValidPath("c/te*t");       //returns false
+	 *    isValidPath("good.txt");     //returns true
+	 *    isValidPath("not|good.txt"); //returns false
+	 *    isValidPath("not:good.txt"); //returns false </pre> */
+	public static boolean isPathValid(String path) {
+		try {
+			Paths.get(path);
+		} catch (InvalidPathException | NullPointerException ex) {
+			return false;
+		}
+		return true;
 	}
 	
 	/** Replaces materials in specified ModelInstance with new ones specified in newMaterials array **/
@@ -107,11 +107,6 @@ public class Utils {
 		}
 	}
 	
-	/** SpecEditor window width **/
-	public static int getWidth() { return SpecEditor.get.width; }
-	/** SpecEditor window height **/
-	public static int getHeight() { return SpecEditor.get.height; }
-	
 	public static String dFormat(double value, int symbolsAfterDot) {
 		PREDEFINED_DF.applyPattern(PREDEFINED_DF_FORMATS[symbolsAfterDot]);
 		return PREDEFINED_DF.format(value);
@@ -132,5 +127,9 @@ public class Utils {
 	public static void logDebug(Object... objects) {
 		StackTraceElement element = Thread.currentThread().getStackTrace()[2];
 		Gdx.app.debug(format("DEBUG][", element.getClassName(), ":", element.getLineNumber()), format(objects));
-	}	
+	}
+	public static void logDebugWarn(Object... objects) {
+		StackTraceElement element = Thread.currentThread().getStackTrace()[2];
+		Gdx.app.error(format("DEBUG-WARN][", element.getClassName(), ":", element.getLineNumber()), format(objects));
+	}
 }
