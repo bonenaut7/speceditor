@@ -23,6 +23,7 @@ allprojects {
 		
 		kryoVersion = '4.0.1'
 		jsonioVersion = '4.14.0'
+		ztZipVersion = '1.15'
     }
 
     repositories {
@@ -47,8 +48,10 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
+		
 		api "com.esotericsoftware:kryo:$kryoVersion"
 		api "com.cedarsoftware:json-io:$jsonioVersion"
+		api "org.zeroturnaround:zt-zip:$ztZipVersion"
     }
 }
 
@@ -60,9 +63,11 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
-		api "com.esotericsoftware:kryo:$kryoVersion"
-		api "com.cedarsoftware:json-io:$jsonioVersion"
 		implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
 		implementation files("libs/ini4j-0.5.4.jar")
+		
+		api "com.esotericsoftware:kryo:$kryoVersion"
+		api "com.cedarsoftware:json-io:$jsonioVersion"
+		api "org.zeroturnaround:zt-zip:$ztZipVersion"
     }
 }
