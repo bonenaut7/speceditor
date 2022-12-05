@@ -21,6 +21,7 @@ public class SpecFileChooser {
 	private static final SpecFileChooser instance = new SpecFileChooser();
 	private static JFrame frame;
 	private static JFileChooser fileChooser;
+	private String title = null;
 	
 	private SpecFileChooser() {
 		frame = new JFrame();
@@ -32,6 +33,7 @@ public class SpecFileChooser {
 		fileChooser.setSelectedFile(null);
 		fileChooser.setSelectedFiles(null);
 		fileChooser.resetChoosableFileFilters();
+		instance.title = null;
 		return instance;
 	}
 	
@@ -40,6 +42,7 @@ public class SpecFileChooser {
 		fileChooser.setSelectedFiles(null);
 		fileChooser.resetChoosableFileFilters();
 		fileChooser.setCurrentDirectory(ProjectManager.currentProject == null ? null : ProjectManager.currentProject.getProjectFolder().file());
+		instance.title = null;
 		return instance;
 	}
 	
@@ -53,8 +56,13 @@ public class SpecFileChooser {
 		return this;
 	}
 	
+	public SpecFileChooser setTitle(String title) {
+		fileChooser.setDialogTitle(this.title = title);
+		return this;
+	}
+	
 	public FileHandle openSingle(boolean allowFiles, boolean allowFolders) {
-		fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_OPEN), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
+		if (this.title == null) fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_OPEN), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
 		fileChooser.setFileSelectionMode(allowFiles && allowFolders ? JFileChooser.FILES_AND_DIRECTORIES : allowFolders ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(false);
 		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
@@ -64,7 +72,7 @@ public class SpecFileChooser {
 	}
 	
 	public FileHandle[] openMultiple(boolean allowFiles, boolean allowFolders) {
-		fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_OPEN), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
+		if (this.title == null) fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_OPEN), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
 		fileChooser.setFileSelectionMode(allowFiles && allowFolders ? JFileChooser.FILES_AND_DIRECTORIES : allowFolders ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(true);
 		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null) {
@@ -78,7 +86,7 @@ public class SpecFileChooser {
 	}
 	
 	public FileHandle saveSingle(boolean allowFiles, boolean allowFolders) {
-		fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_SAVE), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
+		if (this.title == null) fileChooser.setDialogTitle(Utils.format(this.getString(TITLE_SAVE), " ", this.getString(!allowFiles && allowFolders ? TITLE_FOLDER : TITLE_FILE)));
 		fileChooser.setFileSelectionMode(allowFiles && allowFolders ? JFileChooser.FILES_AND_DIRECTORIES : allowFolders ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(false);
 		if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
