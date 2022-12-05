@@ -66,7 +66,20 @@ public class SpecEditor extends Apparat<GInputProcessor> {
 		this.renderer.render(this, width, height);
 	}
 	
+	/** Returns preference value from project configuration **/
+	public static <TYPE> TYPE getPreference(String name, Class<TYPE> typeClass, TYPE defaultValue) {
+		if (!DefaultResources.settings.containsKey("PREFERENCES")) DefaultResources.settings.add("PREFERENCES");
+		return DefaultResources.settings.get("PREFERENCES").containsKey(name) ? DefaultResources.settings.get("PREFERENCES").get(name, typeClass) : defaultValue;
+	}
+
+	/** Sets preference value in project configuration **/
+	public static void setPreference(String name, Object object) {
+		if (!DefaultResources.settings.containsKey("PREFERENCES")) DefaultResources.settings.add("PREFERENCES");
+		DefaultResources.settings.get("PREFERENCES").put(name, object);
+	}
+	
 	public void dispose() {
+		try { DefaultResources.settings.store(); } catch (Exception e) {}
 		super.dispose();
 		this.resourceManager.assetManager.dispose();
 	}
