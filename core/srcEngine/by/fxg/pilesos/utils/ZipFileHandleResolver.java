@@ -1,4 +1,4 @@
-package by.fxg.speceditor.scenes.format;
+package by.fxg.pilesos.utils;
 
 import java.util.zip.ZipFile;
 

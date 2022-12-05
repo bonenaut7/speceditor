@@ -1,4 +1,4 @@
-package by.fxg.speceditor.scenes.format;
+package by.fxg.pilesos.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,5 +65,9 @@ public class ZipFileHandle extends FileHandle {
 
 	public long lastModified() {
 		return this.archiveEntry.getTime();
+	}
+	
+	public ZipFile getZipFile() {
+		return this.archive;
 	}
 }
