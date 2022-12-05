@@ -7,20 +7,17 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.RenderManager;
-import by.fxg.speceditor.screen.BaseScreen;
-import by.fxg.speceditor.std.ui.SpecInterface;
-import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class GuiError extends BaseScreen {
-	private final IFocusable focusedObject;
+public final class GuiError extends Gui {
 	private Array<String> strings = new Array<>();
 	private UButton buttonClose;
 	
-	public GuiError(String exceptionPlace, Throwable exception) {
-		this.strings.add("We've got error at: " + exceptionPlace, "");
+	public GuiError(String caller, Throwable exception) {
+		super(null);
+		this.strings.add("We've got error at: " + caller, "");
 		
 		if (exception != null) {
 			this.strings.add(exception.getMessage() == null ? exception.getClass().getTypeName() : exception.getMessage(), "");
@@ -32,15 +29,10 @@ public class GuiError extends BaseScreen {
 		this.buttonClose = new UButton("Cancel");
 		
 		this.resize(Utils.getWidth(), Utils.getHeight());
-		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
-		SpecInterface.INSTANCE.currentFocus = null;
 	}
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
-		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
-			SpecEditor.get.renderer.currentGui = null;
-			SpecInterface.INSTANCE.currentFocus = this.focusedObject;
-		}
+		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) this.closeGui();
 	}
 
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {

@@ -8,22 +8,18 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.SpecEditor;
 import by.fxg.speceditor.render.RenderManager;
-import by.fxg.speceditor.screen.BaseScreen;
 import by.fxg.speceditor.std.objectTree.ITreeElementFolder;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
 import by.fxg.speceditor.std.objectTree.TreeElement;
-import by.fxg.speceditor.std.ui.SpecInterface;
-import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UHoldButton;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class GuiObjectTreeDelete extends BaseScreen {
+public final class GuiObjectTreeDelete extends Gui {
 	private SpecObjectTree objectTree;
 	private Array<TreeElement> treeElements;
-	private final IFocusable focusedObject;
-	
+
 	private int totalElements, folders, folderElements;
 	private final String[] strings;
 	
@@ -31,6 +27,7 @@ public class GuiObjectTreeDelete extends BaseScreen {
 	private UHoldButton buttonDelete;
 	
 	public GuiObjectTreeDelete(SpecObjectTree objectTree, Array<TreeElement> treeElements) {
+		super(null);
 		this.objectTree = objectTree;
 		this.treeElements = new Array<TreeElement>(treeElements);
 		for (TreeElement element : treeElements) {
@@ -47,15 +44,10 @@ public class GuiObjectTreeDelete extends BaseScreen {
 		this.buttonDelete = new UHoldButton("Delete", Keys.ENTER, 60).setColor(UColor.redgray);
 		
 		this.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
-		SpecInterface.INSTANCE.currentFocus = null;
 	}
 	
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
-		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
-			SpecEditor.get.renderer.currentGui = null;
-			SpecInterface.INSTANCE.currentFocus = this.focusedObject;
-		}
+		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) this.closeGui();
 		
 		this.buttonDelete.update();
 		if (this.buttonDelete.isPressed()) {
@@ -65,8 +57,7 @@ public class GuiObjectTreeDelete extends BaseScreen {
 				this.objectTree.getStack().removeElementFromHierarchy(element);
 			}
 			this.objectTree.refreshTree();
-			SpecEditor.get.renderer.currentGui = null;
-			SpecInterface.INSTANCE.currentFocus = this.focusedObject;
+			this.closeGui();
 		}
 	}
 

@@ -11,32 +11,24 @@ import com.badlogic.gdx.utils.Align;
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.SpecEditor;
-import by.fxg.speceditor.screen.BaseScreen;
-import by.fxg.speceditor.std.ui.SpecInterface;
-import by.fxg.speceditor.std.ui.SpecInterface.IFocusable;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class GuiAbout extends BaseScreen {
-	private final IFocusable focusedObject;
+public final class GuiAbout extends Gui {
 	private UButton buttonGit, buttonClose;
 	
 	public GuiAbout() {
+		super(null);
 		this.buttonGit = new UButton("Github");
 		this.buttonClose = new UButton("Cancel");
 		
 		this.resize(Utils.getWidth(), Utils.getHeight());
-		this.focusedObject = SpecInterface.INSTANCE.currentFocus;
-		SpecInterface.INSTANCE.currentFocus = null;
 	}
 
 	public void update(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
 		if (this.buttonGit.isPressed()) try { Desktop.getDesktop().browse(new URI("https://github.com/fxgaming/")); } catch (Exception e) {}
-		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) {
-			SpecEditor.get.renderer.currentGui = null;
-			SpecInterface.INSTANCE.currentFocus = this.focusedObject;
-		}
+		if (SpecEditor.get.getInput().isKeyboardDown(Keys.ESCAPE, false) || this.buttonClose.isPressed()) this.closeGui();
 	}
 
 	public void render(Batch batch, ShapeDrawer shape, Foster foster, int width, int height) {
