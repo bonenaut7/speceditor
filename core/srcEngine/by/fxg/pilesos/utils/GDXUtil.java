@@ -33,4 +33,16 @@ public class GDXUtil {
 		rand = new Random();
 		return 100.0D * rand.nextDouble() - (100.0D - chance) > 0;
 	}
+	
+	public static String format(Object... objects) {
+		StringBuilder builder = new StringBuilder();
+		for (Object object : objects) builder.append(object);
+		return builder.toString();
+	}
+	
+	public static String pathExtension(String path) {
+		int dotIndex = path.lastIndexOf('.');
+		if (dotIndex == -1) return "";
+		return path.substring(dotIndex + 1);
+	}
 }
