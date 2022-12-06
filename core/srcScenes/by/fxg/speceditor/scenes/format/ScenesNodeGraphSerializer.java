@@ -1,8 +1,6 @@
 package by.fxg.speceditor.scenes.format;
 
 import java.io.FileOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -15,8 +13,6 @@ import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 
-import by.fxg.speceditor.project.assets.ProjectAsset;
-import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.serialization.SpecEditorSerialization;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objectTree.ElementStack;
@@ -66,20 +62,7 @@ public class ScenesNodeGraphSerializer {
 	public Exception pack() {
 		try {
 			if (this.outFile == null) throw new NullPointerException("Out file is null");
-			FileHandle assetsFile = this.outFile.parent().child(Utils.format(this.outFile.nameWithoutExtension(), ".assets"));
 			if (!this.outFile.exists()) this.outFile.file().createNewFile();
-			if (!assetsFile.exists()) assetsFile.file().createNewFile();
-			
-			ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(assetsFile.file()));
-			for (ProjectAsset<?> projectAsset : ProjectAssetManager.INSTANCE.getAssetMap().values()) {
-				if (projectAsset.getAssetHandlersSize() > 0) {
-					FileHandle handle = projectAsset.getFile();
-					zos.putNextEntry(new ZipEntry(Utils.format(projectAsset.getUUID().toString(), ".", handle.extension())));
-					zos.write(handle.readBytes());
-					zos.closeEntry();
-				}
-			}
-			zos.close();
 			
 			if (this.outFile.extension().equalsIgnoreCase("json")) {
 				//TODO add json exporting
@@ -118,10 +101,11 @@ public class ScenesNodeGraphSerializer {
 			this.inspectElementStack(((ElementFolder)element).getFolderStack());
 		} else if (element instanceof ElementDecal) {
 			ElementDecal elementDecal = (ElementDecal)element;
-			if (elementDecal.decalAsset == null) return null;
+			if (elementDecal.asset == null) return null;
 			ScenesNodeGraph.NodeDecal decal = new ScenesNodeGraph.NodeDecal();
 			decal.name = elementDecal.getName();
-			decal.assetIndex = elementDecal.decalAsset.getUUID();
+			decal.pakArchive = elementDecal.asset.getArchive().getName();
+			decal.pakAsset = elementDecal.asset.getPath();
 			decal.isBillboard = elementDecal.decal.isBillboard();
 			decal.position = elementDecal.decal.position;
 			decal.rotation = elementDecal.decal.rotation;
@@ -150,10 +134,11 @@ public class ScenesNodeGraphSerializer {
 			return light;
 		} else if (element instanceof ElementModel) {
 			ElementModel elementModel = (ElementModel)element;
-			if (elementModel.modelAsset == null) return null;
+			if (elementModel.asset == null) return null;
 			ScenesNodeGraph.NodeModel model = new ScenesNodeGraph.NodeModel();
 			model.name = elementModel.getName();
-			model.assetIndex = elementModel.modelAsset.getUUID();
+			model.pakArchive = elementModel.asset.getArchive().getName();
+			model.pakAsset = elementModel.asset.getPath();
 			model.materials = elementModel.modelInstance.materials;
 			model.position = elementModel.getTransform(GizmoTransformType.TRANSLATE);
 			model.rotation = elementModel.getTransform(GizmoTransformType.ROTATE);
@@ -182,7 +167,7 @@ public class ScenesNodeGraphSerializer {
 			return hitbox;
 		} else if (treeElement instanceof ElementHitboxMesh) {
 			ElementHitboxMesh element = (ElementHitboxMesh)treeElement;
-			if (element.modelAsset == null) return null;
+			if (element.asset == null) return null;
 			ScenesNodeGraph.NodeHitboxMesh hitboxMesh = new ScenesNodeGraph.NodeHitboxMesh();
 			hitboxMesh.name = element.getName();
 			hitboxMesh.specFlags = element.linkToParent[0] ? parentSpecFlags : element.specFlags;
@@ -194,7 +179,8 @@ public class ScenesNodeGraphSerializer {
 			hitboxMesh.position = element.getTransform(GizmoTransformType.TRANSLATE);
 			hitboxMesh.rotation = element.getTransform(GizmoTransformType.ROTATE);
 			hitboxMesh.scale = element.getTransform(GizmoTransformType.SCALE);
-			hitboxMesh.assetIndex = element.modelAsset.getUUID();
+			hitboxMesh.pakArchive = element.asset.getArchive().getName();
+			hitboxMesh.pakAsset = element.asset.getPath();
 			hitboxMesh.nodes = element.nodes;
 			return hitboxMesh;
 		} else if (treeElement instanceof ElementHitboxStack) {

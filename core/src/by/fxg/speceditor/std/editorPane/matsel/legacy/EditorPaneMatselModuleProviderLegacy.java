@@ -38,6 +38,6 @@ public class EditorPaneMatselModuleProviderLegacy implements IEditorPaneMatselMo
 	}
 	
 	public boolean isAttributeAllowed(EditorPaneMatsel editorPaneMatsel, Attribute attribute) {
-		return this.bannedAttributes.contains(attribute.getClass(), true);
+		return !this.bannedAttributes.contains(attribute.getClass(), true);
 	}
 }

@@ -24,10 +24,12 @@ import by.fxg.speceditor.screen.project.SubscreenViewport;
 import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
+import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import by.fxg.speceditor.std.viewport.DefaultRenderer;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDragArea;
+import by.fxg.speceditor.ui.UHoldButton;
 import by.fxg.speceditor.utils.SpecFileChooser;
 import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -131,6 +133,9 @@ public class ScreenSceneProject extends BaseScreen implements ISTDInterfaceActio
 		this.unnamedUselessModule.render(batch, shape, foster, this.sUUMX, this.sUUMY, this.sUUMW, this.sUUMH);
 		
 		batch.begin();
+		if (SpecInterface.INSTANCE.highlightedTooltipElement != null) {
+			SpecInterface.INSTANCE.highlightedTooltipElement.renderTooltip(shape, foster);
+		}
 		this.dropdownArea.render(shape, foster);
 		batch.end();
 	}
@@ -156,7 +161,7 @@ public class ScreenSceneProject extends BaseScreen implements ISTDInterfaceActio
 								Exception exception = serializer.setEnvironment(renderer.viewportEnvironment).addElementStack(project.objectTree.getStack()).setFile(handle).pack();
 								if (exception != null) SpecEditor.get.renderer.currentGui = new GuiError("Error while exporting project", exception);
 							}
-						};
+						}.setButton("Save", UHoldButton.NO_KEY, 30, UColor.yellowblack);
 					} else {
 						DefaultRenderer renderer = (DefaultRenderer)this.project.renderer;
 						ScenesNodeGraphSerializer serializer = new ScenesNodeGraphSerializer().setBufferClearColor(renderer.bufferColor).setCameraParameters(renderer.cameraSettings);
@@ -176,19 +181,11 @@ public class ScreenSceneProject extends BaseScreen implements ISTDInterfaceActio
 	@Override
 	public void onDragAreaDrag(UDragArea dragArea, String id, int start, int value, boolean stopFocus) {
 		switch (id) {
-			case "objectTreeExplorer": {
-				this.project.setPreference("screen.view.objectTreeExplorer.width", (float)value / (float)Utils.getWidth());
-				this.resize(Utils.getWidth(), Utils.getHeight());
-			} break;
-			case "editorPanesEditor": {
-				this.project.setPreference("screen.view.editorPanesEditor.width", (float)value / (float)Utils.getWidth());
-				this.resize(Utils.getWidth(), Utils.getHeight());
-			} break;
-			case "assetSelector": {
-				ScreenSceneProject.this.project.setPreference("screen.view.assetSelector.height", (float)value / (float)Utils.getHeight());
-				ScreenSceneProject.this.resize(Utils.getWidth(), Utils.getHeight());
-			} break;
+			case "objectTreeExplorer": this.project.setPreference("screen.view.objectTreeExplorer.width", (float)value / (float)Utils.getWidth()); break;
+			case "editorPanesEditor": this.project.setPreference("screen.view.editorPanesEditor.width", (float)value / (float)Utils.getWidth()); break;
+			case "assetSelector": this.project.setPreference("screen.view.assetSelector.height", (float)value / (float)Utils.getHeight()); break;
 		}
+		this.resize(Utils.getWidth(), Utils.getHeight());
 	}
 	
 	@Override

@@ -8,7 +8,9 @@ import by.fxg.pilesos.i18n.I18n;
 public class SpecInterface {
 	public static SpecInterface INSTANCE;
 	public IFocusable currentFocus = null;
-	private AppCursor _prevCursor = AppCursor.UNAVAILABLE, _cursor = AppCursor.ARROW; 
+	/** Rendering is not handled for highlighted tooltip. Handle it manually in the end of render cycle. **/
+	public UIElementTooltipped highlightedTooltipElement = null;
+	private AppCursor _prevCursor = AppCursor.UNAVAILABLE, _cursor = AppCursor.ARROW;
 	
 	public void onUpdate() {
 		if (this._cursor != this._prevCursor) {

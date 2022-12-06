@@ -1,14 +1,13 @@
 package by.fxg.speceditor.std.editorPane;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.SpecEditor;
-import by.fxg.speceditor.project.assets.ProjectAsset;
-import by.fxg.speceditor.project.assets.ProjectAssetManager;
+import by.fxg.speceditor.project.assets.SpakAsset;
+import by.fxg.speceditor.screen.gui.GuiAssetManagerSetSpakUser;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -24,12 +23,9 @@ import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UDropdownSelectMultiple;
 import by.fxg.speceditor.ui.URenderBlock;
-import by.fxg.speceditor.utils.SpecFileChooser;
-import by.fxg.speceditor.utils.Utils;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements ISTDInputFieldListener, ISTDInterfaceActionListener {
 	private ElementHitboxMesh element = null;
 	private STDInputField elementName;
@@ -42,7 +38,7 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 	
 	public EditorPaneHitboxMesh() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
-		this.buttonSelectModel = new UButton("Open file");
+		this.buttonSelectModel = new UButton("Select asset");
 		this.nodesSelector = new UDropdownSelectMultiple(15, "None");
 		this.nodesSelector.setActionListener(this, "selector.nodes");
 		
@@ -61,21 +57,18 @@ public class EditorPaneHitboxMesh extends EditorPaneTreeElementHitbox implements
 		foster.setString("Mesh").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectModel.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
-			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).openSingle(true, false);
-			if (handle != null) {
-				ProjectAsset projectAsset = null;
-				if (handle.extension().equalsIgnoreCase("gltf") || handle.extension().equalsIgnoreCase("glb")) {
-					projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(SceneAsset.class, handle);
-				} else projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(Model.class, handle);
-				projectAsset.addHandler(this.element);
-				this.element.generateMesh();
-				if (this.element.model != null) {
-					String[] nodes = new String[this.element.model.nodes.size];
-					for (int i = 0 ; i != this.element.model.nodes.size; i++) nodes[i] = this.element.model.nodes.get(i).id;
-					this.nodesSelector.setVariants(nodes, this.element.nodes);
-				} else this.nodesSelector.setVariants(new String[]{"None available"}, new boolean[]{false});
-				this.updateNodeSelector();
-			}
+			SpecEditor.get.renderer.currentGui = new GuiAssetManagerSetSpakUser(this.element, Model.class, SceneAsset.class) {
+				public void setAssetUser(SpakAsset<?> asset) {
+					super.setAssetUser(asset);
+					element.generateMesh();
+					if (element.model != null) {
+						String[] nodes = new String[element.model.nodes.size];
+						for (int i = 0 ; i != element.model.nodes.size; i++) nodes[i] = element.model.nodes.get(i).id;
+						nodesSelector.setVariants(nodes, element.nodes);
+					} else nodesSelector.setVariants(new String[]{"None available"}, new boolean[]{false});
+					updateNodeSelector();
+				}
+			};
 		}
 		
 		foster.setString("Nodes").draw(x + 5, yOffset -= foster.getHeight() + 6, Align.left);

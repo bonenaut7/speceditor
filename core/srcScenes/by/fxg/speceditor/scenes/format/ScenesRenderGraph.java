@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.Array;
 import by.fxg.pilesos.bullet.objects.IPhysObject;
 import by.fxg.pilesos.bullet.objects.PhysObject;
 import by.fxg.pilesos.decals.SmartDecal;
+import by.fxg.pilesos.specpak.PakAssetManager;
 import by.fxg.speceditor.scenes.format.ScenesNodeGraph.NodeDecal;
 import by.fxg.speceditor.scenes.format.ScenesNodeGraph.NodeHitbox;
 import by.fxg.speceditor.scenes.format.ScenesNodeGraph.NodeHitboxMesh;
@@ -36,7 +37,7 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 @SuppressWarnings("rawtypes")
 public class ScenesRenderGraph {
-	public ScenesAssetIndexer assetIndexer;
+	public PakAssetManager pakAssetManager;
 	public Environment environment;
 	public Color bufferClearColor;
 	public float cameraFieldOfView, cameraFar, cameraNear;
@@ -47,8 +48,8 @@ public class ScenesRenderGraph {
 	public Array<ModelInstance> modelInstances;
 	public Array<IPhysObject> physObjects;
 	
-	public ScenesRenderGraph(ScenesAssetIndexer assetIndexer, ScenesNodeGraph nodeGraph) {
-		this.assetIndexer = assetIndexer;
+	public ScenesRenderGraph(PakAssetManager pakAssetManager, ScenesNodeGraph nodeGraph) {
+		this.pakAssetManager = pakAssetManager;
 		this.environment = nodeGraph.environment;
 		this.bufferClearColor = nodeGraph.bufferClearColor;
 		this.cameraFieldOfView = nodeGraph.cameraParameters.x;
@@ -67,30 +68,34 @@ public class ScenesRenderGraph {
 		}
 		this.decals = new Array<>();
 		for (NodeDecal node : nodeGraph.decals) {
-			Texture texture = assetIndexer.getAsset(Texture.class, node.assetIndex);
-			Decal decal = Decal.newDecal(new TextureRegion(texture), true);
-			decal.setPosition(node.position);
-			decal.setRotation(node.rotation.x, node.rotation.y, node.rotation.z);
-			decal.setScale(node.scale.x * (8F/texture.getWidth()), node.scale.y * (8F/texture.getHeight()));
-			this.decals.add(new SmartDecal(decal, node.isBillboard));
-			this.objectNames.put(this.decals.get(this.decals.size - 1), node.name);
+			if (pakAssetManager.isArchivePresent(node.pakArchive)) {
+				Texture texture = pakAssetManager.getLoadAsset(node.pakArchive, node.pakAsset, Texture.class);
+				Decal decal = Decal.newDecal(new TextureRegion(texture), true);
+				decal.setPosition(node.position);
+				decal.setRotation(node.rotation.x, node.rotation.y, node.rotation.z);
+				decal.setScale(node.scale.x * (8F/texture.getWidth()), node.scale.y * (8F/texture.getHeight()));
+				this.decals.add(new SmartDecal(decal, node.isBillboard));
+				this.objectNames.put(this.decals.get(this.decals.size - 1), node.name);
+			}
 		}
 		this.modelInstances = new Array<>();
 		for (NodeModel node : nodeGraph.models) {
-			ModelInstance modelInstance = null;
-			Class<?> type = assetIndexer.getAssetManager().getAssetType(assetIndexer.getPath(node.assetIndex));
-			if (type == Model.class) modelInstance = new ModelInstance(assetIndexer.getAsset(Model.class, node.assetIndex));
-			else if (type == SceneAsset.class) modelInstance = new ModelInstance(assetIndexer.getAsset(SceneAsset.class, node.assetIndex).scene.model);
-			for (int j = 0; j != node.materials.size; j++) {
-				modelInstance.materials.get(j).set(node.materials.get(j));
+			if (pakAssetManager.isArchivePresent(node.pakArchive)) {
+				ModelInstance modelInstance = null;
+				Class<?> type = pakAssetManager.getAssetManager().getAssetType(pakAssetManager.getResolver().formatAssetPath(node.pakArchive, node.pakAsset));
+				if (type == Model.class) modelInstance = new ModelInstance(pakAssetManager.getLoadAsset(node.pakArchive, node.pakAsset, Model.class));
+				else if (type == SceneAsset.class) modelInstance = new ModelInstance(pakAssetManager.getLoadAsset(node.pakArchive, node.pakAsset, SceneAsset.class).scene.model);
+				for (int j = 0; j != node.materials.size; j++) {
+					modelInstance.materials.get(j).set(node.materials.get(j));
+				}
+				modelInstance.transform.setToTranslation(node.position);
+				modelInstance.transform.scale(node.scale.x, node.scale.y, node.scale.z);
+				modelInstance.transform.rotate(1, 0, 0, node.rotation.x);
+				modelInstance.transform.rotate(0, 1, 0, node.rotation.y);
+				modelInstance.transform.rotate(0, 0, 1, node.rotation.z);
+				this.modelInstances.add(modelInstance);
+				this.objectNames.put(this.modelInstances.get(this.modelInstances.size - 1), node.name);
 			}
-			modelInstance.transform.setToTranslation(node.position);
-			modelInstance.transform.scale(node.scale.x, node.scale.y, node.scale.z);
-			modelInstance.transform.rotate(1, 0, 0, node.rotation.x);
-			modelInstance.transform.rotate(0, 1, 0, node.rotation.y);
-			modelInstance.transform.rotate(0, 0, 1, node.rotation.z);
-			this.modelInstances.add(modelInstance);
-			this.objectNames.put(this.modelInstances.get(this.modelInstances.size - 1), node.name);
 		}
 		this.physObjects = new Array<>();
 		for (NodeHitbox node : nodeGraph.hitboxes) {
@@ -140,13 +145,13 @@ public class ScenesRenderGraph {
 				}
 				return compoundShape;
 			} else return null;
-		} else if (node instanceof NodeHitboxMesh) {
+		} else if (node instanceof NodeHitboxMesh && this.pakAssetManager.isArchivePresent(((NodeHitboxMesh)node).pakArchive)) {
 			NodeHitboxMesh nodeHitboxMesh = (NodeHitboxMesh)node;
 			Array<Node> modelNodes = null;
 			Array<Node> genNodes = new Array<>();
-			Class<?> type = this.assetIndexer.getAssetManager().getAssetType(this.assetIndexer.getPath(nodeHitboxMesh.assetIndex));
-			if (type == Model.class) modelNodes = this.assetIndexer.getAsset(Model.class, nodeHitboxMesh.assetIndex).nodes;
-			else if (type == SceneAsset.class) modelNodes = this.assetIndexer.getAsset(SceneAsset.class, nodeHitboxMesh.assetIndex).scene.model.nodes;
+			Class<?> type = this.pakAssetManager.getAssetManager().getAssetType(this.pakAssetManager.getResolver().formatAssetPath(nodeHitboxMesh.pakArchive, nodeHitboxMesh.pakAsset));
+			if (type == Model.class) modelNodes = this.pakAssetManager.getLoadAsset(nodeHitboxMesh.pakArchive, nodeHitboxMesh.pakAsset, Model.class).nodes;
+			else if (type == SceneAsset.class) modelNodes = this.pakAssetManager.getLoadAsset(nodeHitboxMesh.pakArchive, nodeHitboxMesh.pakAsset, SceneAsset.class).scene.model.nodes;
 			if (modelNodes != null && modelNodes.size > 0) {
 				for (int i = 0; i < modelNodes.size && i < nodeHitboxMesh.nodes.length; i++) {
 					if (nodeHitboxMesh.nodes[i]) genNodes.add(modelNodes.get(i));

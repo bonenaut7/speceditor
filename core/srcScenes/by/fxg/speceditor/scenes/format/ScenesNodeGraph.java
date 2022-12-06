@@ -1,7 +1,5 @@
 package by.fxg.speceditor.scenes.format;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -22,8 +20,8 @@ public class ScenesNodeGraph {
 	public static class NodeDecal {
 		/** Object name **/
 		public String name;
-		/** Index of asset that contains image for decal **/
-		public UUID assetIndex;
+		/** Indexes of asset that contains image for decal **/
+		public String pakArchive, pakAsset;
 		/** Flag is decal billboarded or not (facing to camera all the time) **/
 		public boolean isBillboard;
 		/** Transforms **/
@@ -48,8 +46,8 @@ public class ScenesNodeGraph {
 	public static class NodeModel {
 		/** Object name **/
 		public String name;
-		/** Index of asset that contains model **/
-		public UUID assetIndex;
+		/** Indexes of asset that contains model **/
+		public String pakArchive, pakAsset;
 		/** Materials that must be applied to the model **/
 		public Array<Material> materials;
 		/** Transforms **/
@@ -76,8 +74,8 @@ public class ScenesNodeGraph {
 	}
 	
 	public static class NodeHitboxMesh extends NodeHitbox {
-		/** Index of asset that contains mesh data for generating hitbox **/
-		public UUID assetIndex;
+		/** Indexes of asset that contains mesh data for generating hitbox **/
+		public String pakArchive, pakAsset;
 		/** Nodes for generating hitbox. <br>
 		 * null - not generate, int[] with 0 length - generate from all nodes, in other case use id's flags from the array **/
 		public boolean[] nodes;

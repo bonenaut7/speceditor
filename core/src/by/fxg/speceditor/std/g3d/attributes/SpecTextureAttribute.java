@@ -7,14 +7,14 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.utils.Disposable;
 
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.project.assets.IProjectAssetHandler;
-import by.fxg.speceditor.project.assets.ProjectAsset;
+import by.fxg.speceditor.project.assets.ISpakAssetUser;
+import by.fxg.speceditor.project.assets.SpakAsset;
 
 /** Tips: <br>
- * 	 - To connect ProjectAsset, use {@link ProjectAsset#addHandler(IProjectAssetHandler)} with object of this class.
+ * 	 - To connect ProjectAsset, use {@link SpakAsset#addUser(ISpakAssetUser)} with object of this class.
  * **/
-public class SpecTextureAttribute extends TextureAttribute implements IProjectAssetHandler<Texture>, Disposable {
-	public ProjectAsset<Texture> asset;
+public class SpecTextureAttribute extends TextureAttribute implements ISpakAssetUser<Texture>, Disposable {
+	public SpakAsset<Texture> asset;
 	public boolean flipX, flipY;
 	
 	public SpecTextureAttribute(long type) {
@@ -30,7 +30,7 @@ public class SpecTextureAttribute extends TextureAttribute implements IProjectAs
 		this.flipX = attribute.flipX;
 		this.flipY = attribute.flipY;
 		if (attribute.asset != null) {
-			attribute.asset.addHandler(this);
+			attribute.asset.addUser(this);
 		}
 	}
 	
@@ -54,17 +54,17 @@ public class SpecTextureAttribute extends TextureAttribute implements IProjectAs
 		return this;
 	}
 	
-	public void onAssetHandlerAdded(ProjectAsset<Texture> asset) {
-		if (this.asset != null) this.asset.removeHandlerWithoutNotify(this);
+	public void onSpakUserAdded(SpakAsset<Texture> asset) {
+		if (this.asset != null) this.asset.removeUserWithoutNotify(this);
 		this.asset = asset;
 		this.setTexture(asset.isLoaded() ? asset.getAsset() : DefaultResources.INSTANCE.standardTexture);
 	}
 	
-	public void onAssetLoad(ProjectAsset<Texture> asset) {
+	public void onAssetLoad(SpakAsset<Texture> asset) {
 		this.setTexture(asset.getAsset());
 	}
 	
-	public void onAssetUnload(ProjectAsset<Texture> asset) {
+	public void onAssetUnload(SpakAsset<Texture> asset) {
 		this.setTexture(DefaultResources.INSTANCE.standardTexture);
 	}
 	
@@ -74,7 +74,7 @@ public class SpecTextureAttribute extends TextureAttribute implements IProjectAs
 
 	public void dispose() {
 		if (this.asset != null) {
-			this.asset.removeHandlerWithoutNotify(this);
+			this.asset.removeUserWithoutNotify(this);
 		}
 	}
 	

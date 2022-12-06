@@ -1,10 +1,9 @@
 package by.fxg.speceditor.serialization.gdx;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector2;
@@ -15,8 +14,8 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import by.fxg.speceditor.project.assets.ProjectAsset;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
+import by.fxg.speceditor.project.assets.SpakAsset;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.objectTree.ElementStack;
 import by.fxg.speceditor.std.objectTree.TreeElement;
@@ -29,6 +28,7 @@ import by.fxg.speceditor.std.objectTree.elements.ElementLight;
 import by.fxg.speceditor.std.objectTree.elements.ElementLight.ElementLightType;
 import by.fxg.speceditor.std.objectTree.elements.ElementModel;
 import by.fxg.speceditor.utils.Utils;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 public class ObjectTreeSerializers {
 	public static class ElementStackSerializer extends Serializer<ElementStack> {
@@ -120,9 +120,10 @@ public class ObjectTreeSerializers {
 		public void write(Kryo kryo, Output output, ElementDecal object) {
 			output.writeString(object.getName());
 			output.writeBoolean(object.isVisible());
-			if (object.decalAsset != null) {
+			if (object.asset != null) {
 				output.writeBoolean(true);
-				output.writeString(object.decalAsset.getUUID().toString());
+				output.writeString(object.asset.getArchive().getName());
+				output.writeString(object.asset.getPath());
 			} else output.writeBoolean(false);
 			kryo.writeObject(output, object.decal.position);
 			kryo.writeObject(output, object.decal.rotation);
@@ -134,9 +135,14 @@ public class ObjectTreeSerializers {
 			ElementDecal elementDecal = new ElementDecal(input.readString());
 			elementDecal.setVisible(input.readBoolean());
 			if (input.readBoolean()) {
-				UUID uuid = UUID.fromString(input.readString());
-				ProjectAsset<Texture> projectAsset = ProjectAssetManager.INSTANCE.getAsset(Texture.class, uuid);
-				if (projectAsset != null) projectAsset.addHandler(elementDecal);
+				String pakArchive = input.readString();
+				String pakAsset = input.readString();
+				SpakAsset asset = ProjectAssetManager.INSTANCE.getPakAsset(pakArchive, pakAsset);
+				if (asset != null) {
+					if (asset.getType() == Texture.class) {
+						asset.addUser(elementDecal);
+					} else Utils.logWarn("Deserialization", "Element `", elementDecal.getName(), "`'s Asset `", pakAsset, "`(`", pakArchive, "`) type incorrect `", asset.getType().getSimpleName(), "`. Required: Texture. Removing asset for now...");
+				} else Utils.logWarn("Deserialization", "Element `", elementDecal.getName(), "` can't get asset `", pakAsset, "`(`", pakArchive, "`). Removing asset for now...");
 			}
 			elementDecal.decal.position = kryo.readObject(input, Vector3.class);
 			elementDecal.decal.rotation = kryo.readObject(input, Vector3.class);
@@ -150,9 +156,10 @@ public class ObjectTreeSerializers {
 		public void write(Kryo kryo, Output output, ElementModel object) {
 			output.writeString(object.getName());
 			output.writeBoolean(object.isVisible());
-			if (object.modelAsset != null) {
+			if (object.asset != null) {
 				output.writeBoolean(true);
-				output.writeString(object.modelAsset.getUUID().toString());
+				output.writeString(object.asset.getArchive().getName());
+				output.writeString(object.asset.getPath());
 			} else output.writeBoolean(false);
 			if (object.modelInstance != null) {
 				output.writeBoolean(true);
@@ -170,10 +177,14 @@ public class ObjectTreeSerializers {
 			ElementModel elementModel = new ElementModel(input.readString());
 			elementModel.setVisible(input.readBoolean());
 			if (input.readBoolean()) {
-				UUID uuid = UUID.fromString(input.readString());
-				ProjectAsset<?> projectAsset = ProjectAssetManager.INSTANCE.getAsset(uuid);
-				if (projectAsset != null) projectAsset.addHandler(elementModel);
-				else Utils.logDebug("[ElementModel][Deserialization] Can't find asset `", uuid.toString(), "` with Unknown type loaded.");
+				String pakArchive = input.readString();
+				String pakAsset = input.readString();
+				SpakAsset asset = ProjectAssetManager.INSTANCE.getPakAsset(pakArchive, pakAsset);
+				if (asset != null) {
+					if (asset.getType() == Model.class || asset.getType() == SceneAsset.class) {
+						asset.addUser(elementModel);
+					} else Utils.logWarn("Deserialization", "Element `", elementModel.getName(), "`'s Asset `", pakAsset, "`(`", pakArchive, "`) type incorrect `", asset.getType().getSimpleName(), "`. Required: Model/SceneAsset. Removing asset for now...");
+				} else Utils.logWarn("Deserialization", "Element `", elementModel.getName(), "` can't get asset `", pakAsset, "`(`", pakArchive, "`). Removing asset for now...");
 			}
 			if (input.readBoolean()) {
 				Array<Material> materials = new Array<>();
@@ -273,9 +284,10 @@ public class ObjectTreeSerializers {
 			output.writeInt(object.btFilterGroup);
 			output.writeByte(object.linkToParent.length);
 			for (int i = 0; i != object.linkToParent.length; i++) output.writeBoolean(object.linkToParent[i]);
-			if (object.modelAsset != null) {
+			if (object.asset != null) {
 				output.writeBoolean(true);
-				output.writeString(object.modelAsset.getUUID().toString());
+				output.writeString(object.asset.getArchive().getName());
+				output.writeString(object.asset.getPath());
 				output.writeInt(object.nodes.length);
 				for (int i = 0; i != object.nodes.length; i++) output.writeBoolean(object.nodes[i]);
 			} else output.writeBoolean(false);
@@ -296,14 +308,18 @@ public class ObjectTreeSerializers {
 			byte booleanValues = input.readByte();
 			for (int i = 0; i != booleanValues && i < elementHitboxMesh.linkToParent.length; i++) elementHitboxMesh.linkToParent[i] = input.readBoolean();
 			if (input.readBoolean()) {
-				UUID uuid = UUID.fromString(input.readString());
+				String pakArchive = input.readString();
+				String pakAsset = input.readString();
 				boolean[] nodes = new boolean[input.readInt()];
 				for (int i = 0; i != nodes.length; i++) nodes[i] = input.readBoolean();
-				ProjectAsset<?> projectAsset = ProjectAssetManager.INSTANCE.getAsset(uuid);
-				if (projectAsset != null) {
-					projectAsset.addHandler(elementHitboxMesh);
-					elementHitboxMesh.generateMesh(nodes);
-				} else Utils.logDebug("[ElementHitboxMesh][Deserialization] Can't find asset `", uuid.toString(), "` with Unknown type loaded.");
+				
+				SpakAsset asset = ProjectAssetManager.INSTANCE.getPakAsset(pakArchive, pakAsset);
+				if (asset != null) {
+					if (asset.getType() == Model.class || asset.getType() == SceneAsset.class) {
+						asset.addUser(elementHitboxMesh);
+						elementHitboxMesh.generateMesh(nodes);
+					} else Utils.logWarn("Deserialization", "Element `", elementHitboxMesh.getName(), "`'s Asset `", pakAsset, "`(`", pakArchive, "`) type incorrect `", asset.getType().getSimpleName(), "`. Required: Model/SceneAsset. Removing asset for now...");
+				} else Utils.logWarn("Deserialization", "Element `", elementHitboxMesh.getName(), "` can't get asset `", pakAsset, "`(`", pakArchive, "`). Removing asset for now...");
 			}
 			elementHitboxMesh.getTransform(GizmoTransformType.TRANSLATE).set(kryo.readObject(input, Vector3.class));
 			elementHitboxMesh.getTransform(GizmoTransformType.ROTATE).set(kryo.readObject(input, Vector3.class));

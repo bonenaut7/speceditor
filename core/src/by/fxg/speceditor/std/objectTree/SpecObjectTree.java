@@ -168,6 +168,9 @@ public class SpecObjectTree extends UIElement implements ISTDInterfaceActionList
 						} else {
 							this.setClick(null, true);
 						}
+					} else if (false) { //[LMB Click Visibility] Eye icon on the right
+						
+					
 					} else if (this.getInput().isMouseDown(0, false)) { //[LMB Click]
 						if (this._clickElement == element && isFolder && SpecEditor.get.getTick() - this._elementClickTime < 15L) { //[LMB Click expand]
 							this.setClick(element, true);

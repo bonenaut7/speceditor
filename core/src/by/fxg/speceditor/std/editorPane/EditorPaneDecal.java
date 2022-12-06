@@ -1,12 +1,12 @@
 package by.fxg.speceditor.std.editorPane;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.project.assets.ProjectAssetManager;
+import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.screen.gui.GuiAssetManagerSetSpakUser;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
 import by.fxg.speceditor.std.objectTree.ITreeElementSelector;
@@ -21,8 +21,6 @@ import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.UCheckbox;
 import by.fxg.speceditor.ui.URenderBlock;
-import by.fxg.speceditor.utils.SpecFileChooser;
-import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListener {
@@ -35,28 +33,27 @@ public class EditorPaneDecal extends EditorPane implements ISTDInputFieldListene
 	
 	public EditorPaneDecal() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
-		this.buttonSelectDecal = new UButton("Open file");
+		this.buttonSelectDecal = new UButton("Select asset");
 		this.billboardDecal = new UCheckbox(false);
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
 	}
 	
 	public int updateAndRender(Batch batch, ShapeDrawer shape, Foster foster, int x, int y, int width, int height, int yOffset) {
 		yOffset -= 8;
-		float longestString = this.getLongestStringWidth(foster, "Name", "Decal");
+		float longestString = this.getLongestStringWidth(foster, "Name", "Texture", "Billboard");
 		
 		foster.setString("Name").draw(x + 5, yOffset -= foster.getHeight(), Align.left);
 		this.elementName.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).setFoster(foster).update();
 		this.elementName.render(batch, shape);
 		
-		foster.setString("Decal").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
+		foster.setString("Texture").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectDecal.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).render(shape, foster);
 		if (this.buttonSelectDecal.isPressed()) {
-			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).openSingle(true, false);
-			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(this.element);
+			SpecEditor.get.renderer.currentGui = new GuiAssetManagerSetSpakUser(this.element, Texture.class);
 		}
 		
 		foster.setString("Billboard").draw(x + 5, yOffset -= foster.getHeight() + 7, Align.left);
-		this.billboardDecal.setTransforms(x + foster.getWidth() + 10, yOffset - 2, 12, 12).update();
+		this.billboardDecal.setTransforms(x + longestString + 10, yOffset - 2, 12, 12).update();
 		this.billboardDecal.render(shape);
 		this.element.decal.setBillboard(this.billboardDecal.getValue());
 		

@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.Color;
 import by.fxg.pilesos.graphics.PilesosScissorStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.std.ui.ISTDInterfaceActionListener;
 import by.fxg.speceditor.std.ui.SpecInterface;
 import by.fxg.speceditor.std.ui.SpecInterface.AppCursor;
 import by.fxg.speceditor.std.ui.SpecInterface.UColor;
-import by.fxg.speceditor.std.ui.UIElement;
+import by.fxg.speceditor.std.ui.UIElementTooltipped;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class UButton extends UIElement {
+public class UButton extends UIElementTooltipped {
 	protected String name;
 	protected boolean enabled = true;
 	protected Color color;
@@ -48,6 +49,7 @@ public class UButton extends UIElement {
 			PilesosScissorStack.instance.popScissors();
 		}
 		shape.setColor(prevColor);
+		this.updateTooltip();
 	}
 	
 	public String getName() { return this.name; }
@@ -79,4 +81,7 @@ public class UButton extends UIElement {
 	public boolean isPressed() {
 		return this.enabled && SpecEditor.get.getInput().isMouseDown(0, false) && this.isMouseOver();
 	}
+	
+	public UButton setTooltip(String... tooltipText) { super.setTooltip(tooltipText); return this; }
+	public UButton setTooltip(Foster foster, String... tooltipText) { super.setTooltip(foster, tooltipText); return this; }
 }

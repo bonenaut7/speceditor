@@ -10,8 +10,8 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.project.assets.IProjectAssetHandler;
-import by.fxg.speceditor.project.assets.ProjectAsset;
+import by.fxg.speceditor.project.assets.ISpakAssetUser;
+import by.fxg.speceditor.project.assets.SpakAsset;
 import by.fxg.speceditor.render.DebugDraw3D;
 import by.fxg.speceditor.render.DebugDraw3D.IDebugDraw;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
@@ -22,8 +22,8 @@ import by.fxg.speceditor.std.ui.SpecInterface.UColor;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElementGizmos, IDebugDraw, IProjectAssetHandler {
-	public ProjectAsset modelAsset;
+public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElementGizmos, IDebugDraw, ISpakAssetUser {
+	public SpakAsset asset;
 	/** Nodes for generating hitbox. <br>
 	 * null - not generate, int[] with 0 length - generate from all nodes, in other case use id's from the array **/
 	public boolean[] nodes = new boolean[0];
@@ -48,8 +48,8 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 		this.btFilterMask = copy.btFilterMask;
 		this.btFilterGroup = copy.btFilterGroup;
 		this.linkToParent = Arrays.copyOf(copy.linkToParent, copy.linkToParent.length);
-		if (copy.modelAsset != null) {
-			copy.modelAsset.addHandler(this);
+		if (copy.asset != null) {
+			copy.asset.addUser(this);
 			this.nodes = Arrays.copyOf(copy.nodes, copy.nodes.length);
 			this.generateMesh();
 		} else this.setNewModel(DefaultResources.INSTANCE.standardModel);
@@ -93,13 +93,13 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 		}
 	}
 	
-	public void onAssetHandlerAdded(ProjectAsset asset) {
-		if (this.modelAsset != null) this.modelAsset.removeHandlerWithoutNotify(this);
-		this.modelAsset = asset;
+	public void onSpakUserAdded(SpakAsset asset) {
+		if (this.asset != null) this.asset.removeUserWithoutNotify(this);
+		this.asset = asset;
 		this.onAssetLoad(asset);
 	}
 	
-	public void onAssetLoad(ProjectAsset asset) {
+	public void onAssetLoad(SpakAsset asset) {
 		Object object = asset.getAsset();
 		if (object instanceof SceneAsset) { //gltf model
 			this.setNewModel(((SceneAsset)object).scene.model);
@@ -108,12 +108,12 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 		}
 	}
 	
-	public void onAssetUnload(ProjectAsset asset) {
+	public void onAssetUnload(SpakAsset asset) {
 		this.setNewModel(null);
 	}
 	
-	public void onAssetHandlerRemoved(ProjectAsset asset) {
-		this.modelAsset = null;
+	public void onSpakUserRemoved(SpakAsset asset) {
+		this.asset = null;
 		this.setNewModel(null);
 	}
 	
@@ -122,8 +122,8 @@ public class ElementHitboxMesh extends TreeElementHitbox implements ITreeElement
 	}
 	
 	public void onDelete() {
-		if (this.modelAsset != null) {
-			this.modelAsset.removeHandlerWithoutNotify(this);
+		if (this.asset != null) {
+			this.asset.removeUserWithoutNotify(this);
 		}
 	}
 	

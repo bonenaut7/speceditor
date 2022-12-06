@@ -1,6 +1,5 @@
 package by.fxg.speceditor.std.editorPane.matsel.legacy;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Attribute;
@@ -10,22 +9,21 @@ import com.badlogic.gdx.utils.Array;
 
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.project.assets.ProjectAssetManager;
+import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.screen.gui.GuiAssetManagerSetSpakUser;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatsel;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselModule;
 import by.fxg.speceditor.std.g3d.attributes.SpecTextureAttribute;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
 import by.fxg.speceditor.std.ui.STDDropdownAreaElement;
 import by.fxg.speceditor.ui.UButton;
-import by.fxg.speceditor.utils.SpecFileChooser;
-import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModule {
 	private UButton buttonSelectTexture, buttonFlipTextureX, buttonFlipTextureY;
 	
 	public EditorPaneMatselModuleTextureAttribute() {
-		this.buttonSelectTexture = new UButton("Open file");
+		this.buttonSelectTexture = new UButton("Select asset");
 		this.buttonFlipTextureX = new UButton("UV Flip - X");
 		this.buttonFlipTextureY = new UButton("UV Flip - Y");
 	}
@@ -36,8 +34,7 @@ public class EditorPaneMatselModuleTextureAttribute extends EditorPaneMatselModu
 		this.buttonSelectTexture.setTransforms(x + (int)foster.getWidth() + 10, yOffset - (int)foster.getHalfHeight(), width - (int)foster.getWidth() - 10, 12);
 		this.buttonSelectTexture.render(shape, foster);
 		if (this.buttonSelectTexture.isPressed()) {
-			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_IMAGES).openSingle(true, false);
-			if (handle != null) ProjectAssetManager.INSTANCE.getLoadAsset(Texture.class, handle).addHandler(attribute);
+			SpecEditor.get.renderer.currentGui = new GuiAssetManagerSetSpakUser(attribute, Texture.class);
 		}
 		
 		foster.setString("UV Flip:").draw(x, (yOffset -= foster.getHeight() + 8) - 1, Align.left);

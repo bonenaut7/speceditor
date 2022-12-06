@@ -1,7 +1,5 @@
 package by.fxg.speceditor.scenes.format;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -67,7 +65,8 @@ public class ScenesKryoExtension {
 	public static class ScenesDecalSerializer extends Serializer<ScenesNodeGraph.NodeDecal> {
 		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeDecal object) {
 			output.writeString(object.name);
-			output.writeString(object.assetIndex.toString());
+			output.writeString(object.pakArchive);
+			output.writeString(object.pakAsset);
 			output.writeBoolean(object.isBillboard);
 			kryo.writeObject(output, object.position);
 			kryo.writeObject(output, object.rotation);
@@ -77,7 +76,8 @@ public class ScenesKryoExtension {
 		public ScenesNodeGraph.NodeDecal read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeDecal> type) {
 			ScenesNodeGraph.NodeDecal decal = new ScenesNodeGraph.NodeDecal();
 			decal.name = input.readString();
-			decal.assetIndex = UUID.fromString(input.readString());
+			decal.pakArchive = input.readString();
+			decal.pakAsset = input.readString();
 			decal.isBillboard = input.readBoolean();
 			decal.position = kryo.readObject(input, Vector3.class);
 			decal.rotation = kryo.readObject(input, Vector3.class);
@@ -133,7 +133,8 @@ public class ScenesKryoExtension {
 	public static class ScenesModelSerializer extends Serializer<ScenesNodeGraph.NodeModel> {
 		public void write(Kryo kryo, Output output, ScenesNodeGraph.NodeModel object) {
 			output.writeString(object.name);
-			output.writeString(object.assetIndex.toString());
+			output.writeString(object.pakArchive);
+			output.writeString(object.pakAsset);
 			output.writeInt(object.materials.size);
 			for (int i = 0; i != object.materials.size; i++) {
 				kryo.writeObject(output, object.materials.get(i));
@@ -146,7 +147,8 @@ public class ScenesKryoExtension {
 		public ScenesNodeGraph.NodeModel read(Kryo kryo, Input input, Class<ScenesNodeGraph.NodeModel> type) {
 			ScenesNodeGraph.NodeModel model = new ScenesNodeGraph.NodeModel();
 			model.name = input.readString();
-			model.assetIndex = UUID.fromString(input.readString());
+			model.pakArchive = input.readString();
+			model.pakAsset = input.readString();
 			model.materials = new Array<>();
 			int size = input.readInt();
 			for (int i = 0; i != size; i++) {
@@ -198,7 +200,8 @@ public class ScenesKryoExtension {
 			kryo.writeObject(output, object.position);
 			kryo.writeObject(output, object.rotation);
 			kryo.writeObject(output, object.scale);
-			output.writeString(object.assetIndex.toString());
+			output.writeString(object.pakArchive);
+			output.writeString(object.pakAsset);
 			output.writeInt(object.nodes.length);
 			for (int i = 0; i != object.nodes.length; i++) {
 				output.writeBoolean(object.nodes[i]);
@@ -216,7 +219,8 @@ public class ScenesKryoExtension {
 			hitboxMesh.position = kryo.readObject(input, Vector3.class);
 			hitboxMesh.rotation = kryo.readObject(input, Vector3.class);
 			hitboxMesh.scale = kryo.readObject(input, Vector3.class);
-			hitboxMesh.assetIndex = UUID.fromString(input.readString());
+			hitboxMesh.pakArchive = input.readString();
+			hitboxMesh.pakAsset = input.readString();
 			hitboxMesh.nodes = new boolean[input.readInt()];
 			for (int i = 0; i != hitboxMesh.nodes.length; i++) {
 				hitboxMesh.nodes[i] = input.readBoolean();

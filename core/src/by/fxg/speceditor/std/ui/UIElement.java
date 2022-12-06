@@ -16,12 +16,12 @@ public abstract class UIElement {
 	 *  of misinterpreting concept of sizes in programming (personal opinion of @author)
 	 *  
 	 *  Example cube 5x5 px:
-	 *  X 0 1 2 3 4
 	 *  4 # # # # #
 	 *  3 # # # # #
 	 *  2 # # # # #
 	 *  1 # # # # #
 	 *  0 # # # # #
+	 *  X 0 1 2 3 4
 	 *  
 	 *  Concept is cube with size 5x5 placed onto position x=0, y=0 and start position of size 
 	 *  is x and y(0 and 0 respectively). Programmer by mistake can perceive size as 4x4 instead of 5x5

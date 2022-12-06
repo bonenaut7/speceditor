@@ -1,13 +1,13 @@
 package by.fxg.speceditor.std.editorPane;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Align;
 
 import by.fxg.pilesos.graphics.font.Foster;
-import by.fxg.speceditor.project.assets.ProjectAsset;
-import by.fxg.speceditor.project.assets.ProjectAssetManager;
+import by.fxg.speceditor.SpecEditor;
+import by.fxg.speceditor.project.assets.SpakAsset;
+import by.fxg.speceditor.screen.gui.GuiAssetManagerSetSpakUser;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselMaterialArray;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.GizmosModule;
@@ -22,12 +22,9 @@ import by.fxg.speceditor.ui.ColoredInputField;
 import by.fxg.speceditor.ui.NumberCursorInputField;
 import by.fxg.speceditor.ui.UButton;
 import by.fxg.speceditor.ui.URenderBlock;
-import by.fxg.speceditor.utils.SpecFileChooser;
-import by.fxg.speceditor.utils.Utils;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class EditorPaneModel extends EditorPane implements ISTDInputFieldListener {
 	private ElementModel element = null;
 	private STDInputField elementName;
@@ -39,7 +36,7 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 	public EditorPaneModel() {
 		this.elementName = new ColoredInputField().setAllowFullfocus(false).setListener(this, "name").setMaxLength(48);
 		
-		this.buttonSelectModel = new UButton("Open file");
+		this.buttonSelectModel = new UButton("Select asset");
 		this.transform = (TransformBlock)new TransformBlock(this).setDropped(true);
 		this.matsel = (EditorPaneMatselMaterialArray)new EditorPaneMatselMaterialArray("Material selection").setDropped(true);
 	}
@@ -55,17 +52,13 @@ public class EditorPaneModel extends EditorPane implements ISTDInputFieldListene
 		foster.setString("Model").draw(x + 5, yOffset -= foster.getHeight() + 8, Align.left);
 		this.buttonSelectModel.setTransforms(x + longestString + 10, yOffset -= foster.getHalfHeight(), width - longestString - 15, 15).render(shape, foster);
 		if (this.buttonSelectModel.isPressed()) {
-			FileHandle handle = SpecFileChooser.getInProjectDirectory().setFilter(Utils.FILENAMEFILTER_MODELS).openSingle(true, false);
-			if (handle != null) {
-				ProjectAsset projectAsset = null;
-				if (handle.extension().equalsIgnoreCase("gltf") || handle.extension().equalsIgnoreCase("glb")) {
-					projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(SceneAsset.class, handle);
-				} else projectAsset = ProjectAssetManager.INSTANCE.getLoadAsset(Model.class, handle);
-				projectAsset.addHandler(this.element);
-			}
-			this.matsel.update(this.element.modelInstance.materials);
+			SpecEditor.get.renderer.currentGui = new GuiAssetManagerSetSpakUser(this.element, Model.class, SceneAsset.class) {
+				public void setAssetUser(SpakAsset<?> asset) {
+					super.setAssetUser(asset);
+					matsel.update(element.modelInstance.materials);
+				}
+			};
 		}
-		
 		yOffset = this.transform.setTransforms(x + 5, width - 10).render(batch, shape, foster, yOffset - 5);
 		yOffset = this.matsel.setTransforms(x + 5, width - 10).render(batch, shape, foster, yOffset - 5);
 		if (this.matsel.dropdownArea.isFocused()) this.matsel.dropdownArea.render(shape, foster);

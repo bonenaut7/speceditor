@@ -16,6 +16,7 @@ import by.fxg.speceditor.project.ProjectSolver;
 import by.fxg.speceditor.project.assets.ProjectAssetManager;
 import by.fxg.speceditor.scenes.screen.ScreenSceneProject;
 import by.fxg.speceditor.screen.gui.GuiError;
+import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselEnvironment;
 import by.fxg.speceditor.std.editorPane.matsel.EditorPaneMatselMaterialArray;
 import by.fxg.speceditor.std.editorPane.matsel.legacy.EditorPaneMatselModuleProviderLegacy;
 import by.fxg.speceditor.std.objectTree.SpecObjectTree;
@@ -47,7 +48,7 @@ public class ScenesProject extends BasicProject {
 
 	public boolean loadProject() {
 		//Setup default UI parameters
-		EditorPaneMatselMaterialArray.defaultModuleProvider = //EditorPaneMatselEnvironment.defaultModuleProvider = this.useLegacyRenderer ?
+		EditorPaneMatselMaterialArray.defaultModuleProvider = EditorPaneMatselEnvironment.defaultModuleProvider = //this.useLegacyRenderer ?
 				new EditorPaneMatselModuleProviderLegacy(PointLightsAttribute.class, DirectionalLightsAttribute.class, SpotLightsAttribute.class, CubemapAttribute.class);// :
 				//new EditorPaneMatselModuleProviderGLTF(PointLightsAttribute.class, DirectionalLightsAttribute.class, SpotLightsAttribute.class, CubemapAttribute.class);
 		

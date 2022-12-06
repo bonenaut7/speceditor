@@ -9,8 +9,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.project.assets.IProjectAssetHandler;
-import by.fxg.speceditor.project.assets.ProjectAsset;
+import by.fxg.speceditor.project.assets.ISpakAssetUser;
+import by.fxg.speceditor.project.assets.SpakAsset;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.ITreeElementModelProvider;
@@ -18,8 +18,8 @@ import by.fxg.speceditor.std.objectTree.TreeElement;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ElementModel extends TreeElement implements ITreeElementGizmos, ITreeElementModelProvider, IProjectAssetHandler {
-	public ProjectAsset<?> modelAsset = null;
+public class ElementModel extends TreeElement implements ITreeElementGizmos, ITreeElementModelProvider, ISpakAssetUser {
+	public SpakAsset<?> asset = null;
 	public ModelInstance modelInstance;
 	/** used for setting materials while model being reloaded or loaded another model(???) **/
 	private Array<Material> _modelInstanceMaterialsCache = new Array<>();
@@ -37,13 +37,13 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	private ElementModel(ElementModel copy) {
 		this.displayName = copy.displayName;
 		this.visible = copy.visible;
-		if (copy.modelAsset != null) {
+		if (copy.asset != null) {
 			if (copy.modelInstance != null) {
 				for (Material material : copy.modelInstance.materials) {
 					this._modelInstanceMaterialsCache.add(material.copy());
 				}
 			}
-			copy.modelAsset.addHandler(this);
+			copy.asset.addUser(this);
 		} else this.modelInstance = new ModelInstance(DefaultResources.INSTANCE.standardModel);
 		this.position.set(copy.position);
 		this.rotation.set(copy.rotation);
@@ -74,13 +74,13 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 		return this.modelInstance;
 	}
 	
-	public void onAssetHandlerAdded(ProjectAsset asset) {
-		if (this.modelAsset != null) this.modelAsset.removeHandlerWithoutNotify(this);
-		this.modelAsset = asset;
+	public void onSpakUserAdded(SpakAsset asset) {
+		if (this.asset != null) this.asset.removeUserWithoutNotify(this);
+		this.asset = asset;
 		this.onAssetLoad(asset);
 	}
 	
-	public void onAssetLoad(ProjectAsset asset) {
+	public void onAssetLoad(SpakAsset asset) {
 		Object object = asset.getAsset();
 		if (object instanceof SceneAsset) { //gltf model
 			this.setModel(((SceneAsset)object).scene.model);
@@ -89,7 +89,7 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 		}
 	}
 	
-	public void onAssetUnload(ProjectAsset asset) {
+	public void onAssetUnload(SpakAsset asset) {
 		this._modelInstanceMaterialsCache.size = 0;
 		if (this.modelInstance != null) {
 			for (Material material : this.modelInstance.materials) {
@@ -99,8 +99,8 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 		this.setModel(DefaultResources.INSTANCE.standardModel);
 	}
 	
-	public void onAssetHandlerRemoved(ProjectAsset asset) {
-		this.modelAsset = null;
+	public void onSpakUserRemoved(SpakAsset asset) {
+		this.asset = null;
 		this.setModel(DefaultResources.INSTANCE.standardModel);
 	}
 	
@@ -113,8 +113,8 @@ public class ElementModel extends TreeElement implements ITreeElementGizmos, ITr
 	}
 	
 	public void onDelete() {
-		if (this.modelAsset != null) {
-			this.modelAsset.removeHandlerWithoutNotify(this);
+		if (this.asset != null) {
+			this.asset.removeUserWithoutNotify(this);
 		}
 	}
 

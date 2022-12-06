@@ -1,9 +1,6 @@
 package by.fxg.speceditor.scenes.format;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.zip.ZipException;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -28,6 +25,7 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
+import by.fxg.pilesos.specpak.PakAssetManager;
 import by.fxg.speceditor.serialization.gdx.GdxAttributeSerializers.AttributesSerializer;
 import by.fxg.speceditor.serialization.gdx.GdxAttributeSerializers.BlendingAttributeSerializer;
 import by.fxg.speceditor.serialization.gdx.GdxAttributeSerializers.ColorAttributeSerializer;
@@ -52,41 +50,19 @@ import net.mgsx.gltf.scene3d.attributes.PBRFloatAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 
 public class ScenesNodeGraphDeserializer {
-	protected ScenesAssetIndexer assetIndexer;
-	protected FileHandle assetsFileHandle, graphFileHandle;
+	protected PakAssetManager pakAssetManager;
+	protected Kryo kryo;
 	
-	public ScenesNodeGraphDeserializer(FileHandle assetsFileHandle, FileHandle graphFileHandle) {
-		this.assetsFileHandle = assetsFileHandle;
-		this.graphFileHandle = graphFileHandle;
+	public ScenesNodeGraphDeserializer(PakAssetManager pakAssetManager) {
+		this.pakAssetManager = pakAssetManager;
+		this.kryo = this.createKryo();
 	}
 	
-	public ScenesNodeGraphDeserializer(ScenesAssetIndexer assetIndexer, FileHandle graphFileHandle) {
-		this.assetIndexer = assetIndexer;
-		this.graphFileHandle = graphFileHandle;
-	}
-	
-	public ScenesNodeGraph loadGraph() {
-		try {
-			if (this.assetIndexer == null) {
-				this.assetIndexer = new ScenesAssetIndexer(this.assetsFileHandle);
-				this.assetIndexer.loadAssets(true);
-			}
-			
-			Kryo kryo = this.createKryo();
-			Input input = new Input(new ByteArrayInputStream(this.graphFileHandle.readBytes()));
-			ScenesNodeGraph graph = (ScenesNodeGraph)kryo.readClassAndObject(input);
-			input.close();
-			return graph;
-		} catch (ZipException zipException) {
-			zipException.printStackTrace();
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
-		}
-		return null;
-	}
-	
-	public ScenesAssetIndexer getAssetIndexer() {
-		return this.assetIndexer;
+	public ScenesNodeGraph loadGraph(FileHandle graphFileHandle) {
+		Input input = new Input(new ByteArrayInputStream(graphFileHandle.readBytes()));
+		ScenesNodeGraph graph = (ScenesNodeGraph)this.kryo.readClassAndObject(input);
+		input.close();
+		return graph;
 	}
 	
 	protected Kryo createKryo() {
@@ -110,8 +86,8 @@ public class ScenesNodeGraphDeserializer {
 		kryo.register(PBRFlagAttribute.class, new PBRFlagAttributeSerializer());
 		kryo.register(PBRFloatAttribute.class, new PBRFloatAttributeSerializer());
 		
-		kryo.register(TextureAttribute.class, new TextureAttributeDeserializer(this.assetIndexer));
-		kryo.register(PBRTextureAttribute.class, new PBRTextureAttributeDeserializer(this.assetIndexer));
+		kryo.register(TextureAttribute.class, new TextureAttributeDeserializer(this.pakAssetManager));
+		kryo.register(PBRTextureAttribute.class, new PBRTextureAttributeDeserializer(this.pakAssetManager));
 		kryo.register(ScenesNodeGraph.class, new ScenesKryoExtension.ScenesGraphSerializer());
 		kryo.register(ScenesNodeGraph.NodeDecal.class, new ScenesKryoExtension.ScenesDecalSerializer());
 		kryo.register(ScenesNodeGraph.NodeLight.class, new ScenesKryoExtension.ScenesLightSerializer());
@@ -123,9 +99,9 @@ public class ScenesNodeGraphDeserializer {
 	}
 	
 	protected static class TextureAttributeDeserializer extends Serializer<TextureAttribute> {
-		private ScenesAssetIndexer assetIndexer;
-		protected TextureAttributeDeserializer(ScenesAssetIndexer assetIndexer) {
-			this.assetIndexer = assetIndexer;
+		private PakAssetManager pakAssetManager;
+		protected TextureAttributeDeserializer(PakAssetManager pakAssetManager) {
+			this.pakAssetManager = pakAssetManager;
 		}
 		
 		public void write(Kryo kryo, Output output, TextureAttribute object) {}
@@ -134,19 +110,22 @@ public class ScenesNodeGraphDeserializer {
 			boolean flipX = input.readBoolean();
 			boolean flipY = input.readBoolean();
 			if (input.readBoolean()) {
-				UUID uuid = UUID.fromString(input.readString());
-				TextureRegion region = new TextureRegion(this.assetIndexer.getAsset(Texture.class, uuid));
-				region.flip(flipX, flipY);
-				attribute.set(region);
+				String pakArchive = input.readString();
+				String pakAsset = input.readString();
+				if (this.pakAssetManager.isArchivePresent(pakArchive)) {
+					TextureRegion region = new TextureRegion(this.pakAssetManager.getLoadAsset(pakArchive, pakAsset, Texture.class));
+					region.flip(flipX, flipY);
+					attribute.set(region);
+				}
 			}
 			return attribute;
 		}
 	}
 	
 	protected static class PBRTextureAttributeDeserializer extends Serializer<PBRTextureAttribute> {
-		private ScenesAssetIndexer assetIndexer;
-		protected PBRTextureAttributeDeserializer(ScenesAssetIndexer assetIndexer) {
-			this.assetIndexer = assetIndexer;
+		private PakAssetManager pakAssetManager;
+		protected PBRTextureAttributeDeserializer(PakAssetManager pakAssetManager) {
+			this.pakAssetManager = pakAssetManager;
 		}
 		
 		public void write(Kryo kryo, Output output, PBRTextureAttribute object) {}
@@ -155,10 +134,13 @@ public class ScenesNodeGraphDeserializer {
 			boolean flipX = input.readBoolean();
 			boolean flipY = input.readBoolean();
 			if (input.readBoolean()) {
-				UUID uuid = UUID.fromString(input.readString());
-				TextureRegion region = new TextureRegion(this.assetIndexer.getAsset(Texture.class, uuid));
-				region.flip(flipX, flipY);
-				return new PBRTextureAttribute(Attribute.getAttributeType(attributeType), region);
+				String pakArchive = input.readString();
+				String pakAsset = input.readString();
+				if (this.pakAssetManager.isArchivePresent(pakArchive)) {
+					TextureRegion region = new TextureRegion(this.pakAssetManager.getLoadAsset(pakArchive, pakAsset, Texture.class));
+					region.flip(flipX, flipY);
+					return new PBRTextureAttribute(Attribute.getAttributeType(attributeType), region);
+				}
 			}
 			return null;
 		}

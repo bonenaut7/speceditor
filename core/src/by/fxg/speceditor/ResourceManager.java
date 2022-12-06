@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting;
 import com.badlogic.gdx.graphics.g3d.Model;
 
-import by.fxg.pilesos.PilesosInputImpl;
 import by.fxg.pilesos.graphics.SpriteStack;
 import by.fxg.pilesos.graphics.font.Foster;
 import by.fxg.pilesos.i18n.I18n.I18nPool;

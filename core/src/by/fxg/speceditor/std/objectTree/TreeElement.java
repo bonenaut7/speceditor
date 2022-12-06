@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.project.assets.IProjectAssetHandler;
+import by.fxg.speceditor.project.assets.ISpakAssetUser;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.ui.STDDropdownArea;
@@ -59,7 +59,7 @@ public abstract class TreeElement {
 	
 	/** Called before object deletion from ObjectTree **/
 	public void onDelete() {
-		if (this instanceof IProjectAssetHandler) {
+		if (this instanceof ISpakAssetUser) {
 			throw new IllegalStateException("Project asset handler objects must override onDelete() method and remove self from asset.");
 		}
 	}

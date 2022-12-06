@@ -1,129 +1,147 @@
 package by.fxg.speceditor.project.assets;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.InputChunked;
+import com.esotericsoftware.kryo.io.OutputChunked;
 
 import by.fxg.speceditor.utils.Utils;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 public class ProjectAssetManager implements Disposable {
 	public static ProjectAssetManager INSTANCE;
-	private Map<UUID, ProjectAsset<?>> projectAssets = new HashMap<>();
-	private Map<Path, UUID> pathToUUIDMap = new HashMap<>();
+	protected AssetManager assetManager;
+	protected PAMFileHandleResolver resolver;
+	protected Map<String, Class<?>> assetTypes = new HashMap<>();
+	protected Map<String, SpakArchive> pakArchives = new HashMap<>();
 	
 	public ProjectAssetManager() {
 		INSTANCE = this;
+		this.resolver = new PAMFileHandleResolver(this);
+		this.assetManager = new AssetManager(this.resolver);
+
+		this.addAssetType(Texture.class, "png", "jpg", "jpeg", "bmp", "cim", "etc1", "ktx", "zktx"); //TODO: Add basis support
+		this.addAssetType(Model.class, "obj", "g3db", "g3dj");
+		this.addAssetType(SceneAsset.class, "gltf", "glb");
 	}
 	
-	public boolean hasAsset(FileHandle handle) {
-		return this.pathToUUIDMap.containsKey(handle.file().toPath());
+	public <T> T getGdxAsset(String path, Class<T> type) {
+		return INSTANCE.assetManager.get(path, type);
 	}
-	
-	public void addAsset(ProjectAsset<?> projectAsset) {
-		this.projectAssets.put(projectAsset.getUUID(), projectAsset);
-		this.pathToUUIDMap.put(projectAsset.getFile().file().toPath(), projectAsset.getUUID());
-		Utils.logDebug("New asset added `", projectAsset.getPathToAsset() + "` with uuid: ", projectAsset.getUUID().toString());
-	}
-	
-	public <TYPE> ProjectAsset<TYPE> getAsset(Class<TYPE> type, FileHandle handle) {
-		if (this.hasAsset(handle)) {
-			return (ProjectAsset<TYPE>)this.projectAssets.get(this.pathToUUIDMap.get(handle.file().toPath()));
+
+	public <T> boolean loadGdxAsset(String path, Class<T> type) {
+		if (!this.assetManager.isLoaded(path, type)) {
+			this.assetManager.load(path, type);
+			this.assetManager.finishLoadingAsset(path);
+			return this.assetManager.isLoaded(path, type);
 		}
-		return null;
+		return false;
 	}
 	
-	public <TYPE> ProjectAsset<TYPE> getAsset(Class<TYPE> type, UUID uuid) {
-		ProjectAsset<?> projectAsset = this.projectAssets.get(uuid);
-		return projectAsset != null && projectAsset.getAsset() != null ? (projectAsset.getAsset().getClass().isAssignableFrom(type) ? (ProjectAsset<TYPE>)projectAsset : null) : null;
-	}
-	
-	public ProjectAsset<?> getAsset(UUID uuid) {
-		return this.projectAssets.get(uuid);
-	}
-	
-	public <TYPE> ProjectAsset<TYPE> getLoadAsset(Class<TYPE> clazz, FileHandle handle) {
-		if (!this.hasAsset(handle)) {
-			ProjectAsset<TYPE> projectAsset = new ProjectAsset<>(clazz, handle.file().getAbsolutePath());
-			projectAsset.load();
-			this.addAsset(projectAsset);
-			return projectAsset;
+	public <T> boolean unloadGdxAsset(String path, Class<T> type) {
+		if (this.assetManager.isLoaded(path, type)) {
+			this.assetManager.unload(path);
+			return !this.assetManager.isLoaded(path, type);
 		}
-		return this.getAsset(clazz, handle);
+		return false;
 	}
 	
-	public void saveIndexes(DataOutputStream dos) throws IOException {
-		Array<Class<?>> indexes = new Array<>();
-		Array<ProjectAsset<?>> unidentifiedAssets = new Array<>();
-		for (ProjectAsset<?> projectAsset : INSTANCE.projectAssets.values()) { //idk what the fuck is happened, but got this working only through INSTANCE lol...
-			if (projectAsset.getType() != null) {
-				if (!indexes.contains(projectAsset.getType(), true) && projectAsset.getAssetHandlersSize() > 0) {
-					indexes.add(projectAsset.getType());
+	public boolean addPakArchive(FileHandle handle) { return this.addPakArchive(handle.nameWithoutExtension(), handle); }
+	public boolean addPakArchive(String name, FileHandle handle) {
+		if (handle != null && handle.exists()) {
+			if (!this.isPakArchiveExists(name)) {
+				try {
+					this.pakArchives.put(name, new SpakArchive(handle, name));
+					 Utils.logDebug("PAK archive added: ", handle.path());
+					 return true;
+				} catch (Exception exception) {
+					Utils.logError(exception, "ProjectAssetManager", "Unable to add PAK archive from path: ", handle.path());
 				}
-			} else unidentifiedAssets.add(projectAsset);
-		}
-		Utils.logDebug("There is ", unidentifiedAssets.size, " assets that can't be indexed!");
-		
-		
-		dos.writeInt(0x00000000); //version
-		dos.writeInt(indexes.size); //size of type indexes
-		dos.writeInt(this.projectAssets.size() - unidentifiedAssets.size); //size of indexes
-		for (int i = 0; i != indexes.size; i++) dos.writeUTF(indexes.get(i).getTypeName());
-		for (ProjectAsset<?> projectAsset : this.projectAssets.values()) {
-			dos.writeInt(indexes.indexOf(projectAsset.getType(), true));
-			dos.writeUTF(projectAsset.getPathToAsset());
-			dos.writeUTF(projectAsset.getUUID().toString());
+			} else Utils.logDebug("Unable to add PAK archive, `", name, "` already exists.");
+		} else Utils.logDebug("Unable to add PAK archive, path is null or not exists.");
+		return false;
+	}
+	
+	public boolean removePakArchive(String name) {
+		if (name != null) {
+			if (this.isPakArchiveExists(name)) {
+				SpakArchive archive = this.pakArchives.remove(name);
+				archive.dispose();
+				Utils.logDebug("PAK archive `", name, "` removed.");
+				return true;
+			} else Utils.logDebug("Unable to remove PAK archive `", name, "` because it not exist.");
+		} else Utils.logDebug("Unable to remove PAK archive because name is null.");
+		return false;
+	}
+	
+	public boolean isPakArchiveExists(String pakName) {
+		return this.pakArchives.containsKey(pakName);
+	}
+	
+	public boolean isPakAssetExists(String pakName, String pakAsset) {
+		SpakArchive pakArchive = this.getPakArchive(pakName);
+		return pakArchive != null && pakArchive.containsEntry(pakName);
+	}
+	
+	public SpakArchive getPakArchive(String pakName) {
+		return this.pakArchives.get(pakName);
+	}
+	
+	public SpakAsset<?> getPakAsset(String pakName, String pakAsset) {
+		SpakArchive pakArchive = this.getPakArchive(pakName);
+		return pakArchive != null ? pakArchive.getPakAsset(pakAsset) : null;
+	}
+	
+	public void saveIndexes(Kryo kryo, OutputChunked output) throws IOException {
+		output.writeInt(0x00000000);
+		output.writeInt(this.pakArchives.size());
+		for (SpakArchive archive : this.pakArchives.values()) {
+			output.writeString(archive.getName());
+			output.writeString(archive.getFileHandle().file().getAbsolutePath());
 		}
 	}
 	
-	public void loadIndexes(DataInputStream dis) throws IOException {
-		dis.skip(4); //int version = dis.readInt();
-		int typeIndexesSize = dis.readInt();
-		int indexesSize = dis.readInt();
-		Array<Class<?>> typeIndexes = new Array<>();
-		for (int i = 0; i != typeIndexesSize; i++) {
-			String classType = dis.readUTF();
-			try {
-				typeIndexes.add(Class.forName(classType));
-			} catch (ClassNotFoundException classNotFoundException) {
-				typeIndexes.add(null);
-			}
-		}
-		for (int i = 0; i != indexesSize; i++) {
-			try {
-				int index = dis.readInt();
-				String path = dis.readUTF();
-				UUID uuid = UUID.fromString(dis.readUTF());
-				if (index > -1) {
-					ProjectAsset<?> projectAsset = new ProjectAsset(typeIndexes.get(index), uuid, path);
-					projectAsset.load();
-					this.addAsset(projectAsset);
-				}
-			} catch (GdxRuntimeException gdxRuntimeException) {
-				Utils.logError(gdxRuntimeException, "Asset loading", gdxRuntimeException.getMessage());
-			}
+	public void loadIndexes(Kryo kryo, InputChunked input) throws IOException {
+		int version = input.readInt();
+		int archives = input.readInt();
+		for (int i = 0; i != archives; i++) {
+			String name = input.readString();
+			FileHandle handle = Gdx.files.absolute(input.readString());
+			if (handle.exists()) {
+				if (this.addPakArchive(name, handle)) {
+					this.getPakArchive(name).loadAssets();
+				} else Utils.logWarn("Deserialization", "SpakArchive `", name, "` is not loaded. Skipping...");
+			} else Utils.logWarn("Deserialization", "SpakArchive `", name, "` is not found by path `", handle.path(), "`. Skipping...");
 		}
 	}
+
+	public Map<String, SpakArchive> getSpakArchiveMap() {
+		return this.pakArchives;
+	}
 	
-	public Map<UUID, ProjectAsset<?>> getAssetMap() {
-		return this.projectAssets;
+	public Class<?> getTypeForExtension(String extension) {
+		return this.assetTypes.get(extension);
+	}
+	
+	private void addAssetType(Class<?> type, String... extensions) {
+		for (String extension : extensions) {
+			this.assetTypes.put(extension, type);
+		}
 	}
 
 	public void dispose() {
-		for (ProjectAsset<?> projectAsset : this.projectAssets.values()) {
-			if (projectAsset.isLoaded()) {
-				projectAsset.unload();
-			}
+		for (SpakArchive archive : this.pakArchives.values()) {
+			archive.dispose();
 		}
-		this.pathToUUIDMap.clear();
-		this.projectAssets.clear();
+		this.assetManager.dispose();
 	}
 }

@@ -40,14 +40,15 @@ public class ScenesProjectIO {
 				return false;
 			}
 			int version = dis.readInt();
+			InputChunked input = new InputChunked(dis);
 			
 			Utils.logDebug("Version: ", version, ", Loading asset indexes");
 			/** ProjectAssetManager section **/ {
-				projectAssetManager.loadIndexes(dis);
+				projectAssetManager.loadIndexes(kryo, input);
+				input.nextChunks();
 			}
 			
 			Utils.logDebug("Asset indexes loaded, Loading viewport data");
-			InputChunked input = new InputChunked(dis);
 			/** Viewport section **/ {
 				viewportRenderer.readData(kryo, input);
 				input.nextChunks();
@@ -78,18 +79,17 @@ public class ScenesProjectIO {
 			destFile.file().createNewFile();
 			FileOutputStream fos = new FileOutputStream(destFile.file());
 			DataOutputStream dos = new DataOutputStream(fos);
-			
 			Kryo kryo = SpecEditorSerialization.INSTANCE.kryo;
 
 			dos.writeInt(0xBADF05CE); //SCE - scenes format magic
 			dos.writeInt(0x00000001); //version
+			OutputChunked output = new OutputChunked(dos);
 			
 			/** ProjectAssetManager section **/ {
-				projectAssetManager.saveIndexes(dos);
+				projectAssetManager.saveIndexes(kryo, output);
+				output.endChunks();
 			}
 			
-			//End of usual DataOutputStream manipulations
-			OutputChunked output = new OutputChunked(dos);
 			/** Viewport section **/ {
 				viewportRenderer.writeData(kryo, output);
 				output.endChunks();

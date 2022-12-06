@@ -5,15 +5,15 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 
 import by.fxg.speceditor.DefaultResources;
-import by.fxg.speceditor.project.assets.IProjectAssetHandler;
-import by.fxg.speceditor.project.assets.ProjectAsset;
+import by.fxg.speceditor.project.assets.ISpakAssetUser;
+import by.fxg.speceditor.project.assets.SpakAsset;
 import by.fxg.speceditor.std.g3d.EditDecal;
 import by.fxg.speceditor.std.gizmos.GizmoTransformType;
 import by.fxg.speceditor.std.gizmos.ITreeElementGizmos;
 import by.fxg.speceditor.std.objectTree.TreeElement;
 
-public class ElementDecal extends TreeElement implements ITreeElementGizmos, IProjectAssetHandler<Texture>  {
-	public ProjectAsset<Texture> decalAsset = null;
+public class ElementDecal extends TreeElement implements ITreeElementGizmos, ISpakAssetUser<Texture>  {
+	public SpakAsset<Texture> asset = null;
 	public EditDecal decal = new EditDecal();
 	
 	public ElementDecal() { this("New decal"); }
@@ -24,7 +24,7 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 	private ElementDecal(ElementDecal copy) {
 		this.displayName = copy.displayName;
 		this.visible = copy.visible;
-		if (copy.decalAsset != null) copy.decalAsset.addHandler(this);
+		if (copy.asset != null) copy.asset.addUser(this);
 		this.decal.setBillboard(copy.decal.isBillboard());
 		this.decal.position.set(copy.decal.position);
 		this.decal.rotation.set(copy.decal.rotation);
@@ -47,17 +47,17 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 		return transformType != GizmoTransformType.SCALE;
 	}
 
-	public void onAssetHandlerAdded(ProjectAsset<Texture> asset) {
-		if (this.decalAsset != null) this.decalAsset.removeHandlerWithoutNotify(this);
-		this.decalAsset = asset;
+	public void onSpakUserAdded(SpakAsset<Texture> asset) {
+		if (this.asset != null) this.asset.removeUserWithoutNotify(this);
+		this.asset = asset;
 		this.onAssetLoad(asset);
 	}
 	
-	public void onAssetLoad(ProjectAsset<Texture> asset) {
+	public void onAssetLoad(SpakAsset<Texture> asset) {
 		this.decal.setTexture(asset.getAsset());
 	}
 	
-	public void onAssetUnload(ProjectAsset<Texture> asset) {
+	public void onAssetUnload(SpakAsset<Texture> asset) {
 		this.decal.setDefaultDecal();
 	}
 	
@@ -66,8 +66,8 @@ public class ElementDecal extends TreeElement implements ITreeElementGizmos, IPr
 	}
 	
 	public void onDelete() {
-		if (this.decalAsset != null) {
-			this.decalAsset.removeHandlerWithoutNotify(this);
+		if (this.asset != null) {
+			this.asset.removeUserWithoutNotify(this);
 		}
 	}
 }

@@ -15,7 +15,7 @@ import by.fxg.speceditor.utils.Utils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UDragArea extends UIElement implements IFocusable, IMouseController {
-	protected int minValue, maxValue;
+	protected int offsetValue, minValue, maxValue;
 	protected boolean moveByHeight = false;
 	protected int dragStart, drag;
 	
@@ -23,7 +23,9 @@ public class UDragArea extends UIElement implements IFocusable, IMouseController
 		this.setActionListener(actionListener, actionListenerID);
 	}
 	
-	public UDragArea setParameters(int minValue, int maxValue, boolean moveByHeight) {
+	public UDragArea setParameters(int minValue, int maxValue, boolean moveByHeight) { return this.setParameters(0, minValue, maxValue, moveByHeight); }
+	public UDragArea setParameters(int offsetValue, int minValue, int maxValue, boolean moveByHeight) {
+		this.offsetValue = offsetValue;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		this.moveByHeight = moveByHeight;
@@ -35,7 +37,9 @@ public class UDragArea extends UIElement implements IFocusable, IMouseController
 			SpecInterface.setCursor(AppCursor.GRABBING);
 			if (!this.getInput().isMouseDown(0, true)) {
 				this.drag = MathUtils.clamp(this.drag, this.minValue, this.maxValue);
-				this.actionListener.onDragAreaDrag(this, this.actionListenerID, this.dragStart, this.drag, true);
+				if (this.minValue < this.maxValue) {
+					this.actionListener.onDragAreaDrag(this, this.actionListenerID, this.dragStart, this.drag, true);
+				}
 				this.setFocused(false);
 				this.getInput().setCursorCatched(false);
 				Gdx.input.setCursorPosition(this.x + this.width / 2, Utils.getHeight() - (this.y + this.height / 2));
@@ -43,7 +47,8 @@ public class UDragArea extends UIElement implements IFocusable, IMouseController
 		} else if (this.isMouseOver()) {
 			SpecInterface.setCursor(this.moveByHeight ? AppCursor.RESIZE_VERTICAL : AppCursor.RESIZE_HORIZONTAL);
 			if (this.getInput().isMouseDown(0, false)) {
-				this.dragStart = this.drag = this.moveByHeight ? this.y : this.x;
+				this.dragStart = this.moveByHeight ? this.y : this.x;
+				this.drag = this.moveByHeight ? this.y - this.offsetValue : this.x - this.offsetValue;
 				this.setFocused(true);
 				GInputProcessor.mouseController = this;
 				this.getInput().setCursorCatched(true);
@@ -53,7 +58,7 @@ public class UDragArea extends UIElement implements IFocusable, IMouseController
 	
 	public void render(ShapeDrawer shape) {
 		prevColor = shape.getPackedColor();
-		shape.setColor(this.isMouseOver() || this.isFocused() ? UColor.elementHover : UColor.elementDefaultColor);
+		shape.setColor(this.isMouseOver() || this.isFocused() ? UColor.elementIntensiveColor : UColor.elementDefaultColor);
 		shape.filledRectangle(this.x, this.y, this.width, this.height);
 		shape.setColor(prevColor);
 	}
@@ -67,7 +72,7 @@ public class UDragArea extends UIElement implements IFocusable, IMouseController
 	}
 
 	public void onMouseInput(float x, float y) {
-		if (this.isFocused()) {
+		if (this.isFocused() && this.minValue < this.maxValue) {
 			this.drag = MathUtils.clamp(this.drag + (int)(this.moveByHeight ? y : -x), this.minValue, this.maxValue);
 			this.actionListener.onDragAreaDrag(this, this.actionListenerID, this.dragStart, this.drag, false);
 		}

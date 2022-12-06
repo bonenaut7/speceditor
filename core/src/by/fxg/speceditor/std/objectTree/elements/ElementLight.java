@@ -80,7 +80,7 @@ public class ElementLight extends TreeElement implements ITreeElementGizmos {
 	
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		this._viewportDecal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(Utils.format("defaults/lightdecal_", visible, ".png"))));
+		this._viewportDecal.setDecal(Decal.newDecal(SpriteStack.getTextureRegion(Utils.format("defaultassets/lightdecal_", visible, ".png"))));
 		this._viewportDecal.getDecal().setScale(0.0015f, 0.0015f);
 	}
 	
