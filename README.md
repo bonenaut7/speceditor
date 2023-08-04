@@ -3,9 +3,7 @@ Set of tools that can assist you in creation of your projects
 Available tools: Scene editor.  
 Planning tools: GLTF Scene editor, support for community created tools(through addons)
 
-Project is in the active development
-You can ask questions or send your wishes in our [discord](https://discord.gg/2FqQQxyFS8)  
-Changelog is also posting in our discord server.
+Project is currently abandoned
 
 # Quick start
 ```java
