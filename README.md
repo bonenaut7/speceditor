@@ -4,6 +4,20 @@ Available tools: Scene editor.
 Planning tools: GLTF Scene editor, support for community created tools(through addons)
 
 Project is currently abandoned
+# Roadmap that will be completed if i'm will switch from fucking AMD GPU
+* Remake whole UI with ImGui
+* Add styles support for ImGui (i promise we need it, it's very important)
+* Do something with 'PAK'-shit-ass-ets, maybe external packer would be great idea
+* Replace node graphs with flexible and extensive API
+* Make better prefabs
+* Add support for different compressed textures like S3TC and Block Compression, Basis would be great too
+* Add support for different viewports (standalone ones and combined, for example diffuse+collision debug)
+* Make better abstraction for IPhysObject, add better flexibility that allows to switch between bullet and something else
+* A lot of documentation for all this shit would be great bonus, i forgot what the fuck is bullet masks and filters
+* Fix addons and implement BeanShell as addon-scripting because java addons sounds painful without ASM
+* Release that thing as 4th iteration of this editor and rename it to 'Spec', just 'Spec'
+* REPLACE GIZMOS
+* do some commit crimes and celebrate
 
 # Quick start
 ```java
